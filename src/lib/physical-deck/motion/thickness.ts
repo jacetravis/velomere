@@ -25,7 +25,16 @@ export function sampleThickness(live: number) {
   return clampThickness(live);
 }
 
+/** Releasing, cancelling, or otherwise losing the thumb parks it at neutral and records no card movement. */
+export const THUMB_INTERRUPTIONS = ["release", "cancel", "lost-capture", "blur", "key"] as const;
+export type ThumbInterrupt = (typeof THUMB_INTERRUPTIONS)[number];
+
+export function interruptThickness(reason: ThumbInterrupt) {
+  return { holding: false as const, thickness: 0.5, reason, movement: null };
+}
+
 /** Releasing the thumb ends the hold and parks it at neutral. It does not describe a card movement. */
 export function releaseThickness() {
-  return { holding: false as const, thickness: 0.5 };
+  const parked = interruptThickness("release");
+  return { holding: parked.holding, thickness: parked.thickness };
 }

@@ -13,7 +13,9 @@ export const SHUFFLE_STYLES = [
 
 export type ShuffleStyle = (typeof SHUFFLE_STYLES)[number];
 export type MotionEnd = "top" | "bottom";
-export type MotionSource = "reader" | "algorithm-selected";
+export type MotionActor = "reader" | "algorithm-selected";
+/** Reader chose it, the program derived it from a reader value, or the algorithm chose it. */
+export type MotionSource = MotionActor | "derived";
 
 export type TransferEvent = {
   kind: "transfer";
@@ -60,7 +62,7 @@ export type MotionEvent = TransferEvent | SlideEvent | PickupEvent | SquareEvent
 export type PhysicalShuffleTrace = {
   schema: typeof MOTION_SCHEMA;
   style: ShuffleStyle;
-  source: MotionSource;
+  source: MotionActor;
   drawPileCount: number;
   originalDeckCount: number;
   input: {
@@ -75,6 +77,8 @@ export type PhysicalShuffleTrace = {
     inputAttribution: Record<string, MotionSource>;
   };
   events: MotionEvent[];
+  /** Diagnostic only. Replay does not trust this; the events are the order. */
+  orderChanged?: boolean;
   /** Diagnostic only. A commit is valid only when replay reproduces this order. */
   afterOrder: number[];
 };

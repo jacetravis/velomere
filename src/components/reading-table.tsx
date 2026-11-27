@@ -43,7 +43,7 @@ import {
   startFreshPhysical,
   subscribePhysical,
 } from "@/lib/physical-deck/runtime";
-import { sampleThickness, THICKNESS_INSET, thicknessFromDrag, thicknessFromPointer } from "@/lib/physical-deck/motion/thickness";
+import { interruptThickness, sampleThickness, THICKNESS_INSET, thicknessFromDrag, thicknessFromPointer, type ThumbInterrupt } from "@/lib/physical-deck/motion/thickness";
 import { captureSpread } from "@/lib/physical-deck/spread-record";
 import { displayedTableReading, resumeTableReading, tableLaysReading } from "@/lib/physical-deck/table-reading";
 import { waitingSheets } from "@/lib/physical-deck/waiting-stack";
@@ -253,7 +253,7 @@ export function ReadingTable() {
   const thicknessDrag = useRef(false);
   const thicknessGrab = useRef<{ x: number; thickness: number; absolute: boolean } | null>(null);
   const springToken = useRef(0);
-  const parkRef = useRef<() => void>(() => {});
+  const parkRef = useRef<(reason?: ThumbInterrupt) => void>(() => {});
   const thicknessTrack = useRef<HTMLDivElement>(null);
   const [packetThickness, setPacketThickness] = useState(0.5);
   const [thicknessReturn, setThicknessReturn] = useState(false);
@@ -287,7 +287,7 @@ export function ReadingTable() {
   useEffect(() => {
     const stop = () => {
       if (!holding.current && !thicknessDrag.current) return;
-      parkRef.current();
+      parkRef.current("blur");
     };
     window.addEventListener("blur", stop);
     return () => window.removeEventListener("blur", stop);
@@ -527,10 +527,15 @@ export function ReadingTable() {
 
   const handlingBlocked = () => physicalLoading() || !!physicalPause() || !physicalState();
 
-  const recordShuffle = (ratio: number, turn: number, thickness?: number) => {
+  const recordShuffle = (
+    ratio: number,
+    turn: number,
+    thickness?: number,
+    readerChoices?: { ratio?: boolean },
+  ) => {
     const before = orderRef.current.map((card) => card.id);
     // The aside/drop/tuck picture is not these movements. The trace is the shuffle.
-    const next = applyPhysicalMotionShuffle({ before, style: animationChoice, ratio, turn, thickness });
+    const next = applyPhysicalMotionShuffle({ before, style: animationChoice, ratio, turn, thickness, readerChoices });
     showPile(next.drawPile);
   };
 
@@ -643,6 +648,7 @@ export function ReadingTable() {
     const later = openShuffle(token);
     let count = 0;
     let armed = false;
+    const cutRatioForPass = (pass: number) => ((pass - 1) % 7 + 1) / 7;
 
     const clearFly = () => {
       if (flyTimer.current != null) {
@@ -736,17 +742,18 @@ export function ReadingTable() {
         flyTimer.current = window.setTimeout(launch, 2600 + Math.random() * 3200);
       }
       const sampled = sampleThickness(thicknessRef.current);
+      const ratio = cutRatioForPass(count);
       cutLock.current = true;
       setShuffleStep(count);
       setShufflingTimes(count);
       setCutMotion(Math.max(32, Math.round(step * 0.92)));
-      setCutPreview(sampled);
+      setCutPreview(ratio);
       setCutBeat("aside");
       later(step, () => setCutBeat("drop"));
       later(step * 2, () => {
         setCutBeat("tuck");
         try {
-          recordShuffle(sampled, count, sampled);
+          recordShuffle(ratio, count, sampled, { ratio: false });
         } catch (err) {
           shuffleRun.current += 1;
           notePhysical(err);
@@ -757,7 +764,7 @@ export function ReadingTable() {
         setOrigin((value) => {
           const size = order.length;
           if (size < 2) return value;
-          return (value + splitIndex(size, sampled)) % size;
+          return (value + splitIndex(size, ratio)) % size;
         });
         play();
       });
@@ -778,7 +785,7 @@ export function ReadingTable() {
     }
   };
 
-  const parkThickness = () => {
+  const parkThickness = (reason: ThumbInterrupt = "release") => {
     thicknessDrag.current = false;
     thicknessGrab.current = null;
     endHold();
@@ -787,8 +794,9 @@ export function ReadingTable() {
     setThicknessReturn(true);
     window.requestAnimationFrame(() => {
       if (springToken.current !== token) return;
-      thicknessRef.current = 0.5;
-      setPacketThickness(0.5);
+      const parked = interruptThickness(reason);
+      thicknessRef.current = parked.thickness;
+      setPacketThickness(parked.thickness);
     });
   };
   parkRef.current = parkThickness;
@@ -1515,15 +1523,15 @@ export function ReadingTable() {
               }}
               onPointerUp={() => {
                 if (!thicknessDrag.current) return;
-                parkThickness();
+                parkThickness("release");
               }}
               onPointerCancel={() => {
                 if (!thicknessDrag.current) return;
-                parkThickness();
+                parkThickness("cancel");
               }}
               onLostPointerCapture={() => {
                 if (!thicknessDrag.current) return;
-                parkThickness();
+                parkThickness("lost-capture");
               }}
               onKeyDown={(event) => {
                 if (event.key === " " || event.key === "Enter") {
@@ -1541,12 +1549,12 @@ export function ReadingTable() {
               onKeyUp={(event) => {
                 if (event.key === " " || event.key === "Enter" || event.key === "Escape") {
                   event.preventDefault();
-                  parkThickness();
+                  parkThickness("key");
                 }
               }}
               onBlur={() => {
                 if (!holding.current && !thicknessDrag.current) return;
-                parkThickness();
+                parkThickness("blur");
               }}
             >
               <span className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-[10px] tracking-[0.16em] text-subtle uppercase">Thin</span>

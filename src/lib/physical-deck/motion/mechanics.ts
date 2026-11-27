@@ -4,18 +4,19 @@ import { replayPhysicalShuffle } from "./replay";
 /**
  * Six grips. The event list is the shuffle. Nothing here may be re-rolled on replay.
  *
- * original — one visible cut. With a reader thickness, that thickness is the cut.
- *   Otherwise the cut is the pass ratio. A rotation, not a random shuffle.
+ * original — one visible cut from the pass ratio, never from packet thickness.
+ *   A rotation, not a random shuffle. The deck drag is the explicit cut.
  * overhand — hold the stock and strip top packets onto the top of the other hand
- *   until it is empty. Thickness sets the packet size against the cards still held.
- * riffle_bridge — split at the pass ratio. Thickness sets how many cards leave a
- *   half together. The bridge squares; it does not reorder.
- * hindu — bottom-strip grip. Thickness sets each bottom packet against the cards
- *   still held, then the remaining stock is placed underneath.
+ *   until it is empty. Thickness chooses a handful, not a fraction of the stock.
+ *   The thickest strip still leaves cards behind, so one pass cannot be a no-op.
+ * riffle_bridge — split at the pass ratio. Thickness only changes how many cards
+ *   leave a half together. It does not move the split. The bridge squares; it does not reorder.
+ * hindu — bottom-strip grip. Thickness chooses each bottom pull. The last stock
+ *   is placed underneath. A pull never takes the whole stock.
  * table_wash — discrete kinematic wash. Thickness sets how far the cards spread
  *   and which way they are gathered. Not a contact simulation.
- * three_packet_cut — two boundaries. Thickness places those boundaries. No trailing
- *   rotation. Two cards make two packets. One card is not a shuffle.
+ * three_packet_cut — two boundaries from the pass ratio or an explicit cut.
+ *   Thickness does not move them. No trailing rotation. Two cards make two packets.
  */
 
 export type ShufflePlan = {
@@ -30,11 +31,13 @@ export type ShufflePlan = {
   cutPoints?: readonly [number, number] | null;
   pickupOrder?: readonly number[] | null;
   originalDeckCount?: number;
-  /** Explicit packet, cut, or pickup values chosen by the reader rather than this planner. */
+  /** Explicit packet, cut, pickup, or ratio values chosen by the reader rather than this planner. */
   readerChoices?: {
     packetSizes?: boolean;
     cutPoints?: boolean;
     pickupOrder?: boolean;
+    /** False when the pass ratio is a section chosen for the hold, not a finger cut. */
+    ratio?: boolean;
   };
 };
 
@@ -76,13 +79,47 @@ function cutIndex(length: number, ratio: number) {
   return clamp(Math.ceil(clamp(ratio, 0, 1) * (length - 1)), 1, length - 1);
 }
 
-/** Packet size from the thumb, plus a small recorded wobble that cannot erase a thin or thick choice. */
-function sizedPacket(remaining: number, thickness: number, rng: () => number, leave = 0) {
+/** Packet size from the thumb, inside a grip's real range. Extremes stay put; the middle may wobble by a card. */
+function calibratedPacket(
+  remaining: number,
+  deckSize: number,
+  thickness: number,
+  rng: () => number,
+  bounds: { min: number; max: number },
+  leave = 0,
+) {
   const room = remaining - leave;
   if (room < 1) fail("Cannot move empty packet");
-  const target = 1 + (room - 1) * clamp(thickness, 0, 1);
-  const wobble = (rng() - 0.5) * Math.min(0.8, room * 0.12);
-  return clamp(Math.round(target + wobble), 1, room);
+  let hi = Math.min(bounds.max, room);
+  const lowBound = Math.min(bounds.min, hi);
+  const untouched = remaining === deckSize && leave === 0;
+  if (untouched && hi >= remaining) hi = Math.max(1, remaining - 1);
+  const low = Math.min(lowBound, hi);
+  const t = clamp(thickness, 0, 1);
+  const target = low + (hi - low) * t;
+  const wobbleCap = Math.min(t, 1 - t) < 0.12 ? 0.35 : Math.min(0.9, Math.max(0.35, (hi - low) * 0.18));
+  const wobble = (rng() - 0.5) * wobbleCap * 2;
+  return clamp(Math.round(target + wobble), low, hi);
+}
+
+/** Overhand handful. Thick is clumsy, never the whole stock. */
+function overhandBounds(deckSize: number) {
+  if (deckSize <= 2) return { min: 1, max: 1 };
+  return { min: 1, max: clamp(Math.round(deckSize * 0.14), 2, Math.min(12, deckSize - 1)) };
+}
+
+/** Hindu bottom pull. Always leaves a stock, and more than one card on a larger deck. */
+function hinduBounds(deckSize: number) {
+  if (deckSize <= 3) return { min: 1, max: 1 };
+  return { min: 1, max: clamp(Math.round(deckSize * 0.16), 2, Math.min(16, deckSize - 2)) };
+}
+
+/** Riffle release. A few cards at a time so the halves still weave. */
+function riffleBounds(deckSize: number) {
+  if (deckSize < 8) return { min: 1, max: 1 };
+  if (deckSize < 22) return { min: 1, max: 2 };
+  if (deckSize < 52) return { min: 1, max: 3 };
+  return { min: 1, max: 4 };
 }
 
 function zone(state: Work, name: string) {
@@ -153,6 +190,7 @@ export function planPhysicalShuffle(plan: ShufflePlan): PhysicalShuffleTrace {
     seed: "algorithm-selected",
     ...(thickness != null ? { thickness: "reader" as const } : {}),
   };
+  if (plan.readerChoices?.ratio === false) attribution.ratio = "algorithm-selected";
 
 type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | Omit<PickupEvent, "seq" | "t"> | Omit<SquareEvent, "seq" | "t">;
 
@@ -194,9 +232,9 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
   if (n >= 2) {
     switch (plan.style) {
       case "original": {
-        const cut = cutIndex(n, thickness ?? ratio);
+        const cut = cutIndex(n, ratio);
         packetSizes = [cut, n - cut];
-        attribution.packetSizes = "reader";
+        attribution.packetSizes = attribution.ratio;
         transfer("draw", "upper", cut, "top", "bottom", "lift_upper_packet");
         transfer("draw", "result", n - cut, "top", "bottom", "put_lower_on_result");
         transfer("upper", "result", cut, "top", "bottom", "tuck_upper_under");
@@ -215,7 +253,7 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
           const count = suggested == null
             ? thickness == null
               ? Math.min(left, Math.max(1, Math.round(n * portion)))
-              : sizedPacket(left, thickness, rng)
+              : calibratedPacket(left, n, thickness, rng, overhandBounds(n))
             : suggested;
           transfer("held", "receive", count, "top", "top", "strip_top_to_receiver_top");
           sizes.push(count);
@@ -224,7 +262,7 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
         packetSizes = sizes;
         attribution.packetSizes = plan.packetSizes
           ? plan.readerChoices?.packetSizes ? "reader" : "algorithm-selected"
-          : thickness == null ? "algorithm-selected" : "reader";
+          : thickness == null ? "algorithm-selected" : "derived";
         if (thickness != null && !plan.packetSizes) attribution.variation = "algorithm-selected";
         transfer("receive", "draw", n, "top", "bottom", "finish_overhand");
         square("draw");
@@ -242,7 +280,7 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
           const count = suggested == null
             ? thickness == null
               ? Math.min(remaining - 1, Math.max(1, Math.round(n * portion)))
-              : sizedPacket(remaining, thickness, rng, 1)
+              : calibratedPacket(remaining, n, thickness, rng, hinduBounds(n), 1)
             : suggested;
           if (count <= 0 || count >= remaining) fail("Hindu must leave the final packet to place underneath");
           transfer("held", "receive", count, "bottom", "top", "strip_bottom_to_receiver_top");
@@ -255,7 +293,7 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
         packetSizes = sizes;
         attribution.packetSizes = plan.packetSizes
           ? plan.readerChoices?.packetSizes ? "reader" : "algorithm-selected"
-          : thickness == null ? "algorithm-selected" : "reader";
+          : thickness == null ? "algorithm-selected" : "derived";
         if (thickness != null && !plan.packetSizes) attribution.variation = "algorithm-selected";
         transfer("held", "receive", rest, "top", "bottom", "place_remaining_below_receiver");
         transfer("receive", "draw", n, "top", "bottom", "finish_hindu");
@@ -265,8 +303,8 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
       case "riffle_bridge": {
         const cut = cutIndex(n, ratio);
         packetSizes = [cut, n - cut];
-        attribution.packetSizes = "reader";
-        attribution.releases = thickness == null ? "algorithm-selected" : "reader";
+        attribution.packetSizes = attribution.ratio;
+        attribution.releases = thickness == null ? "algorithm-selected" : "derived";
         if (thickness != null) attribution.releaseVariation = "algorithm-selected";
         transfer("draw", "left", cut, "top", "bottom", "split_left");
         transfer("draw", "right", n - cut, "top", "bottom", "split_right");
@@ -278,7 +316,7 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
           const available = zone(state, side).length;
           const run = thickness == null
             ? Math.min(available, 1 + (rng() < 0.22 ? 1 : 0))
-            : Math.min(available, sizedPacket(available, thickness, rng));
+            : Math.min(available, calibratedPacket(available, n, thickness, rng, riffleBounds(n)));
           transfer(side, "merged", run, "bottom", "top", `riffle_release_${turnIndex}`);
           turnIndex += 1;
         }
@@ -297,23 +335,15 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
           square("draw");
           break;
         }
-        const first = plan.cutPoints?.[0] ?? (thickness == null
-          ? clamp(Math.round(n * (0.2 + 0.32 * clamp(ratio, 0, 1))), 1, n - 2)
-          : clamp(Math.round(1 + (n - 3) * clamp(thickness, 0, 1)), 1, n - 2));
-        const rest = n - first;
-        const middle = thickness == null
-          ? null
-          : clamp(Math.round(1 + Math.max(0, rest - 2) * clamp(thickness, 0, 1)), 1, rest - 1);
-        const second = plan.cutPoints?.[1] ?? (middle == null
-          ? clamp(Math.round(n * (0.55 + 0.27 * clamp(ratio, 0, 1))), first + 1, n - 1)
-          : first + middle);
+        const first = plan.cutPoints?.[0] ?? clamp(Math.round(n * (0.2 + 0.32 * clamp(ratio, 0, 1))), 1, n - 2);
+        const second = plan.cutPoints?.[1] ?? clamp(Math.round(n * (0.55 + 0.27 * clamp(ratio, 0, 1))), first + 1, n - 1);
         if (!Number.isInteger(first) || !Number.isInteger(second) || first <= 0 || second <= first || second >= n) {
           fail("Invalid three-packet cut boundaries");
         }
         cutPoints = [first, second];
         attribution.cutPoints = plan.cutPoints
           ? plan.readerChoices?.cutPoints ? "reader" : "algorithm-selected"
-          : thickness == null ? "algorithm-selected" : "reader";
+          : "algorithm-selected";
         transfer("draw", "packet0", first, "top", "bottom", "make_top_packet");
         transfer("draw", "packet1", second - first, "top", "bottom", "make_middle_packet");
         transfer("draw", "packet2", n - second, "top", "bottom", "make_bottom_packet");
@@ -334,8 +364,8 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
       }
       case "table_wash": {
         const thumb = thickness == null ? null : clamp(thickness, 0, 1);
-        attribution.positions = thumb == null ? "algorithm-selected" : "reader";
-        attribution.pickupAxis = "reader";
+        attribution.positions = thumb == null ? "algorithm-selected" : "derived";
+        attribution.pickupAxis = thumb == null ? "reader" : "derived";
         if (thumb != null) attribution.positionVariation = "algorithm-selected";
         if (thumb == null) {
           for (const id of before) {
@@ -401,6 +431,7 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
       inputAttribution: attribution,
     },
     events,
+    orderChanged: !same(before, after),
     afterOrder: after,
   };
   const replayed = replayPhysicalShuffle(before, trace, originalDeckCount);
