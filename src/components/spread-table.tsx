@@ -11,12 +11,13 @@ import { ChatWithSolace } from "@/components/entry-links";
 import { MeaningText } from "@/components/meaning-text";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { listCards, listDecks } from "@/lib/cards/server";
-import { suitLabel, type Card } from "@/lib/cards/types";
+import { suitLabel } from "@/lib/cards/types";
 import labels from "@/lib/cards/d3-labels.json";
 import { project, SpreadCommandError, type Assignment, type Session } from "@/lib/spreads/engine";
 import { fittedCardWidth, expandedPositions } from "@/lib/spreads/fit";
 import { PhysicalCard } from "@/components/tarot-card";
 import { useSpreads } from "@/lib/spreads/store";
+import { applyDeliver, applyDrawWaiting, applyFlip, applyGather, physicalState } from "@/lib/physical-deck/runtime";
 import { useJournal } from "@/lib/journal/store";
 import { cardSitting } from "@/lib/solace/sitting";
 import { useSolace } from "@/lib/solace/store";
@@ -157,9 +158,10 @@ export function SpreadTable() {
 
   const take = (current: Session) => {
     const used = new Set(current.assignments.map((item) => item.cardId));
-    const pool = (cards ?? []).filter((card) => !used.has(card.id));
-    if (!pool.length) throw new SpreadCommandError("This deck does not have enough cards left.");
-    const card = pool[Math.floor(Math.random() * pool.length)] as Card;
+    const topId = physicalState()?.drawPile[0];
+    const card = (cards ?? []).find((item) => item.id === topId && !used.has(item.id));
+    if (!card || topId == null) throw new SpreadCommandError("The top card is not available.");
+    applyDrawWaiting();
     return {
       deckId: deck?.id ?? activeDeckId ?? 0,
       deckName: deck?.name ?? "Deck",
@@ -172,6 +174,17 @@ export function SpreadTable() {
       suit: card.suit,
       rank: card.rank,
     };
+  };
+
+  const releaseReading = () => {
+    try {
+      if (physicalState()) applyGather();
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "The cards could not be returned to the deck.");
+      return;
+    }
+    discard();
+    setKept(false);
   };
 
   const run = (work: () => void) => {
@@ -279,7 +292,7 @@ export function SpreadTable() {
           >
             Draw {Math.min(view.drawnCount + 1, view.requiredCount)} of {view.requiredCount}
           </Button>
-          {live ? <Button type="button" variant="ghost" onClick={() => { discard(); setKept(false); }}>Discard this reading</Button> : null}
+          {live ? <Button type="button" variant="ghost" onClick={releaseReading}>Discard this reading</Button> : null}
         </div>
       ) : (
         <div className="relative mt-6">
@@ -292,7 +305,7 @@ export function SpreadTable() {
                   className={`relative flex h-24 w-16 items-center justify-center overflow-hidden rounded-md border ${slot.visual === "ghost" ? "border-dashed border-fg/30 bg-fg/5" : "border-transparent bg-[#2c2926] shadow-card"} ${view.nextAction === "flip_first" && slot.visual === "first_face_down" ? "ring-2 ring-fg" : ""} ${view.nextAction === "reveal_next_from_stack" && slot.visual === "ghost" && view.nextPosition?.order === slot.position.order ? "ring-1 ring-fg/70" : ""}`}
                   style={{ rotate: `${slot.position.rotationDeg}deg`, transition: reduce ? "none" : "transform 280ms ease" }}
                   onClick={() => {
-                    if (slot.visual === "first_face_down") run(() => flip(crypto.randomUUID()));
+                    if (slot.visual === "first_face_down") run(() => { applyFlip(); flip(crypto.randomUUID()); });
                     else if (slot.visual === "revealed_face_up") setDetailOrder(slot.position.order);
                   }}
                 >
@@ -312,7 +325,7 @@ export function SpreadTable() {
               type="button"
               className={`mt-4 flex items-center gap-3 rounded-2xl bg-surface p-3 ${view.nextAction === "reveal_next_from_stack" ? "ring-2 ring-fg" : "opacity-70"}`}
               disabled={busy || view.nextAction !== "reveal_next_from_stack"}
-              onClick={() => run(() => deliver(crypto.randomUUID()))}
+              onClick={() => run(() => { applyDeliver(); deliver(crypto.randomUUID()); })}
             >
               <img src="/card-back.jpg" alt="" className="h-16 w-11 rounded-md object-cover" />
               <span className="text-left text-sm">
@@ -333,10 +346,10 @@ export function SpreadTable() {
             <div className="mt-4 grid gap-2">
               <Button type="button" variant="secondary" onClick={journal}>{kept ? "Kept in the journal" : "Add Journal Entry"}</Button>
               <Button type="button" variant="secondary" onClick={talk}>Chat with Solace</Button>
-              <Button type="button" variant="ghost" onClick={() => { discard(); setKept(false); }}>Clear the table</Button>
+              <Button type="button" variant="ghost" onClick={releaseReading}>Clear the table</Button>
             </div>
           ) : (
-            <Button type="button" variant="ghost" className="mt-3" onClick={() => { discard(); setKept(false); }}>Discard this reading</Button>
+            <Button type="button" variant="ghost" className="mt-3" onClick={releaseReading}>Discard this reading</Button>
           )}
         </div>
       )}
@@ -543,7 +556,7 @@ export function SpreadLay({
                   setLifted(null);
                   return;
                 }
-                if (slot.visual === "first_face_down") run(() => flip(crypto.randomUUID()));
+                if (slot.visual === "first_face_down") run(() => { applyFlip(); flip(crypto.randomUUID()); });
                 else setDetailOrder(slot.position.order);
               }}
               onContextMenu={(event) => event.preventDefault()}
@@ -651,6 +664,7 @@ export function SpreadLay({
             const position = placed.find((item) => item.order === next.order);
             if (!position) return;
             try {
+              applyDeliver();
               deliver(crypto.randomUUID());
               if (!reduce) {
                 setShowFace(false);

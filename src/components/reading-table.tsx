@@ -19,12 +19,34 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Separator } from "@/components/ui/separator";
 import { listCards, listDecks, updateCardMeaning } from "@/lib/cards/server";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
-import { cutCards, sheetsForSplit, shuffleByStyle, shuffleCards, shuffleSplit } from "@/lib/cards/order";
+import { sheetsForSplit, shuffleByStyle, shuffleSplit } from "@/lib/cards/order";
+import {
+  applyAcceptSlip,
+  applyCut,
+  applyDrawSingle,
+  applyDrawWaiting,
+  applyEject,
+  applyGather,
+  applyPutBack,
+  applyRealizedShuffle,
+  applyReturnWaiting,
+  applyStage,
+  bootPhysical,
+  orderIds,
+  pausePhysical,
+  peekPhysical,
+  physicalLoading,
+  physicalPause,
+  physicalState,
+  startFreshPhysical,
+  subscribePhysical,
+} from "@/lib/physical-deck/runtime";
 import { edgeLook, paperTone, sheetLean } from "@/lib/cards/edge";
 import { cardFrame } from "@/lib/cards/shape";
 import { cutDepth, cutPace, cutSections, latchShuffleCount, SHUFFLE_MAX, SHUFFLE_MIN } from "@/lib/cards/shuffle-count";
 import { shufflePose } from "@/lib/shuffle-style";
 import { DEFAULT_SHUFFLE_ANIMATION, setShuffleAnimation, shuffleAnimation, subscribeShuffleAnimation } from "@/lib/shuffle-animation";
+import { type PhysicalState } from "@/lib/physical-deck/state";
 import { suitLabel, type Card } from "@/lib/cards/types";
 import labels from "@/lib/cards/d3-labels.json";
 import { cn } from "@/lib/utils";
@@ -36,7 +58,6 @@ import {
   noteTableReturnMounted,
   noteTableReturnUnmounted,
   peekTableReturn,
-  tableReturnShownKey,
 } from "@/lib/table-return";
 import { applyStarterDecks, useJournal, type Orientation, type Reading } from "@/lib/journal/store";
 import { useSpreads } from "@/lib/spreads/store";
@@ -78,9 +99,24 @@ function storyNumber(name: string) {
   return index + 1;
 }
 
+function cardsIn(ids: readonly number[], source: readonly Card[]) {
+  const byId = new Map(source.map((card) => [card.id, card]));
+  return ids.map((id) => byId.get(id)).filter((card): card is Card => !!card);
+}
+
+function spreadAgrees(next: PhysicalState, cardIds: readonly number[]) {
+  const spreadCards = Object.entries(next.table)
+    .filter(([key]) => key.startsWith("spread:"))
+    .map(([, value]) => value.cardId);
+  const out = [...next.waitingStack, ...spreadCards];
+  if (out.length !== cardIds.length) return false;
+  const have = new Set(out);
+  return cardIds.every((id) => have.has(id));
+}
+
 export function ReadingTable() {
   const navigate = useNavigate();
-  const { user } = useCurrentUserState();
+  const { user, isPending } = useCurrentUserState();
   const activeDeckId = useJournal((s) => s.activeDeckId);
   const ensureActiveLook = useJournal((s) => s.ensureActiveLook);
   const { data: decks } = useQuery({
@@ -218,12 +254,17 @@ export function ReadingTable() {
     window.localStorage.setItem("solace-spread-overlay", spreadGuides ? "on" : "off");
   }, [spreadGuides]);
   const [pendingSpread, setPendingSpread] = useState<string | null>(null);
+  const [physicalNote, setPhysicalNote] = useState<string | null>(null);
+  const [canFresh, setCanFresh] = useState(false);
+  const bootKey = useRef("");
   const spreadOverlays = useSpreads((s) => s.overlays);
   const spreadCustom = useSpreads((s) => s.custom);
   const spreadStandardOrder = useSpreads((s) => s.standardOrder);
   const spreadCustomOrder = useSpreads((s) => s.customOrder);
   const queryClient = useQueryClient();
   const orderRef = useRef<Card[]>([]);
+  const deckRef = useRef<Card[]>([]);
+  const phaseRef = useRef<Phase>("still");
   const appliedReturn = useRef<string | null>(null);
   const flyTimer = useRef<number | null>(null);
   const holdWait = useRef<number | null>(null);
@@ -249,6 +290,8 @@ export function ReadingTable() {
     };
   }, [slip]);
   orderRef.current = order;
+  deckRef.current = deck;
+  phaseRef.current = phase;
 
   const clearShuffle = () => {
     for (const id of shuffleTimers.current) window.clearTimeout(id);
@@ -261,10 +304,12 @@ export function ReadingTable() {
   }, []);
 
   useEffect(() => {
+    if (isPending || !deck.length || activeDeckId == null) return;
+    const owner = user?.id ?? "local";
+    const identity = `${owner}:${activeDeckId}:${deck.map((card) => card.id).join(",")}`;
+    let historical = false;
     const request = peekTableReturn();
-    const shown = tableReturnShownKey();
     if (request && activeDeckId === request.deckId) {
-      if (deck.length === 0) return;
       const card = deck.find((item) => item.id === request.cardId);
       const key = `${request.deckId}:${request.cardId}:${request.pulledAt}`;
       if (!card) {
@@ -273,11 +318,10 @@ export function ReadingTable() {
       } else if (appliedReturn.current !== key) {
         appliedReturn.current = key;
         markTableReturnShown(key);
+        historical = true;
         const reading = request.readingId
           ? (useJournal.getState().readings ?? []).find((item) => item.id === request.readingId) ?? null
           : null;
-        setOrder([card, ...deck.filter((item) => item.id !== card.id)]);
-        setOrigin(0);
         setDrawn({
           card,
           orientation: request.orientation,
@@ -288,34 +332,131 @@ export function ReadingTable() {
         setPhase("drawn");
         setFlipped(false);
         window.setTimeout(() => setFlipped(true), 80);
-        setCutPreview(null);
-        setCutBeat(null);
-        setCutMotion(null);
-        holding.current = false;
-        runKind.current = null;
-        setHeld(false);
-        setWorked(false);
-        return;
-      } else {
-        return;
       }
     }
-    if (shown && shown.startsWith(`${activeDeckId}:`)) return;
-    shuffleRun.current += 1;
-    clearShuffle();
-    setOrder(shuffleCards(deck));
-    setOrigin(0);
-    setDrawn(null);
-    setFlipped(false);
-    setPhase("still");
-    setCutPreview(null);
-    setCutBeat(null);
-    setCutMotion(null);
-    holding.current = false;
-    runKind.current = null;
-    setHeld(false);
-    setWorked(false);
-  }, [deck, activeDeckId]);
+    if (bootKey.current === identity) return;
+    bootKey.current = identity;
+    const openIds = (useSpreads.getState().session?.assignments ?? [])
+      .filter((item) => item.deckId === activeDeckId)
+      .map((item) => item.cardId);
+    if (!peekPhysical(owner, activeDeckId) && openIds.length > 0) {
+      pausePhysical("This reading started before each card's place was saved. Handling is paused so those cards are not shuffled away.");
+      setPhysicalNote(physicalPause());
+      setCanFresh(true);
+      orderRef.current = [];
+      setOrder([]);
+      if (!historical) setPhase("still");
+      return;
+    }
+    try {
+      const next = bootPhysical(owner, activeDeckId, deck.map((card) => card.id));
+      const note = physicalPause();
+      const restoring = !next && physicalLoading() && !note;
+      setPhysicalNote(note ?? (restoring ? "Restoring the deck…" : null));
+      setCanFresh(!!note);
+      if (!next || note) {
+        orderRef.current = [];
+        setOrder([]);
+        if (!historical) setPhase("still");
+        return;
+      }
+      if (!spreadAgrees(next, openIds)) {
+        pausePhysical("The open reading does not match the remembered deck. Handling is paused so cards are not moved.");
+        setPhysicalNote(physicalPause());
+        setCanFresh(true);
+        orderRef.current = [];
+        setOrder([]);
+        if (!historical) setPhase("still");
+        return;
+      }
+      const cards = cardsIn(next.drawPile, deck);
+      orderRef.current = cards;
+      setOrder(cards);
+      setOrigin(0);
+      if (historical) {
+        setPhase("drawn");
+        return;
+      }
+      if (next.mode === "single" && next.table.single) {
+        const card = deck.find((item) => item.id === next.table.single?.cardId);
+        if (card) {
+          setDrawn({
+            card,
+            orientation: next.orientations[String(card.id)] === 180 ? "reversed" : "upright",
+            pulledAt: new Date().toISOString(),
+            question: "",
+            reading: null,
+          });
+          setPhase("drawn");
+          setFlipped(true);
+          return;
+        }
+      }
+      if (next.slippedCard != null) {
+        const card = deck.find((item) => item.id === next.slippedCard);
+        if (card) setSlip({ card, left: 24, top: 24, x: 0, y: 0, rot: 8, spin: 8, width: 120, landed: true });
+      }
+      setDrawn(null);
+      setFlipped(false);
+      setPhase(cards.length ? "ready" : "still");
+      setCutPreview(null);
+      setCutBeat(null);
+      setCutMotion(null);
+    } catch (err) {
+      setPhysicalNote(err instanceof Error ? err.message : "The deck could not be restored.");
+      setCanFresh(!!physicalPause());
+      orderRef.current = [];
+      setOrder([]);
+      setPhase("still");
+    }
+  }, [deck, activeDeckId, user?.id, isPending]);
+
+  useEffect(() => {
+    return subscribePhysical(() => {
+      const note = physicalPause();
+      const restoring = physicalLoading() && !note;
+      setPhysicalNote(note ?? (restoring ? "Restoring the deck…" : null));
+      setCanFresh(!!note);
+      if (restoring) return;
+      if (note) {
+        shuffleRun.current += 1;
+        orderRef.current = [];
+        setOrder([]);
+        if (phaseRef.current !== "drawn") setPhase("still");
+        return;
+      }
+      const next = physicalState();
+      if (!next) return;
+      if (phaseRef.current === "shuffling" || phaseRef.current === "cutting") return;
+      const openIds = (useSpreads.getState().session?.assignments ?? [])
+        .filter((item) => item.deckId === next.deckId)
+        .map((item) => item.cardId);
+      if (!spreadAgrees(next, openIds)) {
+        pausePhysical("The open reading does not match the remembered deck. Handling is paused so cards are not moved.");
+        return;
+      }
+      const cards = cardsIn(next.drawPile, deckRef.current);
+      orderRef.current = cards;
+      setOrder(cards);
+      if (phaseRef.current === "drawn") return;
+      if (next.mode === "single" && next.table.single) {
+        const card = deckRef.current.find((item) => item.id === next.table.single?.cardId);
+        if (card) {
+          setDrawn({
+            card,
+            orientation: next.orientations[String(card.id)] === 180 ? "reversed" : "upright",
+            pulledAt: new Date().toISOString(),
+            question: "",
+            reading: null,
+          });
+          setPhase("drawn");
+          setFlipped(true);
+          return;
+        }
+      }
+      setPhase(cards.length ? "ready" : "still");
+    });
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -338,6 +479,55 @@ export function ReadingTable() {
     setPhase("ready");
   };
 
+  const notePhysical = (err: unknown) => {
+    const message = physicalPause() ?? (err instanceof Error ? err.message : "The deck could not be saved.");
+    setPhysicalNote(message);
+    setCanFresh(!!physicalPause());
+    toast(message);
+  };
+
+  const showPile = (ids?: readonly number[]) => {
+    const cards = cardsIn(ids ?? orderIds(), deckRef.current);
+    orderRef.current = cards;
+    setOrder(cards);
+    return cards;
+  };
+
+  const handlingBlocked = () => physicalLoading() || !!physicalPause() || !physicalState();
+
+  const recordShuffle = (ratio: number, turn: number) => {
+    const current = orderRef.current;
+    const before = current.map((card) => card.id);
+    const next = shuffleByStyle(animationChoice, current, ratio, Math.random, turn);
+    applyRealizedShuffle(before, next.map((card) => card.id), animationChoice);
+    orderRef.current = next;
+    setOrder(next);
+  };
+
+  const beginFresh = () => {
+    if (activeDeckId == null) return;
+    try {
+      const next = startFreshPhysical(deckRef.current.map((card) => card.id), activeDeckId);
+      useSpreads.getState().discard();
+      const cards = cardsIn(next.drawPile, deckRef.current);
+      orderRef.current = cards;
+      setOrder(cards);
+      setDrawn(null);
+      setFlipped(false);
+      setPanel(null);
+      setSlip(null);
+      setOrigin(0);
+      setHandoff(false);
+      handing.current = false;
+      setPhysicalNote(null);
+      setCanFresh(false);
+      setPhase(cards.length ? "ready" : "still");
+      bootKey.current = `${user?.id ?? "local"}:${activeDeckId}:${deckRef.current.map((card) => card.id).join(",")}`;
+    } catch (err) {
+      notePhysical(err);
+    }
+  };
+
   const openShuffle = (token: number) => {
     clearShuffle();
     setDrawn(null);
@@ -357,7 +547,9 @@ export function ReadingTable() {
   };
 
   const shuffle = (times = shuffleCount) => {
-    if (order.length < 2 || phase === "shuffling" || phase === "cutting") return;
+    if (handlingBlocked() || order.length < 2 || phase === "shuffling" || phase === "cutting") return;
+    const mode = physicalState()?.mode;
+    if (mode !== "ready" && mode !== "collecting") return;
     const passes = Math.min(SHUFFLE_MAX, Math.max(SHUFFLE_MIN, Math.round(times)));
     const ratios = cutSections(passes);
     const pace = cutPace(passes);
@@ -386,7 +578,13 @@ export function ReadingTable() {
       later(step, () => setCutBeat("drop"));
       later(step * 2, () => {
         setCutBeat("tuck");
-        setOrder((current) => shuffleByStyle(animationChoice, current, ratio, Math.random, index + 1));
+        try {
+          recordShuffle(ratio, index + 1);
+        } catch (err) {
+          shuffleRun.current += 1;
+          notePhysical(err);
+          setPhase("still");
+        }
       });
       later(step * 3, () => {
         setOrigin((value) => {
@@ -407,7 +605,9 @@ export function ReadingTable() {
   };
 
   const beginHold = () => {
-    if (order.length < 2 || phase === "cutting" || slip) return;
+    if (handlingBlocked() || order.length < 2 || phase === "cutting" || slip) return;
+    const mode = physicalState()?.mode;
+    if (mode !== "ready" && mode !== "collecting") return;
     if (phase === "shuffling") {
       if (runKind.current === "hold") {
         holding.current = true;
@@ -444,7 +644,13 @@ export function ReadingTable() {
       const index = Math.floor(Math.random() * current.length);
       const card = current[index];
       if (!card) return;
-      setOrder([card, ...current.filter((_, item) => item !== index)]);
+      try {
+        applyEject(index);
+      } catch (err) {
+        notePhysical(err);
+        return;
+      }
+      showPile();
       setOrigin(0);
       setCutPreview(null);
       setCutBeat(null);
@@ -522,7 +728,13 @@ export function ReadingTable() {
       later(step, () => setCutBeat("drop"));
       later(step * 2, () => {
         setCutBeat("tuck");
-        setOrder((current) => shuffleByStyle(animationChoice, current, ratio, Math.random, count));
+        try {
+          recordShuffle(ratio, count);
+        } catch (err) {
+          shuffleRun.current += 1;
+          notePhysical(err);
+          setPhase("still");
+        }
       });
       later(step * 3, () => {
         setOrigin((value) => {
@@ -555,9 +767,10 @@ export function ReadingTable() {
   };
 
   const cut = (ratio: number) => {
-    if (order.length < 2 || phase === "shuffling" || phase === "cutting" || phase === "drawn") {
+    if (handlingBlocked() || order.length < 2 || phase === "shuffling" || phase === "cutting" || phase === "drawn") {
       return;
     }
+    if (physicalState()?.mode !== "ready") return;
     const lead = cutPreview == null ? liftLead() : 0;
     cutLock.current = true;
     setCutMotion(520);
@@ -569,11 +782,20 @@ export function ReadingTable() {
     window.setTimeout(() => setCutBeat("drop"), 560 + lead);
     window.setTimeout(() => setCutBeat("tuck"), 1080 + lead);
     window.setTimeout(() => {
-      const size = order.length;
+      const before = orderRef.current.map((card) => card.id);
+      try {
+        applyCut(before, ratio);
+      } catch (err) {
+        cutLock.current = false;
+        notePhysical(err);
+        setPhase("still");
+        return;
+      }
+      const size = before.length;
       if (size > 1) {
         setOrigin((value) => (value + splitIndex(size, ratio)) % size);
       }
-      setOrder((current) => cutCards(current, ratio));
+      showPile();
       cutLock.current = false;
       setCutPreview(null);
       setCutBeat(null);
@@ -581,18 +803,28 @@ export function ReadingTable() {
     }, 1620 + lead);
   };
 
-  const collectNative = (card: Card) => {
+  const collectNative = (card: Card): "skip" | "blocked" | "taken" => {
+    if (handlingBlocked()) return "blocked";
     const state = useSpreads.getState();
     const spread = state.effective(state.activeSpreadId);
-    if (!spread || spread.positions.length < 2) return false;
+    if (!spread || spread.positions.length < 2) return "skip";
+    const physical = physicalState();
+    if (!physical || (physical.mode !== "ready" && physical.mode !== "collecting")) return "blocked";
     const live = state.session;
-    if (live && live.spread.id === spread.id && live.status !== "collecting" && live.status !== "complete") return true;
-    if (collectLock.current) return true;
+    if (live && live.spread.id === spread.id && live.status !== "collecting") return "blocked";
+    if (physical.mode === "collecting" && (!live || live.status !== "collecting" || live.spread.id !== spread.id)) return "blocked";
+    if (collectLock.current) return "blocked";
     collectLock.current = true;
+    let moved = false;
     try {
-      if (!live || live.spread.id !== spread.id || live.status === "complete") state.begin();
+      if (!live || live.spread.id !== spread.id) state.begin();
       const current = useSpreads.getState().session;
-      if (!current || current.status !== "collecting") return true;
+      if (!current || current.status !== "collecting") return "blocked";
+      const physical = physicalState();
+      if (physical?.slippedCard === card.id) applyAcceptSlip("waiting");
+      else if (physical?.drawPile[0] === card.id && physical.slippedCard == null) applyDrawWaiting();
+      else throw new Error("That is not the top card.");
+      moved = true;
       useSpreads.getState().draw(`draw-${current.id}-v${current.version + 1}`, {
         deckId: active?.id ?? activeDeckId ?? 0,
         deckName: active?.name ?? "Deck",
@@ -605,30 +837,49 @@ export function ReadingTable() {
         suit: card.suit,
         rank: card.rank,
       });
-      setOrder((currentOrder) => {
-        const list = currentOrder.length ? currentOrder : deck;
-        return list.filter((item) => item.id !== card.id);
-      });
+      showPile();
       setOrigin(0);
       setFlight((value) => value + 1);
+      return "taken";
     } catch (err) {
+      if (moved) {
+        try {
+          applyReturnWaiting();
+          showPile();
+        } catch (undo) {
+          notePhysical(undo);
+        }
+      }
       toast(err instanceof Error ? err.message : "That card stayed in the deck.");
+      return "blocked";
     } finally {
       window.setTimeout(() => {
         collectLock.current = false;
       }, 740);
     }
-    return true;
   };
 
   const reveal = (card: Card) => {
-    if (collectNative(card)) return;
-    const orientation: Orientation =
-      includeReversals && Math.random() < 0.5 ? "reversed" : "upright";
+    const spreadDraw = collectNative(card);
+    if (spreadDraw !== "skip") return spreadDraw === "taken";
+    if (handlingBlocked()) return false;
+    const side: 0 | 180 = includeReversals && Math.random() < 0.5 ? 180 : 0;
+    try {
+      if (physicalState()?.slippedCard === card.id) applyAcceptSlip("single", side);
+      else if (physicalState()?.drawPile[0] === card.id && physicalState()?.slippedCard == null) applyDrawSingle(side);
+      else throw new Error("That is not the top card.");
+    } catch (err) {
+      notePhysical(err);
+      return false;
+    }
+    const placed = physicalState()?.table.single?.cardId;
+    const real = deckRef.current.find((item) => item.id === placed) ?? card;
+    const orientation: Orientation = physicalState()?.orientations[String(real.id)] === 180 ? "reversed" : "upright";
     const asked = questionRef.current.trim();
+    showPile();
     setZoomOpen(false);
     setDrawn({
-      card,
+      card: real,
       orientation,
       pulledAt: new Date().toISOString(),
       question: asked,
@@ -636,36 +887,57 @@ export function ReadingTable() {
     });
     setPhase("drawn");
     window.setTimeout(() => setFlipped(true), 80);
+    return true;
   };
 
   const draw = () => {
-    const current = order.length > 0 ? order : deck;
-    const card = current[0];
-    if (!card || phase === "shuffling" || phase === "cutting" || phase === "drawn" || slip) return;
+    if (handlingBlocked() || phase === "shuffling" || phase === "cutting" || phase === "drawn" || slip) return;
+    const card = orderRef.current[0];
+    if (!card || physicalState()?.drawPile[0] !== card.id) return;
     reveal(card);
   };
 
   const putBack = () => {
+    if (physicalState()?.mode === "single") {
+      try {
+        applyPutBack();
+        showPile();
+      } catch (err) {
+        notePhysical(err);
+        return;
+      }
+    }
     setDrawn(null);
     setFlipped(false);
     setPanel(null);
     setZoomOpen(false);
-    setPhase(order.length ? "ready" : "still");
+    setPhase(orderRef.current.length ? "ready" : "still");
   };
 
   const returnWaiting = () => {
-    if (phase === "shuffling" || phase === "cutting" || slip) return;
+    if (handlingBlocked() || phase === "shuffling" || phase === "cutting" || slip) return;
     const pile = pileRef.current;
     const slab = tableBand.current;
     const deckNode = slab?.querySelector("[data-deck]");
     if (!pile || !slab || !deckNode) return;
+    const expected = physicalState()?.waitingStack.at(-1);
+    if (expected == null) return;
+    try {
+      applyReturnWaiting();
+    } catch (err) {
+      notePhysical(err);
+      return;
+    }
     const cardId = useSpreads.getState().restoreLatest();
-    if (cardId == null) return;
+    if (cardId !== expected) {
+      pausePhysical("The side stack and the deck disagreed. Handling is paused so nothing is overwritten.");
+      setPhysicalNote(physicalPause());
+      setCanFresh(true);
+      return;
+    }
     handing.current = false;
     setHandoff(false);
-    const card = deck.find((item) => item.id === cardId);
-    if (!card) return;
-    setOrder((current) => [card, ...current.filter((item) => item.id !== card.id)]);
+    showPile();
     setOrigin(0);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
@@ -728,7 +1000,48 @@ export function ReadingTable() {
     return [...standard, ...mine];
   }, [spreadOverlays, spreadCustom, spreadStandardOrder, spreadCustomOrder]);
   const tableIsFresh = !slip && !drawn && !flipped && phase !== "drawn" && phase !== "shuffling" && phase !== "cutting" && (!spreadLive || (spreadLive.drawnCount === 0 && spreadLive.status === "collecting"));
+  const clearTable = () => {
+    if (physicalPause()) {
+      setPhysicalNote(physicalPause());
+      setCanFresh(true);
+      toast(physicalPause() ?? "Handling is paused.");
+      return;
+    }
+    try {
+      if (physicalState()) {
+        const next = applyGather();
+        showPile(next?.drawPile);
+      }
+      useSpreads.getState().discard();
+      setDrawn(null);
+      setFlipped(false);
+      setPanel(null);
+      setZoomOpen(false);
+      setHandoff(false);
+      handing.current = false;
+      setFlight(0);
+      setSlip(null);
+      setOrigin(0);
+      setPhase(orderRef.current.length ? "ready" : "still");
+    } catch (err) {
+      notePhysical(err);
+    }
+  };
   const applySpread = (id: string) => {
+    if (physicalPause()) {
+      toast(physicalPause() ?? "Handling is paused.");
+      setPendingSpread(null);
+      return;
+    }
+    try {
+      if (physicalState()) {
+        const next = applyGather();
+        showPile(next?.drawPile);
+      }
+    } catch (err) {
+      notePhysical(err);
+      return;
+    }
     useSpreads.getState().discard();
     useSpreads.getState().setActive(id);
     setDrawn(null);
@@ -739,9 +1052,8 @@ export function ReadingTable() {
     handing.current = false;
     setFlight(0);
     setSlip(null);
-    setOrder(deck);
     setOrigin(0);
-    setPhase(deck.length ? "ready" : "still");
+    setPhase(orderRef.current.length ? "ready" : "still");
     setPendingSpread(null);
   };
   const chooseSpread = (id: string) => {
@@ -766,6 +1078,7 @@ export function ReadingTable() {
       return;
     }
     if (spreadLive.status !== "collected" || handing.current) return;
+    if (physicalPause() || physicalLoading() || !physicalState()) return;
     handing.current = true;
     const reason = question.trim();
     if (reason) useSpreads.getState().remember(reason);
@@ -775,6 +1088,10 @@ export function ReadingTable() {
       const live = useSpreads.getState().session;
       if (!live || live.id !== id || live.status !== "collected") return;
       try {
+        if (physicalState()?.mode === "collecting") applyStage();
+        else if (physicalState()?.mode !== "revealing" && physicalState()?.mode !== "complete") {
+          throw new Error("The deck is not ready to lay out this spread.");
+        }
         useSpreads.getState().stage(`stage-${id}`);
       } catch (err) {
         toast(err instanceof Error ? err.message : "The spread could not be laid out.");
@@ -914,6 +1231,15 @@ export function ReadingTable() {
                 <Link to="/deck">Open decks</Link>
               </Button>
             </div>
+          ) : physicalNote && order.length === 0 && !drawn ? (
+            <div className="max-w-sm px-6 text-center">
+              <p className="text-sm text-muted">{physicalNote}</p>
+              {canFresh ? (
+                <Button type="button" className="mt-4" variant="secondary" onClick={beginFresh}>
+                  Start a fresh recorded order
+                </Button>
+              ) : null}
+            </div>
           ) : drawn ? (
             <DrawnFace
               onReturn={putBack}
@@ -945,7 +1271,7 @@ export function ReadingTable() {
               preview={cutPreview}
               beat={cutBeat}
               motion={cutMotion}
-              count={order.length || 78}
+              count={order.length}
               origin={origin}
               edge={edge ?? 100}
               edgeColor={edgeColor ?? 0}
@@ -985,8 +1311,7 @@ export function ReadingTable() {
                     onClick={() => {
                       if (!slip.landed) return;
                       const card = slip.card;
-                      setSlip(null);
-                      reveal(card);
+                      if (reveal(card)) setSlip(null);
                     }}
                   >
                     <img src={backSrc} alt="" draggable={false} className="h-full w-full rounded-[inherit] object-cover" />
@@ -1065,7 +1390,7 @@ export function ReadingTable() {
             <Button
               variant="secondary"
               className="relative w-full touch-pan-y overflow-hidden select-none"
-              disabled={deck.length < 2 || !!slip || phase === "cutting" || (phase === "shuffling" && !held)}
+              disabled={deck.length < 2 || !!slip || !!physicalNote || phase === "cutting" || (phase === "shuffling" && !held)}
               onContextMenu={(event) => event.preventDefault()}
               onKeyDown={(event) => {
                 if (event.key !== " " && event.key !== "Enter") return;
@@ -1132,6 +1457,16 @@ export function ReadingTable() {
             </Button>
             {slip?.landed ? (
               <p className="text-center text-xs text-subtle">A card slipped out. Tap it.</p>
+            ) : null}
+            {physicalNote ? (
+              <div className="grid w-full gap-2 text-center">
+                <p className="text-xs text-subtle">{physicalNote}</p>
+                {canFresh ? (
+                  <Button type="button" variant="secondary" onClick={beginFresh}>
+                    Start a fresh recorded order
+                  </Button>
+                ) : null}
+              </div>
             ) : null}
           </div>
         ) : null}
@@ -1217,7 +1552,7 @@ export function ReadingTable() {
 
         {spreadSize > 1 ? (
           <div className="mt-3 flex w-full max-w-md items-center gap-2">
-            <Button type="button" variant="secondary" className="flex-1" onClick={() => useSpreads.getState().discard()}>
+            <Button type="button" variant="secondary" className="flex-1" onClick={clearTable}>
               Clear the table
             </Button>
             <button
