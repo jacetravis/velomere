@@ -1,5 +1,7 @@
 import { shuffleCards } from "@/lib/cards/order";
 import type { PhysicalCommit } from "./commit";
+import { planPhysicalShuffle, type ShufflePlan } from "./motion/mechanics";
+import type { ShuffleStyle } from "./motion/events";
 import { decideAccount, type SyncMark } from "./reconcile";
 import type { SpreadSnapshot } from "./spread-record";
 import {
@@ -15,6 +17,7 @@ import {
   flipFirst,
   gatherAll,
   legacyShuffleEndpoint,
+  motionShuffle,
   newState,
   putBackSingle,
   replayOperation,
@@ -812,6 +815,45 @@ export function applyRealizedShuffle(before: readonly CardId[], after: readonly 
   return act((current) => {
     if (current.drawPile.join(",") !== before.join(",")) throw new Error("The deck moved before this shuffle could be saved.");
     return legacyShuffleEndpoint(current, nextOp(active!, "shuffle"), [...after], style);
+  });
+}
+
+function motionSeed() {
+  const buffer = new Uint32Array(1);
+  crypto.getRandomValues(buffer);
+  return buffer[0] || 1;
+}
+
+/** Reader shuffle. One recorded movement trace becomes one durable operation. Fewer than two cards is not an operation. */
+export function applyPhysicalMotionShuffle(input: {
+  before: readonly CardId[];
+  style: ShuffleStyle;
+  ratio: number;
+  turn: number;
+  seed?: number;
+  packetSizes?: ShufflePlan["packetSizes"];
+  cutPoints?: ShufflePlan["cutPoints"];
+  pickupOrder?: ShufflePlan["pickupOrder"];
+  readerChoices?: ShufflePlan["readerChoices"];
+}) {
+  return act((current) => {
+    if (current.drawPile.join(",") !== input.before.join(",")) throw new Error("The deck moved before this shuffle could be saved.");
+    if (current.mode !== "ready" && current.mode !== "collecting") throw new Error("Deck not available");
+    if (current.drawPile.length < 2) return current;
+    const trace = planPhysicalShuffle({
+      style: input.style,
+      before: current.drawPile,
+      ratio: input.ratio,
+      turn: input.turn,
+      seed: input.seed ?? motionSeed(),
+      packetSizes: input.packetSizes,
+      cutPoints: input.cutPoints,
+      pickupOrder: input.pickupOrder,
+      originalDeckCount: current.inventory.length,
+      readerChoices: input.readerChoices,
+    });
+    if (!trace.events.length) return current;
+    return motionShuffle(current, nextOp(active!, "motion"), trace);
   });
 }
 

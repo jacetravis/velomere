@@ -1,4 +1,6 @@
 import { sha256 } from "./hash";
+import type { PhysicalShuffleTrace } from "./motion/events";
+import { replayPhysicalShuffle } from "./motion/replay";
 
 /** One physical card. Identity is the deck's Card.id, never its name or position. */
 export type CardId = number;
@@ -10,6 +12,10 @@ export type OperationMeta = {
   style?: string;
   attribution?: string;
   realizedOrder?: number[];
+  /** Reader pass versus an algorithm-selected control. Present on motion shuffles. */
+  source?: "reader" | "algorithm-selected";
+  /** Recorded movements. Replay of this trace is the shuffle. `realizedOrder` is not. */
+  motion?: PhysicalShuffleTrace;
   destination?: "single" | "waiting";
   side?: Side;
   position?: number;
@@ -165,6 +171,22 @@ export function legacyShuffleEndpoint(state: PhysicalState, op: string, output: 
     requireThat(output.every((id) => next.drawPile.includes(id)), "Permutation changed inventory");
     next.drawPile = [...output];
   }, { style, attribution, realizedOrder: [...output] });
+}
+
+/** One reader shuffle pass. The next draw pile is whatever the recorded movements produce. */
+export function motionShuffle(state: PhysicalState, op: string, trace: PhysicalShuffleTrace): PhysicalState {
+  requireThat(trace.events.length > 0, "The shuffle recorded no movements.");
+  return change(state, op, "motion_shuffle", (next) => {
+    requireThat(next.mode === "ready" || next.mode === "collecting", "Deck not available");
+    requireThat(trace.style.length > 0, "The shuffle has no style.");
+    const after = replayPhysicalShuffle(next.drawPile, trace, next.inventory.length);
+    next.drawPile = after;
+  }, {
+    style: trace.style,
+    attribution: "user",
+    source: trace.source,
+    motion: trace,
+  });
 }
 
 export function ejectSlip(state: PhysicalState, op: string, index: number): PhysicalState {
@@ -334,6 +356,7 @@ export function checkpoint(state: PhysicalState): PhysicalState {
       meta: {
         ...operation.meta,
         realizedOrder: operation.meta.realizedOrder ? [...operation.meta.realizedOrder] : undefined,
+        motion: operation.meta.motion ? structuredClone(operation.meta.motion) : undefined,
       },
     })),
   };
@@ -354,6 +377,9 @@ export function replayOperation(state: PhysicalState, operation: Operation): Phy
         operation.meta.style ?? "legacy",
         operation.meta.attribution ?? "user",
       );
+    case "motion_shuffle":
+      if (!operation.meta.motion) throw new Error("The shuffle has no recorded movements.");
+      return motionShuffle(state, id, operation.meta.motion);
     case "slip_ejected_from_drawpile":
       return ejectSlip(state, id, operation.meta.index ?? -1);
     case "slip_tapped":

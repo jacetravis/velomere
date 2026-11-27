@@ -19,7 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Separator } from "@/components/ui/separator";
 import { listCards, listDecks, updateCardMeaning } from "@/lib/cards/server";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
-import { sheetsForSplit, shuffleByStyle, shuffleSplit } from "@/lib/cards/order";
+import { sheetsForSplit, shuffleSplit } from "@/lib/cards/order";
 import {
   applyAcceptSlip,
   applyCut,
@@ -27,8 +27,8 @@ import {
   applyDrawWaiting,
   applyEject,
   applyGather,
+  applyPhysicalMotionShuffle,
   applyPutBack,
-  applyRealizedShuffle,
   applyReturnWaiting,
   applyStage,
   bootPhysical,
@@ -511,12 +511,10 @@ export function ReadingTable() {
   const handlingBlocked = () => physicalLoading() || !!physicalPause() || !physicalState();
 
   const recordShuffle = (ratio: number, turn: number) => {
-    const current = orderRef.current;
-    const before = current.map((card) => card.id);
-    const next = shuffleByStyle(animationChoice, current, ratio, Math.random, turn);
-    applyRealizedShuffle(before, next.map((card) => card.id), animationChoice);
-    orderRef.current = next;
-    setOrder(next);
+    const before = orderRef.current.map((card) => card.id);
+    // The aside/drop/tuck picture is not these movements. Stage 3 binds the animation to this trace.
+    const next = applyPhysicalMotionShuffle({ before, style: animationChoice, ratio, turn });
+    showPile(next.drawPile);
   };
 
   const beginFresh = () => {
