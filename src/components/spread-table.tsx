@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Info } from "lucide-react";
@@ -17,9 +17,8 @@ import { project, SpreadCommandError, type Assignment, type Session } from "@/li
 import { fittedCardWidth, expandedPositions } from "@/lib/spreads/fit";
 import { PhysicalCard } from "@/components/tarot-card";
 import { useSpreads } from "@/lib/spreads/store";
-import { applyDeliver, applyDrawWaiting, applyFlip, applyGather, pausePhysical, physicalSpread, physicalState, setPhysicalReading } from "@/lib/physical-deck/runtime";
-import { repairSpreadSession } from "@/lib/physical-deck/spread-sync";
-import { spreadForRecovery } from "@/lib/physical-deck/spread-record";
+import { applyDeliver, applyDrawWaiting, applyFlip, applyGather, pausePhysical, physicalSpread, physicalState, setPhysicalReading, subscribePhysical } from "@/lib/physical-deck/runtime";
+import { displayedTableReading, resumeTableReading } from "@/lib/physical-deck/table-reading";
 import { useJournal } from "@/lib/journal/store";
 import { cardSitting } from "@/lib/solace/sitting";
 import { useSolace } from "@/lib/solace/store";
@@ -43,19 +42,17 @@ function storyNumber(name: string) {
 
 function alignSpread() {
   const physical = physicalState();
-  const session = useSpreads.getState().session;
   if (!physical) return;
-  const sessionSpread = session?.assignments.some((item) => item.deckId === physical.deckId) ? session.spread : null;
-  const plan = repairSpreadSession(
+  const store = useSpreads.getState();
+  const plan = resumeTableReading({
     physical,
-    session,
-    [],
-    spreadForRecovery(physicalSpread(), sessionSpread),
-    physical.deckId,
-    session?.assignments[0]?.deckName ?? "Deck",
-  );
-  if (plan.action === "replace") useSpreads.getState().adopt(plan.session);
-  if (plan.action === "clear") useSpreads.getState().adopt(null);
+    session: store.session,
+    cards: [],
+    recorded: physicalSpread(),
+    deckId: physical.deckId,
+    deckName: store.session?.assignments[0]?.deckName ?? "Deck",
+    adopt: (session) => store.adopt(session),
+  });
   if (plan.action === "pause") pausePhysical(plan.reason);
 }
 
@@ -160,8 +157,17 @@ export function SpreadTable() {
     queryFn: () => listCards({ data: { deckId: activeDeckId ?? 0 } }),
     enabled: user !== null && activeDeckId != null,
   });
-  const spread = useSpreads((s) => s.effective(s.activeSpreadId));
+  const selectedSpread = useSpreads((s) => s.effective(s.activeSpreadId));
+  const selectedId = useSpreads((s) => s.activeSpreadId);
   const session = useSpreads((s) => s.session);
+  const recordedSpread = useSyncExternalStore(subscribePhysical, physicalSpread, physicalSpread);
+  const displayed = displayedTableReading({
+    session,
+    selectedId,
+    selected: selectedSpread,
+    recorded: recordedSpread,
+  });
+  const spread = displayed.spread ?? selectedSpread;
   const begin = useSpreads((s) => s.begin);
   const draw = useSpreads((s) => s.draw);
   const flip = useSpreads((s) => s.flip);
@@ -172,8 +178,8 @@ export function SpreadTable() {
   const [kept, setKept] = useState(false);
   const [busy, setBusy] = useState(false);
   const deck = decks?.find((item) => item.id === activeDeckId) ?? decks?.find((item) => item.active);
-  const view = useMemo(() => project(session && spread && session.spread.id === spread.id ? session : null, spread?.positions.length ?? 1), [session, spread]);
-  const live = session && spread && session.spread.id === spread.id ? session : null;
+  const view = useMemo(() => project(displayed.session, spread?.positions.length ?? 1), [displayed.session, spread]);
+  const live = displayed.session;
   const reduce = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const take = (current: Session) => {

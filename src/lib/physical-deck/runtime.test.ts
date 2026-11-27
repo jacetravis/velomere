@@ -19,8 +19,10 @@ import {
   retryPhysicalSync,
   setPhysicalLookupForTests,
   setPhysicalRemoteForTests,
+  setPhysicalTimerForTests,
   setPhysicalTransportForTests,
   settlePhysicalForTests,
+  startFreshPhysical,
 } from "./runtime.ts";
 
 const memory = new Map<string, string>();
@@ -472,5 +474,180 @@ test("a found account spread is restored without using another layout or drawing
   assert.equal(physicalSpread()?.positions[0]?.meaningApplication, "Home");
   assert.equal(physicalOutbox().length, 0);
   assert.deepEqual([...zones(physicalState()!)].sort((a, b) => a - b), [11, 22, 33, 44]);
+});
+
+test("a fresh order keeps its authorization until the account accepts it", async () => {
+  memory.delete("solace-physical-v1:reader-fresh:130");
+  resetPhysicalForTests();
+  const older = legacyShuffleEndpoint(
+    newState(130, "older-session", [1, 2, 3, 4]),
+    "older-prep",
+    [4, 3, 2, 1],
+    "initial_preparation",
+    "system_initial_preparation",
+  );
+  const openedFirst = bootPhysical("reader-fresh", 130, [1, 2, 3, 4]);
+  assert.ok(openedFirst);
+  const sent: Array<{ sessionId: string; supersede?: boolean; id: string }> = [];
+  setPhysicalTransportForTests(async () => {
+    throw new Error("offline");
+  });
+  const opened = startFreshPhysical([1, 2, 3, 4], 130);
+  assert.ok(opened);
+  const pile = [...opened.drawPile];
+  const pending = physicalOutbox().map((item) => item.operation.id);
+  assert.equal(pending.length, 1);
+  assert.notEqual(opened.sessionId, openedFirst.sessionId);
+  await settlePhysicalForTests();
+  assert.equal(physicalPause(), null);
+  assert.deepEqual(physicalOutbox().map((item) => item.operation.id), pending);
+  const stored = JSON.parse(memory.get("solace-physical-v1:reader-fresh:130") ?? "{}") as { supersede?: boolean; outbox?: { operation: { id: string } }[] };
+  assert.equal(stored.supersede, true);
+  assert.deepEqual(stored.outbox?.map((item) => item.operation.id), pending);
+
+  setPhysicalLookupForTests(async () => ({ status: "found", snapshot: older, spread: null }));
+  setPhysicalTransportForTests(async (input) => {
+    sent.push({ sessionId: input.sessionId, supersede: input.supersede, id: input.operation.id });
+    return { status: "conflict", revision: 0, reason: "The account rejected this copy." };
+  });
+  await retryPhysicalSync();
+  assert.match(physicalPause() ?? "", /rejected/);
+  assert.equal(physicalState()?.sessionId, opened.sessionId);
+  assert.notEqual(physicalState()?.sessionId, older.sessionId);
+  assert.deepEqual(physicalState()?.drawPile, pile);
+  assert.deepEqual(physicalOutbox().map((item) => item.operation.id), pending);
+  assert.equal(sent[0]?.supersede, true);
+  assert.equal(sent[0]?.sessionId, opened.sessionId);
+  const afterConflict = JSON.parse(memory.get("solace-physical-v1:reader-fresh:130") ?? "{}") as { supersede?: boolean; outbox?: { operation: { id: string } }[] };
+  assert.equal(afterConflict.supersede, true);
+  assert.deepEqual(afterConflict.outbox?.map((item) => item.operation.id), pending);
+
+  resetPhysicalForTests();
+  sent.length = 0;
+  setPhysicalLookupForTests(async () => ({ status: "found", snapshot: older, spread: null }));
+  setPhysicalTransportForTests(async (input) => {
+    sent.push({ sessionId: input.sessionId, supersede: input.supersede, id: input.operation.id });
+    return { status: "saved", revision: input.operation.revisionTo };
+  });
+  const restored = bootPhysical("reader-fresh", 130, [1, 2, 3, 4]);
+  assert.ok(restored);
+  assert.equal(restored.sessionId, opened.sessionId);
+  assert.deepEqual(restored.drawPile, pile);
+  await settlePhysicalForTests();
+  assert.equal(physicalPause(), null);
+  assert.equal(physicalState()?.sessionId, opened.sessionId);
+  assert.notEqual(physicalState()?.sessionId, older.sessionId);
+  assert.deepEqual(physicalState()?.drawPile, pile);
+  assert.equal(physicalOutbox().length, 0);
+  assert.equal(sent[0]?.supersede, true);
+  assert.equal(sent[0]?.id, pending[0]);
+  const acknowledged = JSON.parse(memory.get("solace-physical-v1:reader-fresh:130") ?? "{}") as { supersede?: boolean; outbox?: unknown[] };
+  assert.equal(acknowledged.supersede, false);
+  assert.equal(acknowledged.outbox?.length, 0);
+});
+
+test("a failed account lookup retries without inventing an empty account or a second session", async () => {
+  memory.delete("solace-physical-v1:reader-retry:140");
+  resetPhysicalForTests();
+  const timers: Array<{ run: () => void; delay: number }> = [];
+  setPhysicalTimerForTests((run, delay) => {
+    timers.push({ run, delay });
+  });
+  let phase: "down" | "absent" | "found" = "down";
+  const account = legacyShuffleEndpoint(
+    newState(140, "account-session", [1, 2, 3, 4]),
+    "account-prep",
+    [4, 3, 2, 1],
+    "initial_preparation",
+    "system_initial_preparation",
+  );
+  const sent: string[] = [];
+  setPhysicalLookupForTests(async () => {
+    if (phase === "down") return { status: "unavailable", snapshot: null, spread: null };
+    if (phase === "absent") return { status: "absent", snapshot: null, spread: null };
+    return { status: "found", snapshot: account, spread: null };
+  });
+  setPhysicalTransportForTests(async (input) => {
+    sent.push(input.sessionId);
+    return { status: "saved", revision: input.operation.revisionTo };
+  });
+  assert.equal(bootPhysical("reader-retry", 140, [1, 2, 3, 4]), null);
+  await settlePhysicalForTests();
+  const sessionId = physicalState()?.sessionId;
+  assert.ok(sessionId);
+  const pile = [...(physicalState()?.drawPile ?? [])];
+  applyCut(pile, 0.5);
+  const cutPile = [...(physicalState()?.drawPile ?? [])];
+  const pending = physicalOutbox().map((item) => item.operation.id);
+  assert.equal(sent.length, 0);
+  assert.equal(timers.length, 1);
+  assert.deepEqual(timers.map((item) => item.delay), [1000]);
+
+  timers.shift()?.run();
+  await settlePhysicalForTests();
+  assert.equal(physicalState()?.sessionId, sessionId);
+  assert.deepEqual(physicalState()?.drawPile, cutPile);
+  assert.equal(sent.length, 0);
+  assert.equal(timers.length, 1);
+  assert.equal(timers[0]?.delay, 2000);
+
+  const delays: number[] = [];
+  let guard = 0;
+  while (timers.length && phase === "down" && guard < 8) {
+    guard += 1;
+    const next = timers.shift()!;
+    delays.push(next.delay);
+    next.run();
+    await settlePhysicalForTests();
+  }
+  assert.deepEqual(delays, [2000, 4000, 8000, 16000]);
+  assert.equal(timers.length, 0);
+  assert.equal(sent.length, 0);
+  assert.equal(physicalState()?.sessionId, sessionId);
+  assert.deepEqual(physicalOutbox().map((item) => item.operation.id), pending);
+
+  phase = "absent";
+  await retryPhysicalSync();
+  assert.equal(physicalPause(), null);
+  assert.equal(physicalState()?.sessionId, sessionId);
+  assert.deepEqual(physicalState()?.drawPile, cutPile);
+  assert.deepEqual(sent, [sessionId, sessionId]);
+  assert.equal(physicalOutbox().length, 0);
+  assert.equal(timers.length, 0);
+
+  memory.delete("solace-physical-v1:reader-retry:141");
+  resetPhysicalForTests();
+  phase = "down";
+  sent.length = 0;
+  timers.length = 0;
+  setPhysicalTimerForTests((run, delay) => {
+    timers.push({ run, delay });
+  });
+  setPhysicalLookupForTests(async () => (
+    phase === "down"
+      ? { status: "unavailable", snapshot: null, spread: null }
+      : { status: "found", snapshot: account, spread: null }
+  ));
+  setPhysicalTransportForTests(async (input) => {
+    sent.push(input.sessionId);
+    return { status: "saved", revision: input.operation.revisionTo };
+  });
+  assert.equal(bootPhysical("reader-retry", 141, [1, 2, 3, 4]), null);
+  await settlePhysicalForTests();
+  const localId = physicalState()?.sessionId;
+  const localPile = [...(physicalState()?.drawPile ?? [])];
+  applyCut(localPile, 0.5);
+  const kept = [...(physicalState()?.drawPile ?? [])];
+  const keptIds = physicalOutbox().map((item) => item.operation.id);
+  phase = "found";
+  assert.equal(timers.length, 1);
+  timers.shift()?.run();
+  await settlePhysicalForTests();
+  assert.equal(sent.length, 0);
+  assert.equal(physicalState()?.sessionId, localId);
+  assert.notEqual(physicalState()?.sessionId, account.sessionId);
+  assert.deepEqual(physicalState()?.drawPile, kept);
+  assert.deepEqual(physicalOutbox().map((item) => item.operation.id), keptIds);
+  assert.match(physicalPause() ?? "", /somewhere else/);
 });
 });

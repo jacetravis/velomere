@@ -40,7 +40,20 @@ export function decideAccount(input: {
   remote: PhysicalState | null;
   sync: SyncMark;
   allowCreate?: boolean;
+  /** The reader already authorized this local order to replace an older account session. */
+  authorizedFresh?: boolean;
 }): ReconcileDecision {
+  if (input.authorizedFresh && input.local) {
+    if (input.view === "unavailable") {
+      if (input.sync === "ready" && input.unsent > 0) return "flush";
+      return "hold";
+    }
+    const remote = input.view === "found" ? input.remote : null;
+    if (remote && remote.sessionId !== input.local.sessionId) {
+      return input.unsent > 0 ? "flush" : "keep";
+    }
+    return decideReconcile(input.local, input.unsent, remote);
+  }
   if (input.view === "unavailable") {
     if (!input.local) return input.allowCreate === false ? "hold" : "offline";
     if (input.sync === "ready" && input.unsent > 0) return "flush";

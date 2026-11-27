@@ -49,6 +49,8 @@ type Journal = {
   reading: ReadingLink | null;
   spread?: SpreadSnapshot | null;
   sync?: SyncMark;
+  /** Present until the account acknowledges the first operation of a reader-authorized fresh order. */
+  supersede?: boolean;
 };
 
 type Transport = (input: PhysicalCommit) => Promise<{ status: "saved" | "conflict"; revision: number; reason?: string }>;
@@ -70,6 +72,9 @@ type Scope = {
   loading: boolean;
   generation: number;
   sequence: number;
+  lookupAttempts: number;
+  lookupRetryToken: number;
+  lookupTimerPending: boolean;
   flushChain: Promise<void>;
   reconcileTask: Promise<void> | null;
 };
@@ -80,7 +85,10 @@ const scopes = new Map<string, Scope>();
 let transportOverride: Transport | null = null;
 let remoteLoader: RemoteLoader | null = null;
 let lookupOverride: Lookup | null = null;
+let timerOverride: ((callback: () => void, delay: number) => void) | null = null;
 const listeners = new Set<() => void>();
+
+const LOOKUP_RETRY_DELAYS = [1000, 2000, 4000, 8000, 16000];
 
 function blankScope(ownerId: string, deckId: number, id: string): Scope {
   return {
@@ -98,6 +106,9 @@ function blankScope(ownerId: string, deckId: number, id: string): Scope {
     loading: false,
     generation: 0,
     sequence: 0,
+    lookupAttempts: 0,
+    lookupRetryToken: 0,
+    lookupTimerPending: false,
     flushChain: Promise.resolve(),
     reconcileTask: null,
   };
@@ -168,6 +179,10 @@ export function setPhysicalLookupForTests(lookup: Lookup | null) {
   lookupOverride = lookup;
 }
 
+export function setPhysicalTimerForTests(timer: ((callback: () => void, delay: number) => void) | null) {
+  timerOverride = timer;
+}
+
 export async function settlePhysicalForTests() {
   await Promise.all([...scopes.values()].flatMap((scope) => [scope.reconcileTask ?? Promise.resolve(), scope.flushChain]));
   if (active?.sync === "ready") await flushScope(active);
@@ -177,7 +192,7 @@ export async function settlePhysicalForTests() {
 export async function retryPhysicalSync() {
   const scope = active;
   if (!scope?.state) return;
-  await reconcileScope(scope, scope.state.inventory, false);
+  await queueReconcile(scope, scope.state.inventory, false);
   await flushScope(scope);
 }
 
@@ -188,6 +203,7 @@ export function resetPhysicalForTests() {
   transportOverride = null;
   remoteLoader = null;
   lookupOverride = null;
+  timerOverride = null;
 }
 
 function key(owner: string, deckId: number) {
@@ -218,7 +234,7 @@ if (typeof window !== "undefined") {
   window.addEventListener("online", () => {
     const scope = active;
     if (!scope) return;
-    void reconcileScope(scope, scope.state?.inventory ?? [], false);
+    void queueReconcile(scope, scope.state?.inventory ?? [], false);
   });
 }
 
@@ -263,6 +279,7 @@ function rebuildLegacy(scope: Scope, snapshot: PhysicalState): Journal | null {
     reading: null,
     spread: null,
     sync: "unknown",
+    supersede: false,
   };
 }
 
@@ -275,6 +292,7 @@ function journalFrom(scope: Scope, snapshot: PhysicalState, items: OutboxItem[])
     reading: scope.reading,
     spread: scope.spread,
     sync: scope.sync,
+    supersede: scope.supersede,
   };
 }
 
@@ -294,6 +312,7 @@ function parseJournal(scope: Scope, raw: string): { journal: Journal | null; pau
         reading: parsed.reading ?? null,
         spread: parsed.spread ?? null,
         sync: parsed.sync ?? "unknown",
+        supersede: parsed.supersede === true,
       },
     };
   }
@@ -310,6 +329,7 @@ function parseJournal(scope: Scope, raw: string): { journal: Journal | null; pau
           reading: null,
           spread: null,
           sync: "unknown",
+          supersede: false,
         },
       };
     }
@@ -420,13 +440,49 @@ export function flushPhysical(): Promise<void> {
 }
 
 function scheduleRetry(scope: Scope) {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" && !timerOverride) return;
   const generation = scope.generation;
   const seen = epoch;
-  window.setTimeout(() => {
+  const run = () => {
     if (epoch !== seen || scope.generation !== generation) return;
-    void reconcileScope(scope, scope.state?.inventory ?? [], false);
-  }, 4000);
+    void queueReconcile(scope, scope.state?.inventory ?? [], false);
+  };
+  if (timerOverride) timerOverride(run, 4000);
+  else window.setTimeout(run, 4000);
+}
+
+function armLookupRetry(scope: Scope) {
+  if (scope.lookupTimerPending || scope.lookupAttempts >= LOOKUP_RETRY_DELAYS.length) return;
+  if (!timerOverride && typeof window === "undefined") return;
+  const delay = LOOKUP_RETRY_DELAYS[scope.lookupAttempts]!;
+  scope.lookupTimerPending = true;
+  const token = scope.lookupRetryToken + 1;
+  scope.lookupRetryToken = token;
+  const generation = scope.generation;
+  const seen = epoch;
+  const run = () => {
+    if (scope.lookupRetryToken !== token) return;
+    scope.lookupTimerPending = false;
+    if (epoch !== seen || scope.generation !== generation) return;
+    scope.lookupAttempts += 1;
+    void queueReconcile(scope, scope.state?.inventory ?? [], false);
+  };
+  if (timerOverride) timerOverride(run, delay);
+  else window.setTimeout(run, delay);
+}
+
+function clearLookupRetry(scope: Scope) {
+  scope.lookupAttempts = 0;
+  scope.lookupTimerPending = false;
+  scope.lookupRetryToken += 1;
+}
+
+function queueReconcile(scope: Scope, cardIds: readonly CardId[], allowCreate: boolean) {
+  const run = () => reconcileScope(scope, cardIds, allowCreate);
+  const previous = scope.reconcileTask ?? Promise.resolve();
+  const task = previous.then(run, run);
+  scope.reconcileTask = task;
+  return task;
 }
 
 async function drain(scope: Scope, generation: number, seen: number) {
@@ -514,11 +570,16 @@ function applySaved(scope: Scope, saved: Journal) {
   scope.reading = saved.reading;
   scope.spread = saved.spread ?? null;
   scope.sync = saved.sync ?? "unknown";
+  scope.supersede = saved.supersede === true;
 }
 
 export function bootPhysical(owner: string, deckId: number, cardIds: readonly CardId[]): PhysicalState | null {
   const scope = ensure(owner || "local", deckId);
   scope.generation += 1;
+  scope.lookupRetryToken += 1;
+  scope.lookupTimerPending = false;
+  scope.lookupAttempts = 0;
+  scope.supersede = false;
   active = scope;
   scope.paused = null;
   scope.loading = false;
@@ -542,14 +603,14 @@ export function bootPhysical(owner: string, deckId: number, cardIds: readonly Ca
       return saved.snapshot;
     }
     applySaved(scope, saved);
-    if (shouldReconcile()) scope.reconcileTask = reconcileScope(scope, cardIds, false);
+    if (shouldReconcile()) scope.reconcileTask = queueReconcile(scope, cardIds, false);
     return saved.snapshot;
   }
   if (!shouldReconcile()) return createFresh(scope, cardIds, "ready");
   scope.state = null;
   scope.outbox = [];
   scope.loading = true;
-  scope.reconcileTask = reconcileScope(scope, cardIds, true);
+  scope.reconcileTask = queueReconcile(scope, cardIds, true);
   return null;
 }
 
@@ -601,6 +662,8 @@ async function reconcileScope(scope: Scope, cardIds: readonly CardId[], allowCre
     return;
   }
   const view = account.status === "found" && !account.snapshot ? "unavailable" : account.status;
+  if (view === "unavailable") armLookupRetry(scope);
+  else clearLookupRetry(scope);
   const decision = decideAccount({
     local: scope.state,
     unsent: scope.outbox.length,
@@ -608,6 +671,7 @@ async function reconcileScope(scope: Scope, cardIds: readonly CardId[], allowCre
     remote: account.snapshot,
     sync: scope.sync,
     allowCreate,
+    authorizedFresh: scope.supersede,
   });
   if (decision === "offline") {
     try {
@@ -633,6 +697,11 @@ async function reconcileScope(scope: Scope, cardIds: readonly CardId[], allowCre
     return;
   }
   if (decision === "adopt" && account.snapshot) {
+    if (scope.supersede && scope.state && account.snapshot.sessionId !== scope.state.sessionId) {
+      scope.loading = false;
+      emit(scope);
+      return;
+    }
     adopt(scope, account.snapshot, account.spread);
     scope.loading = false;
     emit(scope);
@@ -685,6 +754,9 @@ export function startFreshPhysical(cardIds: readonly CardId[], deckId = active?.
   const owner = active?.ownerId || "local";
   const scope = ensure(owner, deckId);
   scope.generation += 1;
+  scope.lookupRetryToken += 1;
+  scope.lookupTimerPending = false;
+  scope.lookupAttempts = 0;
   active = scope;
   scope.paused = null;
   scope.loading = false;

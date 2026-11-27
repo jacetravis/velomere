@@ -43,8 +43,8 @@ import {
   startFreshPhysical,
   subscribePhysical,
 } from "@/lib/physical-deck/runtime";
-import { repairSpreadSession } from "@/lib/physical-deck/spread-sync";
-import { captureSpread, spreadForRecovery } from "@/lib/physical-deck/spread-record";
+import { captureSpread } from "@/lib/physical-deck/spread-record";
+import { displayedTableReading, resumeTableReading, tableLaysReading } from "@/lib/physical-deck/table-reading";
 import { waitingSheets } from "@/lib/physical-deck/waiting-stack";
 import { edgeLook, paperTone, sheetLean } from "@/lib/cards/edge";
 import { cardFrame } from "@/lib/cards/shape";
@@ -111,12 +111,10 @@ function cardsIn(ids: readonly number[], source: readonly Card[]) {
 
 function healOpenSpread(next: PhysicalState, cards: readonly Card[], deckName: string) {
   const store = useSpreads.getState();
-  const sessionSpread = store.session?.assignments.some((item) => item.deckId === next.deckId) ? store.session.spread : null;
-  const spread = spreadForRecovery(physicalSpread(), sessionSpread);
-  const plan = repairSpreadSession(
-    next,
-    store.session,
-    cards.map((card) => ({
+  const plan = resumeTableReading({
+    physical: next,
+    session: store.session,
+    cards: cards.map((card) => ({
       id: card.id,
       name: card.name,
       upright: card.upright,
@@ -126,16 +124,15 @@ function healOpenSpread(next: PhysicalState, cards: readonly Card[], deckName: s
       suit: card.suit,
       rank: card.rank,
     })),
-    spread,
-    next.deckId,
+    recorded: physicalSpread(),
+    deckId: next.deckId,
     deckName,
-  );
+    adopt: (session) => store.adopt(session),
+  });
   if (plan.action === "pause") {
     pausePhysical(plan.reason);
     return false;
   }
-  if (plan.action === "clear") store.adopt(null);
-  if (plan.action === "replace") store.adopt(plan.session);
   return true;
 }
 
@@ -824,11 +821,18 @@ export function ReadingTable() {
   const collectNative = (card: Card): "skip" | "blocked" | "taken" => {
     if (handlingBlocked()) return "blocked";
     const state = useSpreads.getState();
-    const spread = state.effective(state.activeSpreadId);
+    const selected = state.effective(state.activeSpreadId);
+    const displayed = displayedTableReading({
+      session: state.session,
+      selectedId: state.activeSpreadId,
+      selected,
+      recorded: physicalSpread(),
+    });
+    const spread = displayed.session?.spread ?? selected;
     if (!spread || spread.positions.length < 2) return "skip";
     const physical = physicalState();
     if (!physical || (physical.mode !== "ready" && physical.mode !== "collecting")) return "blocked";
-    const live = state.session;
+    const live = displayed.session;
     if (live && live.spread.id === spread.id && live.status !== "collecting") return "blocked";
     if (physical.mode === "collecting" && (!live || live.status !== "collecting" || live.spread.id !== spread.id)) return "blocked";
     if (collectLock.current) return "blocked";
@@ -1008,11 +1012,19 @@ export function ReadingTable() {
     node.classList.add("is-flying");
   }, [flight]);
 
-  const spreadSize = useSpreads((s) => s.effective(s.activeSpreadId)?.positions.length ?? 1);
+  const selectedSpread = useSpreads((s) => s.effective(s.activeSpreadId));
   const spreadId = useSpreads((s) => s.activeSpreadId);
   const session = useSpreads((s) => s.session);
-  const spreadLive = session && session.spread.id === spreadId && session.spread.positions.length === spreadSize ? session : null;
-  const spreadLaid = spreadSize > 1 && !!spreadLive && (spreadLive.status === "staged" || spreadLive.status === "revealing" || spreadLive.status === "complete");
+  const recordedSpread = useSyncExternalStore(subscribePhysical, physicalSpread, physicalSpread);
+  const displayed = displayedTableReading({
+    session,
+    selectedId: spreadId,
+    selected: selectedSpread,
+    recorded: recordedSpread,
+  });
+  const spreadLive = displayed.session;
+  const spreadSize = displayed.spread?.positions.length ?? 1;
+  const spreadLaid = tableLaysReading(displayed);
   const waitingCount = spreadLive?.assignments.filter((item) => item.location === "waiting_stack").length ?? 0;
   const spreadChoices = useMemo(() => {
     const { standard, mine } = useSpreads.getState().list();
@@ -1407,7 +1419,7 @@ export function ReadingTable() {
           <div className="mt-3 flex w-full max-w-md flex-col items-center gap-2">
             {spreadSize > 1 ? (
               <p className="text-center text-xs text-subtle">
-                {spreadLive?.drawnCount ?? 0} of {spreadSize} cards drawn for {spreadChoices.find((item) => item.id === spreadId)?.name ?? "this spread"}
+                {spreadLive?.drawnCount ?? 0} of {spreadSize} cards drawn for {spreadLive?.spread.name ?? spreadChoices.find((item) => item.id === spreadId)?.name ?? "this spread"}
               </p>
             ) : null}
             <Button

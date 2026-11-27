@@ -26,4 +26,20 @@ test("reconciliation never overwrites unsent local actions", () => {
   assert.equal(decideAccount({ local: null, unsent: 0, view: "unavailable", remote: null, sync: "unknown", allowCreate: false }), "hold");
   assert.equal(decideAccount({ local: prep(), unsent: 1, view: "absent", remote: null, sync: "offline" }), "flush");
   assert.equal(decideAccount({ local: prep(), unsent: 1, view: "found", remote: { ...remote, sessionId: "account" }, sync: "offline" }), "adopt");
+  assert.equal(
+    decideAccount({ local: prep(), unsent: 1, view: "found", remote: { ...remote, sessionId: "account" }, sync: "ready", authorizedFresh: true }),
+    "flush",
+  );
+  assert.equal(
+    decideAccount({ local: prep(), unsent: 0, view: "found", remote: { ...remote, sessionId: "account" }, sync: "ready", authorizedFresh: true }),
+    "keep",
+  );
+  assert.equal(
+    decideAccount({ local: prep(), unsent: 1, view: "unavailable", remote: null, sync: "ready", authorizedFresh: true }),
+    "flush",
+  );
+  assert.equal(
+    decideAccount({ local: prep(), unsent: 1, view: "absent", remote: null, sync: "ready", authorizedFresh: true }),
+    "flush",
+  );
 });
