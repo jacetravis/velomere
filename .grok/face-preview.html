@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+<body style="margin:0;background:#222;display:flex;gap:8px">
+<style>
+  .card{position:relative;width:180px;height:296px}
+  .card img.art{width:100%;height:100%;object-fit:cover}
+  .grain{position:absolute;inset:0;background:url('/card-grain-velomere.jpg') 0 0/100% 100%;mix-blend-mode:overlay}
+  .glow{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 46%, transparent 48%, rgba(62,30,12,.42) 100%);mix-blend-mode:multiply}
+  .edge{position:absolute;inset:0;-webkit-mask:url('/card-border-velomere.png?v=13') 0 0/100% 100% no-repeat;mask:url('/card-border-velomere.png?v=13') 0 0/100% 100% no-repeat}
+</style>
+<div class="card"><img class="art" src="/cards/velomere/the-shuffle.svg?v=13"><div class="grain"></div><div class="glow"></div><div class="edge" style="background:#c6a15a"></div></div>
+<div class="card"><img class="art" src="/cards/velomere/ace-of-hearings.svg?v=13"><div class="grain"></div><div class="glow"></div><div class="edge" style="background:#7a5a98"></div></div>
+</body>
+</html>

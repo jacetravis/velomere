@@ -1,0 +1,360 @@
+{
+  "manifest": {
+    "style_id": "velomere_codex_becoming_v1",
+    "display_name": "Codex of Becoming",
+    "symbol_schema": "velomere-symbols/1.0",
+    "version": "1.0",
+    "proposal": true,
+    "not_canon": true,
+    "not_historical_correspondence": true,
+    "card_name": "Narrow Question",
+    "meaning_revision": "v20.4",
+    "source_geometry_sha256": "e303a097c1ddfb9d60b98fd6a804af9b203cbdf5e2ec860c566be21207ff47d6",
+    "scene_graph_sha256": "e303a097c1ddfb9d60b98fd6a804af9b203cbdf5e2ec860c566be21207ff47d6",
+    "orientation": "upright",
+    "interpretive_freedom": 60,
+    "freedom_changes_painting_only": true,
+    "suit": "Encounter",
+    "suit_color_proposed": null,
+    "suit_colors_are_proposals": true,
+    "topology": {
+      "roots": 2,
+      "joins": 3,
+      "consequential_contacts": 1,
+      "crossings": 0,
+      "downward_return": false,
+      "quiet": false,
+      "outcome": "earned_confluence"
+    },
+    "provenance": {
+      "parents": [
+        "Void",
+        "Ace of Hearings"
+      ],
+      "parent_glyphs_on_face": false,
+      "note": "Parents stay in provenance. They are not redrawn as the child’s emblem."
+    },
+    "seal": "Proposed seal, not canon: an independent crest over a narrow, revisable question. Parents are not the picture.",
+    "operator_instances": [
+      {
+        "glyph_id": "distinct-roots",
+        "operator": "DISTINCT",
+        "title": "The Double Root",
+        "meaning": "Two sources stay identifiable. Two marks are not two people and not a quarrel.",
+        "scene_event_id": null,
+        "positive_evidence": [
+          "geometry.roots"
+        ],
+        "meaning_quote_span": "both claims",
+        "epistemic_status": "attested",
+        "role": "semantic",
+        "canon_status": "graph-fact",
+        "anchor": {
+          "x_norm": 0.11,
+          "y_norm": 0.76
+        },
+        "layer": "vector-authoritative"
+      },
+      {
+        "glyph_id": "interval-field",
+        "operator": "INTERVAL",
+        "title": "The Held Interval",
+        "meaning": "A measured gap: ache, pause, or what has not yet been decided. It is not a connection.",
+        "scene_event_id": null,
+        "positive_evidence": [
+          "canonical-wording"
+        ],
+        "meaning_quote_span": "narrow matter",
+        "epistemic_status": "attested-by-meaning",
+        "role": "semantic",
+        "canon_status": "proposed-visual-from-canonical-wording",
+        "anchor": {
+          "x_norm": 0.11,
+          "y_norm": 0.52
+        },
+        "layer": "vector-authoritative"
+      },
+      {
+        "glyph_id": "contact-host-join",
+        "operator": "CONTACT",
+        "title": "The Attested Bridge",
+        "meaning": "A graph-authenticated meeting. One instance is one stored join segment, not a mood.",
+        "scene_event_id": "host-join",
+        "positive_evidence": [
+          "geometry.joins:host-join"
+        ],
+        "meaning_quote_span": null,
+        "epistemic_status": "attested",
+        "role": "semantic",
+        "canon_status": "graph-fact",
+        "anchor": {
+          "x_norm": 0.40817857142857145,
+          "y_norm": 0.12
+        },
+        "layer": "vector-authoritative"
+      },
+      {
+        "glyph_id": "contact-guest-join",
+        "operator": "CONTACT",
+        "title": "The Attested Bridge",
+        "meaning": "A graph-authenticated meeting. One instance is one stored join segment, not a mood.",
+        "scene_event_id": "guest-join",
+        "positive_evidence": [
+          "geometry.joins:guest-join"
+        ],
+        "meaning_quote_span": null,
+        "epistemic_status": "attested",
+        "role": "semantic",
+        "canon_status": "graph-fact",
+        "anchor": {
+          "x_norm": 0.53725,
+          "y_norm": 0.12
+        },
+        "layer": "vector-authoritative"
+      },
+      {
+        "glyph_id": "contact-shared-stem",
+        "operator": "CONTACT",
+        "title": "The Attested Bridge",
+        "meaning": "A graph-authenticated meeting. One instance is one stored join segment, not a mood.",
+        "scene_event_id": "shared-stem",
+        "positive_evidence": [
+          "geometry.joins:shared-stem"
+        ],
+        "meaning_quote_span": null,
+        "epistemic_status": "attested",
+        "role": "semantic",
+        "canon_status": "graph-fact",
+        "anchor": {
+          "x_norm": 0.47314285714285714,
+          "y_norm": 0.12
+        },
+        "layer": "vector-authoritative"
+      },
+      {
+        "glyph_id": "question-aperture",
+        "operator": "QUESTION",
+        "title": "The Bounded Aperture",
+        "meaning": "An inquiry left unclosed. Completeness of this moment is not an answer to everything.",
+        "scene_event_id": null,
+        "positive_evidence": [
+          "canonical-wording"
+        ],
+        "meaning_quote_span": "Question",
+        "epistemic_status": "attested-by-meaning",
+        "role": "semantic",
+        "canon_status": "proposed-visual-from-canonical-wording",
+        "anchor": {
+          "x_norm": 0.89,
+          "y_norm": 0.16
+        },
+        "layer": "vector-authoritative"
+      },
+      {
+        "glyph_id": "third-crest",
+        "operator": "THIRD",
+        "title": "The Independent Crest",
+        "meaning": "A new identity standing beyond its precursors. It does not erase them or fuse them.",
+        "scene_event_id": null,
+        "positive_evidence": [
+          "emergent-card"
+        ],
+        "meaning_quote_span": null,
+        "epistemic_status": "attested",
+        "role": "semantic",
+        "canon_status": "graph-fact",
+        "anchor": {
+          "x_norm": 0.5,
+          "y_norm": 0.055
+        },
+        "layer": "vector-authoritative"
+      },
+      {
+        "glyph_id": "permission-gate",
+        "operator": "PERMISSION",
+        "title": "The Conditional Gate",
+        "meaning": "A conditional opening. An open gate is not proof that anyone crossed.",
+        "scene_event_id": null,
+        "positive_evidence": [
+          "canonical-wording"
+        ],
+        "meaning_quote_span": "Consent",
+        "epistemic_status": "attested-by-meaning",
+        "role": "semantic",
+        "canon_status": "proposed-visual-from-canonical-wording",
+        "anchor": {
+          "x_norm": 0.11,
+          "y_norm": 0.18
+        },
+        "layer": "vector-authoritative"
+      },
+      {
+        "glyph_id": "shadow-countertrace",
+        "operator": "SHADOW",
+        "title": "The Countertrace",
+        "meaning": "A counterreading: a risk the upright text warns against. It has not been established as fact.",
+        "scene_event_id": null,
+        "positive_evidence": [
+          "shadow-text"
+        ],
+        "meaning_quote_span": "The shadow of Narrow Question is a misreading, not a second event that has already happened. Narrow Question goes wrong when the narrow meeting is inflated into agreement about eve",
+        "epistemic_status": "counterreading",
+        "role": "shadow",
+        "canon_status": "counterreading-not-fact",
+        "anchor": {
+          "x_norm": 0.89,
+          "y_norm": 0.9
+        },
+        "layer": "vector-authoritative"
+      }
+    ],
+    "contact_count": 3,
+    "negative": {
+      "unknown_is_not_noncontact": true,
+      "shadow_is_not_a_join": true,
+      "model_strokes_are_not_symbols": true
+    }
+  },
+  "legend": {
+    "intro": "Codex of Becoming is a new visual grammar for this installation. It is not original canon, not a historical occult system, and not a claim that these shapes were already in the 78. A painted glimmer is not a join. Only a listed CONTACT mark is a stored meeting.",
+    "contact_count": 3,
+    "contact_note": "3 CONTACT segments belong to 1 consequential meeting. They are parts of that meeting, not extra agreements.",
+    "seal": "Proposed seal, not canon: an independent crest over a narrow, revisable question. Parents are not the picture.",
+    "parents": {
+      "parents": [
+        "Void",
+        "Ace of Hearings"
+      ],
+      "parent_glyphs_on_face": false,
+      "note": "Parents stay in provenance. They are not redrawn as the child’s emblem."
+    },
+    "rows": [
+      {
+        "id": "distinct-roots",
+        "operator": "DISTINCT",
+        "title": "The Double Root",
+        "meaning": "Two sources stay identifiable. Two marks are not two people and not a quarrel.",
+        "epistemic": "attested",
+        "role": "semantic",
+        "canonStatus": "graph-fact",
+        "sceneEventId": null,
+        "quote": "both claims",
+        "evidence": [
+          "geometry.roots"
+        ]
+      },
+      {
+        "id": "interval-field",
+        "operator": "INTERVAL",
+        "title": "The Held Interval",
+        "meaning": "A measured gap: ache, pause, or what has not yet been decided. It is not a connection.",
+        "epistemic": "attested-by-meaning",
+        "role": "semantic",
+        "canonStatus": "proposed-visual-from-canonical-wording",
+        "sceneEventId": null,
+        "quote": "narrow matter",
+        "evidence": [
+          "canonical-wording"
+        ]
+      },
+      {
+        "id": "contact-host-join",
+        "operator": "CONTACT",
+        "title": "The Attested Bridge",
+        "meaning": "A graph-authenticated meeting. One instance is one stored join segment, not a mood.",
+        "epistemic": "attested",
+        "role": "semantic",
+        "canonStatus": "graph-fact",
+        "sceneEventId": "host-join",
+        "quote": null,
+        "evidence": [
+          "geometry.joins:host-join"
+        ]
+      },
+      {
+        "id": "contact-guest-join",
+        "operator": "CONTACT",
+        "title": "The Attested Bridge",
+        "meaning": "A graph-authenticated meeting. One instance is one stored join segment, not a mood.",
+        "epistemic": "attested",
+        "role": "semantic",
+        "canonStatus": "graph-fact",
+        "sceneEventId": "guest-join",
+        "quote": null,
+        "evidence": [
+          "geometry.joins:guest-join"
+        ]
+      },
+      {
+        "id": "contact-shared-stem",
+        "operator": "CONTACT",
+        "title": "The Attested Bridge",
+        "meaning": "A graph-authenticated meeting. One instance is one stored join segment, not a mood.",
+        "epistemic": "attested",
+        "role": "semantic",
+        "canonStatus": "graph-fact",
+        "sceneEventId": "shared-stem",
+        "quote": null,
+        "evidence": [
+          "geometry.joins:shared-stem"
+        ]
+      },
+      {
+        "id": "question-aperture",
+        "operator": "QUESTION",
+        "title": "The Bounded Aperture",
+        "meaning": "An inquiry left unclosed. Completeness of this moment is not an answer to everything.",
+        "epistemic": "attested-by-meaning",
+        "role": "semantic",
+        "canonStatus": "proposed-visual-from-canonical-wording",
+        "sceneEventId": null,
+        "quote": "Question",
+        "evidence": [
+          "canonical-wording"
+        ]
+      },
+      {
+        "id": "third-crest",
+        "operator": "THIRD",
+        "title": "The Independent Crest",
+        "meaning": "A new identity standing beyond its precursors. It does not erase them or fuse them.",
+        "epistemic": "attested",
+        "role": "semantic",
+        "canonStatus": "graph-fact",
+        "sceneEventId": null,
+        "quote": null,
+        "evidence": [
+          "emergent-card"
+        ]
+      },
+      {
+        "id": "permission-gate",
+        "operator": "PERMISSION",
+        "title": "The Conditional Gate",
+        "meaning": "A conditional opening. An open gate is not proof that anyone crossed.",
+        "epistemic": "attested-by-meaning",
+        "role": "semantic",
+        "canonStatus": "proposed-visual-from-canonical-wording",
+        "sceneEventId": null,
+        "quote": "Consent",
+        "evidence": [
+          "canonical-wording"
+        ]
+      },
+      {
+        "id": "shadow-countertrace",
+        "operator": "SHADOW",
+        "title": "The Countertrace",
+        "meaning": "A counterreading: a risk the upright text warns against. It has not been established as fact.",
+        "epistemic": "counterreading",
+        "role": "shadow",
+        "canonStatus": "counterreading-not-fact",
+        "sceneEventId": null,
+        "quote": "The shadow of Narrow Question is a misreading, not a second event that has already happened. Narrow Question goes wrong when the narrow meeting is inflated into agreement about eve",
+        "evidence": [
+          "shadow-text"
+        ]
+      }
+    ]
+  }
+}

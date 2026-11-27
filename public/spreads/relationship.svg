@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="525" viewBox="0 0 840 525" role="img" aria-label="Relationship 5-card layout">
+<defs><linearGradient id="bg" x2="0" y2="1"><stop stop-color="#101725"/><stop offset="1" stop-color="#070b14"/></linearGradient><linearGradient id="shine" x2="0" y2="1"><stop stop-color="#2c3b56"/><stop offset="1" stop-color="#172338"/></linearGradient></defs>
+<rect width="840" height="525" rx="34" fill="url(#bg)"/>
+<rect x="11" y="11" width="818" height="503" rx="29" fill="none" stroke="#263248" stroke-width="2"/>
+<text x="44" y="482" fill="#e6ecf7" font-size="29" font-family="Georgia,serif">Relationship</text>
+<text x="796" y="480" text-anchor="end" fill="#91a4c0" font-size="23" font-family="Arial,sans-serif">5 cards</text>
+<g transform="translate(169.76,220.69) rotate(0)">
+<rect x="-40.0" y="-65.7" width="80" height="131.4" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-32.0" y="-57.7" width="64" height="115.4" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -17.6 0 L 0 -17.6 L 17.6 0 L 0 17.6 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="169.76" cy="220.69" r="17" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="169.76" y="226.69" text-anchor="middle" font-size="18" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">1</text>
+<g transform="translate(670.24,220.69) rotate(0)">
+<rect x="-40.0" y="-65.7" width="80" height="131.4" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-32.0" y="-57.7" width="64" height="115.4" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -17.6 0 L 0 -17.6 L 17.6 0 L 0 17.6 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="670.24" cy="220.69" r="17" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="670.24" y="226.69" text-anchor="middle" font-size="18" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">2</text>
+<g transform="translate(420.00,228.35) rotate(0)">
+<rect x="-40.0" y="-65.7" width="80" height="131.4" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-32.0" y="-57.7" width="64" height="115.4" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -17.6 0 L 0 -17.6 L 17.6 0 L 0 17.6 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="420.00" cy="228.35" r="17" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="420.00" y="234.35" text-anchor="middle" font-size="18" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">3</text>
+<g transform="translate(420.00,362.40) rotate(0)">
+<rect x="-40.0" y="-65.7" width="80" height="131.4" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-32.0" y="-57.7" width="64" height="115.4" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -17.6 0 L 0 -17.6 L 17.6 0 L 0 17.6 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="420.00" cy="362.40" r="17" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="420.00" y="368.40" text-anchor="middle" font-size="18" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">4</text>
+<g transform="translate(420.00,101.96) rotate(0)">
+<rect x="-40.0" y="-65.7" width="80" height="131.4" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-32.0" y="-57.7" width="64" height="115.4" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -17.6 0 L 0 -17.6 L 17.6 0 L 0 17.6 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="420.00" cy="101.96" r="17" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="420.00" y="107.96" text-anchor="middle" font-size="18" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">5</text>
+</svg>

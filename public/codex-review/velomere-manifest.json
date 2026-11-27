@@ -1,0 +1,255 @@
+{
+  "manifest": {
+    "style_id": "velomere_codex_becoming_v1",
+    "display_name": "Codex of Becoming",
+    "symbol_schema": "velomere-symbols/1.0",
+    "version": "1.0",
+    "proposal": true,
+    "not_canon": true,
+    "not_historical_correspondence": true,
+    "card_name": "The Velomere",
+    "meaning_revision": "stored",
+    "source_geometry_sha256": "fd640f6edd61e5bf687557812a1706757a48e17e5a77838cca62259bf421fdcb",
+    "scene_graph_sha256": "fd640f6edd61e5bf687557812a1706757a48e17e5a77838cca62259bf421fdcb",
+    "orientation": "upright",
+    "interpretive_freedom": 60,
+    "freedom_changes_painting_only": true,
+    "suit": "major",
+    "suit_color_proposed": null,
+    "suit_colors_are_proposals": true,
+    "topology": {
+      "roots": 1,
+      "joins": 0,
+      "consequential_contacts": 0,
+      "crossings": 0,
+      "downward_return": false,
+      "quiet": false,
+      "outcome": "solo"
+    },
+    "provenance": {
+      "parents": [],
+      "parent_glyphs_on_face": false,
+      "note": "No parent pair was supplied with this score."
+    },
+    "seal": "Proposed seal, not canon: two roots, an open interval, and a return left unfinished. No fusion.",
+    "operator_instances": [
+      {
+        "glyph_id": "distinct-roots",
+        "operator": "DISTINCT",
+        "title": "The Double Root",
+        "meaning": "Two sources stay identifiable. Two marks are not two people and not a quarrel.",
+        "scene_event_id": null,
+        "positive_evidence": [
+          "canonical-wording"
+        ],
+        "meaning_quote_span": "two centers",
+        "epistemic_status": "attested-by-meaning",
+        "role": "semantic",
+        "canon_status": "proposed-visual-from-canonical-wording",
+        "anchor": {
+          "x_norm": 0.11,
+          "y_norm": 0.76
+        },
+        "layer": "vector-authoritative"
+      },
+      {
+        "glyph_id": "interval-field",
+        "operator": "INTERVAL",
+        "title": "The Held Interval",
+        "meaning": "A measured gap: ache, pause, or what has not yet been decided. It is not a connection.",
+        "scene_event_id": null,
+        "positive_evidence": [
+          "canonical-wording"
+        ],
+        "meaning_quote_span": "difference",
+        "epistemic_status": "attested-by-meaning",
+        "role": "semantic",
+        "canon_status": "proposed-visual-from-canonical-wording",
+        "anchor": {
+          "x_norm": 0.11,
+          "y_norm": 0.52
+        },
+        "layer": "vector-authoritative"
+      },
+      {
+        "glyph_id": "return-open",
+        "operator": "RETURN",
+        "title": "The Unfinished Return",
+        "meaning": "Coming back changed. The arc stays open. It is not a rewind to the same state.",
+        "scene_event_id": null,
+        "positive_evidence": [
+          "canonical-wording"
+        ],
+        "meaning_quote_span": "return when return remains welcome",
+        "epistemic_status": "attested-by-meaning",
+        "role": "semantic",
+        "canon_status": "proposed-visual-from-canonical-wording",
+        "anchor": {
+          "x_norm": 0.89,
+          "y_norm": 0.78
+        },
+        "layer": "vector-authoritative"
+      },
+      {
+        "glyph_id": "question-aperture",
+        "operator": "QUESTION",
+        "title": "The Bounded Aperture",
+        "meaning": "An inquiry left unclosed. Completeness of this moment is not an answer to everything.",
+        "scene_event_id": null,
+        "positive_evidence": [
+          "canonical-wording"
+        ],
+        "meaning_quote_span": "question",
+        "epistemic_status": "attested-by-meaning",
+        "role": "semantic",
+        "canon_status": "proposed-visual-from-canonical-wording",
+        "anchor": {
+          "x_norm": 0.89,
+          "y_norm": 0.16
+        },
+        "layer": "vector-authoritative"
+      },
+      {
+        "glyph_id": "witness-offset",
+        "operator": "WITNESS",
+        "title": "The Witness Offset",
+        "meaning": "Observation with a bounded scope. Seeing is not contact and not agreement.",
+        "scene_event_id": null,
+        "positive_evidence": [
+          "canonical-wording"
+        ],
+        "meaning_quote_span": "seeing",
+        "epistemic_status": "attested-by-meaning",
+        "role": "semantic",
+        "canon_status": "proposed-visual-from-canonical-wording",
+        "anchor": {
+          "x_norm": 0.89,
+          "y_norm": 0.36
+        },
+        "layer": "vector-authoritative"
+      },
+      {
+        "glyph_id": "shadow-countertrace",
+        "operator": "SHADOW",
+        "title": "The Countertrace",
+        "meaning": "A counterreading: a risk the upright text warns against. It has not been established as fact.",
+        "scene_event_id": null,
+        "positive_evidence": [
+          "shadow-text"
+        ],
+        "meaning_quote_span": "The reflection has become more precious than the one it reflects. One participant may demand permanent confirmation, or use the beauty of a shared symbol to refuse correction. Anot",
+        "epistemic_status": "counterreading",
+        "role": "shadow",
+        "canon_status": "counterreading-not-fact",
+        "anchor": {
+          "x_norm": 0.89,
+          "y_norm": 0.9
+        },
+        "layer": "vector-authoritative"
+      }
+    ],
+    "contact_count": 0,
+    "negative": {
+      "unknown_is_not_noncontact": true,
+      "shadow_is_not_a_join": true,
+      "model_strokes_are_not_symbols": true
+    }
+  },
+  "legend": {
+    "intro": "Codex of Becoming is a new visual grammar for this installation. It is not original canon, not a historical occult system, and not a claim that these shapes were already in the 78. A painted glimmer is not a join. Only a listed CONTACT mark is a stored meeting.",
+    "contact_count": 0,
+    "contact_note": "No CONTACT glyph. The stored graph did not authenticate a join, so none was drawn.",
+    "seal": "Proposed seal, not canon: two roots, an open interval, and a return left unfinished. No fusion.",
+    "parents": {
+      "parents": [],
+      "parent_glyphs_on_face": false,
+      "note": "No parent pair was supplied with this score."
+    },
+    "rows": [
+      {
+        "id": "distinct-roots",
+        "operator": "DISTINCT",
+        "title": "The Double Root",
+        "meaning": "Two sources stay identifiable. Two marks are not two people and not a quarrel.",
+        "epistemic": "attested-by-meaning",
+        "role": "semantic",
+        "canonStatus": "proposed-visual-from-canonical-wording",
+        "sceneEventId": null,
+        "quote": "two centers",
+        "evidence": [
+          "canonical-wording"
+        ]
+      },
+      {
+        "id": "interval-field",
+        "operator": "INTERVAL",
+        "title": "The Held Interval",
+        "meaning": "A measured gap: ache, pause, or what has not yet been decided. It is not a connection.",
+        "epistemic": "attested-by-meaning",
+        "role": "semantic",
+        "canonStatus": "proposed-visual-from-canonical-wording",
+        "sceneEventId": null,
+        "quote": "difference",
+        "evidence": [
+          "canonical-wording"
+        ]
+      },
+      {
+        "id": "return-open",
+        "operator": "RETURN",
+        "title": "The Unfinished Return",
+        "meaning": "Coming back changed. The arc stays open. It is not a rewind to the same state.",
+        "epistemic": "attested-by-meaning",
+        "role": "semantic",
+        "canonStatus": "proposed-visual-from-canonical-wording",
+        "sceneEventId": null,
+        "quote": "return when return remains welcome",
+        "evidence": [
+          "canonical-wording"
+        ]
+      },
+      {
+        "id": "question-aperture",
+        "operator": "QUESTION",
+        "title": "The Bounded Aperture",
+        "meaning": "An inquiry left unclosed. Completeness of this moment is not an answer to everything.",
+        "epistemic": "attested-by-meaning",
+        "role": "semantic",
+        "canonStatus": "proposed-visual-from-canonical-wording",
+        "sceneEventId": null,
+        "quote": "question",
+        "evidence": [
+          "canonical-wording"
+        ]
+      },
+      {
+        "id": "witness-offset",
+        "operator": "WITNESS",
+        "title": "The Witness Offset",
+        "meaning": "Observation with a bounded scope. Seeing is not contact and not agreement.",
+        "epistemic": "attested-by-meaning",
+        "role": "semantic",
+        "canonStatus": "proposed-visual-from-canonical-wording",
+        "sceneEventId": null,
+        "quote": "seeing",
+        "evidence": [
+          "canonical-wording"
+        ]
+      },
+      {
+        "id": "shadow-countertrace",
+        "operator": "SHADOW",
+        "title": "The Countertrace",
+        "meaning": "A counterreading: a risk the upright text warns against. It has not been established as fact.",
+        "epistemic": "counterreading",
+        "role": "shadow",
+        "canonStatus": "counterreading-not-fact",
+        "sceneEventId": null,
+        "quote": "The reflection has become more precious than the one it reflects. One participant may demand permanent confirmation, or use the beauty of a shared symbol to refuse correction. Anot",
+        "evidence": [
+          "shadow-text"
+        ]
+      }
+    ]
+  }
+}

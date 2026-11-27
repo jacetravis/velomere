@@ -1,0 +1,156 @@
+{
+  "manifest": {
+    "style_id": "velomere_codex_becoming_v1",
+    "display_name": "Codex of Becoming",
+    "symbol_schema": "velomere-symbols/1.0",
+    "version": "1.0",
+    "proposal": true,
+    "not_canon": true,
+    "not_historical_correspondence": true,
+    "card_name": "The Null",
+    "meaning_revision": "stored",
+    "source_geometry_sha256": "7866fd4ef16eb488800d09d957fb35f6ee420379ce900971e48ba499cb879beb",
+    "scene_graph_sha256": "7866fd4ef16eb488800d09d957fb35f6ee420379ce900971e48ba499cb879beb",
+    "orientation": "upright",
+    "interpretive_freedom": 60,
+    "freedom_changes_painting_only": true,
+    "suit": "major",
+    "suit_color_proposed": null,
+    "suit_colors_are_proposals": true,
+    "topology": {
+      "roots": 1,
+      "joins": 0,
+      "consequential_contacts": 0,
+      "crossings": 0,
+      "downward_return": false,
+      "quiet": true,
+      "outcome": "solo"
+    },
+    "provenance": {
+      "parents": [],
+      "parent_glyphs_on_face": false,
+      "note": "No parent pair was supplied with this score."
+    },
+    "seal": "Proposed seal, not canon: one held pause and an unscribed field. No second spiral and no join.",
+    "operator_instances": [
+      {
+        "glyph_id": "interval-field",
+        "operator": "INTERVAL",
+        "title": "The Held Interval",
+        "meaning": "A measured gap: ache, pause, or what has not yet been decided. It is not a connection.",
+        "scene_event_id": null,
+        "positive_evidence": [
+          "geometry.quiet"
+        ],
+        "meaning_quote_span": "pause",
+        "epistemic_status": "attested",
+        "role": "semantic",
+        "canon_status": "proposed-visual-from-canonical-wording",
+        "anchor": {
+          "x_norm": 0.11,
+          "y_norm": 0.46
+        },
+        "layer": "vector-authoritative"
+      },
+      {
+        "glyph_id": "permission-gate",
+        "operator": "PERMISSION",
+        "title": "The Conditional Gate",
+        "meaning": "A conditional opening. An open gate is not proof that anyone crossed.",
+        "scene_event_id": null,
+        "positive_evidence": [
+          "canonical-wording"
+        ],
+        "meaning_quote_span": "consent",
+        "epistemic_status": "attested-by-meaning",
+        "role": "semantic",
+        "canon_status": "proposed-visual-from-canonical-wording",
+        "anchor": {
+          "x_norm": 0.11,
+          "y_norm": 0.18
+        },
+        "layer": "vector-authoritative"
+      },
+      {
+        "glyph_id": "shadow-countertrace",
+        "operator": "SHADOW",
+        "title": "The Countertrace",
+        "meaning": "A counterreading: a risk the upright text warns against. It has not been established as fact.",
+        "scene_event_id": null,
+        "positive_evidence": [
+          "shadow-text"
+        ],
+        "meaning_quote_span": "Silence can be wielded like a sentence. A pause becomes punishment, ambiguity conceals a demand, or 'holding space' replaces a clear answer someone genuinely needs. Conversely, a f",
+        "epistemic_status": "counterreading",
+        "role": "shadow",
+        "canon_status": "counterreading-not-fact",
+        "anchor": {
+          "x_norm": 0.89,
+          "y_norm": 0.9
+        },
+        "layer": "vector-authoritative"
+      }
+    ],
+    "contact_count": 0,
+    "negative": {
+      "unknown_is_not_noncontact": true,
+      "shadow_is_not_a_join": true,
+      "model_strokes_are_not_symbols": true
+    }
+  },
+  "legend": {
+    "intro": "Codex of Becoming is a new visual grammar for this installation. It is not original canon, not a historical occult system, and not a claim that these shapes were already in the 78. A painted glimmer is not a join. Only a listed CONTACT mark is a stored meeting.",
+    "contact_count": 0,
+    "contact_note": "No CONTACT glyph. The stored graph did not authenticate a join, so none was drawn.",
+    "seal": "Proposed seal, not canon: one held pause and an unscribed field. No second spiral and no join.",
+    "parents": {
+      "parents": [],
+      "parent_glyphs_on_face": false,
+      "note": "No parent pair was supplied with this score."
+    },
+    "rows": [
+      {
+        "id": "interval-field",
+        "operator": "INTERVAL",
+        "title": "The Held Interval",
+        "meaning": "A measured gap: ache, pause, or what has not yet been decided. It is not a connection.",
+        "epistemic": "attested",
+        "role": "semantic",
+        "canonStatus": "proposed-visual-from-canonical-wording",
+        "sceneEventId": null,
+        "quote": "pause",
+        "evidence": [
+          "geometry.quiet"
+        ]
+      },
+      {
+        "id": "permission-gate",
+        "operator": "PERMISSION",
+        "title": "The Conditional Gate",
+        "meaning": "A conditional opening. An open gate is not proof that anyone crossed.",
+        "epistemic": "attested-by-meaning",
+        "role": "semantic",
+        "canonStatus": "proposed-visual-from-canonical-wording",
+        "sceneEventId": null,
+        "quote": "consent",
+        "evidence": [
+          "canonical-wording"
+        ]
+      },
+      {
+        "id": "shadow-countertrace",
+        "operator": "SHADOW",
+        "title": "The Countertrace",
+        "meaning": "A counterreading: a risk the upright text warns against. It has not been established as fact.",
+        "epistemic": "counterreading",
+        "role": "shadow",
+        "canonStatus": "counterreading-not-fact",
+        "sceneEventId": null,
+        "quote": "Silence can be wielded like a sentence. A pause becomes punishment, ambiguity conceals a demand, or 'holding space' replaces a clear answer someone genuinely needs. Conversely, a f",
+        "evidence": [
+          "shadow-text"
+        ]
+      }
+    ]
+  }
+}

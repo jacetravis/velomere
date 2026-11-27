@@ -1,0 +1,1120 @@
+{
+  "schemaVersion": "1.1.0",
+  "seedVersion": "2026-11-22.3",
+  "defaultActiveSpreadId": "std-one-card",
+  "categories": [
+    {
+      "id": "standard",
+      "title": "Standard Spreads",
+      "sortOrder": 0,
+      "expandedByDefault": true
+    }
+  ],
+  "spreads": [
+    {
+      "id": "std-one-card",
+      "categoryId": "standard",
+      "name": "One Card",
+      "shortLabel": "1 card",
+      "description": "A single focus for a question, day, or moment. This remains the default reading.",
+      "openingQuestion": "What deserves my attention now?",
+      "editable": true,
+      "sourceKind": "common-spread-variation",
+      "layout": {
+        "coordinateSystem": "normalized-center",
+        "canvasAspectRatio": 0.75,
+        "allowIntentionalOverlap": false,
+        "cardAspectRatio": 0.609,
+        "fitPolicy": "contain-all-with-safe-margins"
+      },
+      "positions": [
+        {
+          "id": "focus",
+          "order": 1,
+          "name": "Focus",
+          "question": "What is most useful to notice or reflect upon now?",
+          "meaningApplication": "Read the full card in relation to the question or present moment, without adding an invented second position.",
+          "x": 0.5,
+          "y": 0.5,
+          "rotationDeg": 0,
+          "zIndex": 1,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        }
+      ],
+      "tileAsset": "visuals/tiles/one-card.svg",
+      "sourceTags": [
+        "reflecta",
+        "arcanebra"
+      ]
+    },
+    {
+      "id": "std-mind-body-spirit",
+      "categoryId": "standard",
+      "name": "Mind · Body · Spirit",
+      "shortLabel": "3 cards",
+      "description": "Three views of one person or situation: what the mind is doing, what the body is carrying, and what the spirit is asking.",
+      "openingQuestion": "How am I meeting this in mind, body, and spirit?",
+      "editable": true,
+      "sourceKind": "common-spread-variation",
+      "layout": {
+        "coordinateSystem": "normalized-center",
+        "canvasAspectRatio": 0.75,
+        "allowIntentionalOverlap": false,
+        "cardAspectRatio": 0.609,
+        "fitPolicy": "contain-all-with-safe-margins"
+      },
+      "positions": [
+        {
+          "rotationDeg": 0,
+          "zIndex": 1,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What belief, story, or thought is most active here?",
+          "id": "mind",
+          "order": 1,
+          "name": "Mind",
+          "question": "What belief, story, or thought is most active here?",
+          "x": 0.22,
+          "y": 0.5
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 2,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What is the body holding, needing, or signaling?",
+          "id": "body",
+          "order": 2,
+          "name": "Body",
+          "question": "What is the body holding, needing, or signaling?",
+          "x": 0.5,
+          "y": 0.5
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 3,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What deeper longing or meaning is asking to be heard?",
+          "id": "spirit",
+          "order": 3,
+          "name": "Spirit",
+          "question": "What deeper longing or meaning is asking to be heard?",
+          "x": 0.78,
+          "y": 0.5
+        }
+      ],
+      "tileAsset": "visuals/tiles/mind-body-spirit.svg",
+      "sourceTags": [
+        "common"
+      ]
+    },
+    {
+      "id": "std-past-present-future",
+      "categoryId": "standard",
+      "name": "Past · Present · Future",
+      "shortLabel": "3 cards",
+      "description": "Three perspectives on how a situation has developed, stands now, and may unfold.",
+      "openingQuestion": "How has this situation moved, and what direction could it take?",
+      "editable": true,
+      "sourceKind": "common-spread-variation",
+      "layout": {
+        "coordinateSystem": "normalized-center",
+        "canvasAspectRatio": 0.75,
+        "allowIntentionalOverlap": false,
+        "cardAspectRatio": 0.609,
+        "fitPolicy": "contain-all-with-safe-margins"
+      },
+      "positions": [
+        {
+          "id": "past",
+          "order": 1,
+          "name": "Past",
+          "question": "What earlier influence or pattern shaped this situation?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What earlier influence or pattern shaped this situation?",
+          "x": 0.22,
+          "y": 0.5,
+          "rotationDeg": 0,
+          "zIndex": 1,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "present",
+          "order": 2,
+          "name": "Present",
+          "question": "What dynamic is active now?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What dynamic is active now?",
+          "x": 0.5,
+          "y": 0.5,
+          "rotationDeg": 0,
+          "zIndex": 2,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "future",
+          "order": 3,
+          "name": "Future",
+          "question": "What direction is emerging if current patterns continue?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What direction is emerging if current patterns continue?",
+          "x": 0.78,
+          "y": 0.5,
+          "rotationDeg": 0,
+          "zIndex": 3,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        }
+      ],
+      "tileAsset": "visuals/tiles/past-present-future.svg",
+      "sourceTags": [
+        "labyrinthos",
+        "reflecta"
+      ]
+    },
+    {
+      "id": "std-shadow-work",
+      "categoryId": "standard",
+      "name": "Shadow Work",
+      "shortLabel": "4 cards",
+      "description": "A four-card shadow spread: the face that is shown, what has been set aside, where the pattern began, and how the two can be met.",
+      "openingQuestion": "What have I set outside the story I tell about myself?",
+      "editable": true,
+      "sourceKind": "common-spread-variation",
+      "layout": {
+        "coordinateSystem": "normalized-center",
+        "canvasAspectRatio": 0.75,
+        "allowIntentionalOverlap": false,
+        "cardAspectRatio": 0.609,
+        "fitPolicy": "contain-all-with-safe-margins"
+      },
+      "positions": [
+        {
+          "rotationDeg": 0,
+          "zIndex": 1,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What do I present, or prefer to be seen as?",
+          "id": "mask",
+          "order": 1,
+          "name": "The Mask",
+          "question": "What do I present, or prefer to be seen as?",
+          "x": 0.32,
+          "y": 0.24
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 2,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What have I disowned, avoided, or kept out of view?",
+          "id": "shadow",
+          "order": 2,
+          "name": "The Shadow",
+          "question": "What have I disowned, avoided, or kept out of view?",
+          "x": 0.68,
+          "y": 0.24
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 3,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: Where did this split begin, or what keeps it in place?",
+          "id": "root",
+          "order": 3,
+          "name": "The Root",
+          "question": "Where did this split begin, or what keeps it in place?",
+          "x": 0.5,
+          "y": 0.52
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 4,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: How can what is shown and what was set aside be held together?",
+          "id": "integration",
+          "order": 4,
+          "name": "The Meeting",
+          "question": "How can what is shown and what was set aside be held together?",
+          "x": 0.5,
+          "y": 0.8
+        }
+      ],
+      "tileAsset": "visuals/tiles/shadow-work.svg",
+      "sourceTags": [
+        "common"
+      ]
+    },
+    {
+      "id": "std-five-card-cross",
+      "categoryId": "standard",
+      "name": "Five-Card Cross",
+      "shortLabel": "5 cards",
+      "description": "The common five-card cross. The center is the situation. Left is the past, right is the future, below is the foundation, and above is the potential.",
+      "openingQuestion": "What is happening, where did it come from, and what can it become?",
+      "editable": true,
+      "sourceKind": "common-spread-variation",
+      "layout": {
+        "coordinateSystem": "normalized-center",
+        "canvasAspectRatio": 0.75,
+        "allowIntentionalOverlap": false,
+        "cardAspectRatio": 0.609,
+        "fitPolicy": "contain-all-with-safe-margins"
+      },
+      "positions": [
+        {
+          "rotationDeg": 0,
+          "zIndex": 3,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What is at the heart of the matter right now?",
+          "id": "situation",
+          "order": 1,
+          "name": "Situation",
+          "question": "What is at the heart of the matter right now?",
+          "x": 0.5,
+          "y": 0.5
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 2,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What past influence still shapes this matter?",
+          "id": "past",
+          "order": 2,
+          "name": "Past",
+          "question": "What past influence still shapes this matter?",
+          "x": 0.22,
+          "y": 0.5
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 3,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What is developing if the present course continues?",
+          "id": "future",
+          "order": 3,
+          "name": "Future",
+          "question": "What is developing if the present course continues?",
+          "x": 0.78,
+          "y": 0.5
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 4,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What lies underneath and supports or limits this?",
+          "id": "foundation",
+          "order": 4,
+          "name": "Foundation",
+          "question": "What lies underneath and supports or limits this?",
+          "x": 0.5,
+          "y": 0.78
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 5,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What is possible, or what crowns this matter?",
+          "id": "potential",
+          "order": 5,
+          "name": "Potential",
+          "question": "What is possible, or what crowns this matter?",
+          "x": 0.5,
+          "y": 0.22
+        }
+      ],
+      "tileAsset": "visuals/tiles/five-card-cross.svg",
+      "sourceTags": [
+        "reflecta",
+        "labyrinthos"
+      ]
+    },
+    {
+      "id": "std-relationship",
+      "categoryId": "standard",
+      "name": "Relationship",
+      "shortLabel": "5 cards",
+      "description": "A five-card relationship spread: you, the other person, the bond between you, the strain in it, and what tends or nourishes it.",
+      "openingQuestion": "What is the shape of this relationship?",
+      "editable": true,
+      "sourceKind": "common-spread-variation",
+      "layout": {
+        "coordinateSystem": "normalized-center",
+        "canvasAspectRatio": 1.65,
+        "allowIntentionalOverlap": false,
+        "cardAspectRatio": 0.609,
+        "fitPolicy": "contain-all-with-safe-margins"
+      },
+      "positions": [
+        {
+          "id": "self",
+          "order": 1,
+          "name": "Self",
+          "question": "What am I bringing or perceiving within the relationship?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What am I bringing or perceiving within the relationship?",
+          "x": 0.22,
+          "y": 0.42,
+          "rotationDeg": 0,
+          "zIndex": 1,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "other",
+          "order": 2,
+          "name": "Other",
+          "question": "How might the other person’s role or perspective be understood?",
+          "meaningApplication": "Read as a reflective possibility about the relationship, not verified access to another person’s private thoughts.",
+          "x": 0.78,
+          "y": 0.42,
+          "rotationDeg": 0,
+          "zIndex": 2,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "connection",
+          "order": 3,
+          "name": "Connection",
+          "question": "What dynamic exists between these perspectives?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What dynamic exists between these perspectives?",
+          "x": 0.5,
+          "y": 0.42,
+          "rotationDeg": 0,
+          "zIndex": 3,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "friction",
+          "order": 4,
+          "name": "Friction",
+          "question": "Where is there a gap, conflict, or unmet need?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: Where is there a gap, conflict, or unmet need?",
+          "x": 0.5,
+          "y": 0.76,
+          "rotationDeg": 0,
+          "zIndex": 4,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "nurture",
+          "order": 5,
+          "name": "Nurture",
+          "question": "What could help the connection develop with care?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What could help the connection develop with care?",
+          "x": 0.5,
+          "y": 0.16,
+          "rotationDeg": 0,
+          "zIndex": 5,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        }
+      ],
+      "tileAsset": "visuals/tiles/relationship.svg",
+      "sourceTags": [
+        "reflecta",
+        "labyrinthos"
+      ]
+    },
+    {
+      "id": "std-the-choice",
+      "categoryId": "standard",
+      "name": "The Choice",
+      "shortLabel": "5 cards",
+      "description": "A fork in the road. The center is the matter. The upper cards are the two choices. The lower cards are where each choice tends.",
+      "openingQuestion": "What changes if I take one path rather than the other?",
+      "editable": true,
+      "sourceKind": "common-spread-variation",
+      "layout": {
+        "coordinateSystem": "normalized-center",
+        "canvasAspectRatio": 0.75,
+        "allowIntentionalOverlap": false,
+        "cardAspectRatio": 0.609,
+        "fitPolicy": "contain-all-with-safe-margins"
+      },
+      "positions": [
+        {
+          "rotationDeg": 0,
+          "zIndex": 2,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What decision or crossroad is actually in front of me?",
+          "id": "matter",
+          "order": 1,
+          "name": "The Matter",
+          "question": "What decision or crossroad is actually in front of me?",
+          "x": 0.5,
+          "y": 0.5
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 2,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What is the nature of the first choice?",
+          "id": "choice-a",
+          "order": 2,
+          "name": "Choice A",
+          "question": "What is the nature of the first choice?",
+          "x": 0.24,
+          "y": 0.24
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 3,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What is the nature of the second choice?",
+          "id": "choice-b",
+          "order": 3,
+          "name": "Choice B",
+          "question": "What is the nature of the second choice?",
+          "x": 0.76,
+          "y": 0.24
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 4,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: Where does the first choice tend to lead?",
+          "id": "outcome-a",
+          "order": 4,
+          "name": "If You Choose A",
+          "question": "Where does the first choice tend to lead?",
+          "x": 0.24,
+          "y": 0.76
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 5,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: Where does the second choice tend to lead?",
+          "id": "outcome-b",
+          "order": 5,
+          "name": "If You Choose B",
+          "question": "Where does the second choice tend to lead?",
+          "x": 0.76,
+          "y": 0.76
+        }
+      ],
+      "tileAsset": "visuals/tiles/the-choice.svg",
+      "sourceTags": [
+        "common"
+      ]
+    },
+    {
+      "id": "std-horseshoe",
+      "categoryId": "standard",
+      "name": "Horseshoe",
+      "shortLabel": "7 cards",
+      "description": "The seven-card horseshoe, read from the upper left around to the upper right: past, present, hidden influence, challenge, outside influence, advice, and outcome.",
+      "openingQuestion": "What surrounds this matter, and where does the arc lead?",
+      "editable": true,
+      "sourceKind": "common-spread-variation",
+      "layout": {
+        "coordinateSystem": "normalized-center",
+        "canvasAspectRatio": 0.75,
+        "allowIntentionalOverlap": false,
+        "cardAspectRatio": 0.609,
+        "fitPolicy": "contain-all-with-safe-margins"
+      },
+      "positions": [
+        {
+          "id": "past",
+          "order": 1,
+          "name": "Past",
+          "question": "What led into this situation?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What led into this situation?",
+          "x": 0.16,
+          "y": 0.2,
+          "rotationDeg": 0,
+          "zIndex": 1,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "present",
+          "order": 2,
+          "name": "Present",
+          "question": "What is happening now?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What is happening now?",
+          "x": 0.28,
+          "y": 0.4,
+          "rotationDeg": 0,
+          "zIndex": 2,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "hidden-influence",
+          "order": 3,
+          "name": "Hidden Influence",
+          "question": "What factor may be less visible or less acknowledged?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What factor may be less visible or less acknowledged?",
+          "x": 0.4,
+          "y": 0.64,
+          "rotationDeg": 0,
+          "zIndex": 3,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "challenge",
+          "order": 4,
+          "name": "Challenge",
+          "question": "Where is the principal difficulty or tension?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: Where is the principal difficulty or tension?",
+          "x": 0.5,
+          "y": 0.78,
+          "rotationDeg": 0,
+          "zIndex": 4,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "outside-influence",
+          "order": 5,
+          "name": "Outside Influence",
+          "question": "What external factors or other people’s choices matter?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What external factors or other people’s choices matter?",
+          "x": 0.6,
+          "y": 0.64,
+          "rotationDeg": 0,
+          "zIndex": 5,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "advice",
+          "order": 6,
+          "name": "Advice",
+          "question": "What action or perspective could help?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What action or perspective could help?",
+          "x": 0.72,
+          "y": 0.4,
+          "rotationDeg": 0,
+          "zIndex": 6,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "outcome",
+          "order": 7,
+          "name": "Outcome",
+          "question": "What result is likely if the present pattern continues?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What result is likely if the present pattern continues?",
+          "x": 0.84,
+          "y": 0.2,
+          "rotationDeg": 0,
+          "zIndex": 7,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        }
+      ],
+      "tileAsset": "visuals/tiles/horseshoe.svg",
+      "sourceTags": [
+        "arcanebra",
+        "reflecta"
+      ]
+    },
+    {
+      "id": "std-the-week",
+      "categoryId": "standard",
+      "name": "The Week",
+      "shortLabel": "7 cards",
+      "description": "Seven days, beginning with the day of the reading. Each card is one day, in order, not a named weekday.",
+      "openingQuestion": "What is useful to notice across the next seven days?",
+      "editable": true,
+      "sourceKind": "common-spread-variation",
+      "layout": {
+        "coordinateSystem": "normalized-center",
+        "canvasAspectRatio": 0.75,
+        "allowIntentionalOverlap": false,
+        "cardAspectRatio": 0.609,
+        "fitPolicy": "contain-all-with-safe-margins"
+      },
+      "positions": [
+        {
+          "rotationDeg": 0,
+          "zIndex": 1,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What is most useful to notice on the day of this reading?",
+          "id": "day-1",
+          "order": 1,
+          "name": "First day",
+          "question": "What is most useful to notice on the day of this reading?",
+          "x": 0.14,
+          "y": 0.32
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 2,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What is most useful to notice on day 2 of this week?",
+          "id": "day-2",
+          "order": 2,
+          "name": "Second day",
+          "question": "What is most useful to notice on day 2 of this week?",
+          "x": 0.38,
+          "y": 0.32
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 3,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What is most useful to notice on day 3 of this week?",
+          "id": "day-3",
+          "order": 3,
+          "name": "Third day",
+          "question": "What is most useful to notice on day 3 of this week?",
+          "x": 0.62,
+          "y": 0.32
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 4,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What is most useful to notice on day 4 of this week?",
+          "id": "day-4",
+          "order": 4,
+          "name": "Fourth day",
+          "question": "What is most useful to notice on day 4 of this week?",
+          "x": 0.86,
+          "y": 0.32
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 5,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What is most useful to notice on day 5 of this week?",
+          "id": "day-5",
+          "order": 5,
+          "name": "Fifth day",
+          "question": "What is most useful to notice on day 5 of this week?",
+          "x": 0.28,
+          "y": 0.72
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 6,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What is most useful to notice on day 6 of this week?",
+          "id": "day-6",
+          "order": 6,
+          "name": "Sixth day",
+          "question": "What is most useful to notice on day 6 of this week?",
+          "x": 0.5,
+          "y": 0.72
+        },
+        {
+          "rotationDeg": 0,
+          "zIndex": 7,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What is most useful to notice on day 7 of this week?",
+          "id": "day-7",
+          "order": 7,
+          "name": "Seventh day",
+          "question": "What is most useful to notice on day 7 of this week?",
+          "x": 0.72,
+          "y": 0.72
+        }
+      ],
+      "tileAsset": "visuals/tiles/the-week.svg",
+      "sourceTags": [
+        "common"
+      ]
+    },
+    {
+      "id": "std-celtic-cross",
+      "categoryId": "standard",
+      "name": "Celtic Cross",
+      "shortLabel": "10 cards",
+      "description": "The Waite Celtic Cross. The cross is the matter, what crosses it, the foundation, the recent past, the crown, and the near future. The staff, from bottom to top, is attitude, environment, hopes and fears, and outcome. The crossing card lies sideways. That turn is its role, not an automatic reversal.",
+      "openingQuestion": "What is the shape of this matter, from its root to its outcome?",
+      "editable": true,
+      "sourceKind": "common-spread-variation",
+      "layout": {
+        "coordinateSystem": "normalized-center",
+        "canvasAspectRatio": 0.75,
+        "allowIntentionalOverlap": true,
+        "cardAspectRatio": 0.609,
+        "fitPolicy": "contain-all-with-safe-margins"
+      },
+      "positions": [
+        {
+          "id": "situation",
+          "order": 1,
+          "name": "Situation",
+          "question": "What is at the heart of the situation?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What is at the heart of the situation?",
+          "x": 0.36,
+          "y": 0.46,
+          "rotationDeg": 0,
+          "zIndex": 1,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "crossing",
+          "order": 2,
+          "name": "Crossing",
+          "question": "What intersects, complicates, or tests the situation?",
+          "meaningApplication": "This card lies crosswise over the Situation. The 90° turn marks the crossing. It is not an automatic reversed reading.",
+          "x": 0.36,
+          "y": 0.46,
+          "rotationDeg": 90,
+          "zIndex": 12,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways across the Situation: this is the crossing role. Do not treat the turn itself as a reversal.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          },
+          "intentionalOverlapWith": [
+            "situation"
+          ]
+        },
+        {
+          "id": "foundation",
+          "order": 3,
+          "name": "Foundation",
+          "question": "What lies underneath or in the deeper background?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What lies underneath or in the deeper background?",
+          "x": 0.36,
+          "y": 0.76,
+          "rotationDeg": 0,
+          "zIndex": 3,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "recent-past",
+          "order": 4,
+          "name": "Recent Past",
+          "question": "What has recently been influential or is receding?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What has recently been influential or is receding?",
+          "x": 0.15,
+          "y": 0.46,
+          "rotationDeg": 0,
+          "zIndex": 4,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "crown",
+          "order": 5,
+          "name": "Crown",
+          "question": "What aim, hope, or best available outcome crowns this matter?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What aim, hope, or best available outcome crowns this matter?",
+          "x": 0.36,
+          "y": 0.18,
+          "rotationDeg": 0,
+          "zIndex": 5,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "near-future",
+          "order": 6,
+          "name": "Near Future",
+          "question": "What immediate development may be approaching?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What immediate development may be approaching?",
+          "x": 0.57,
+          "y": 0.46,
+          "rotationDeg": 0,
+          "zIndex": 6,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "attitude",
+          "order": 7,
+          "name": "Attitude",
+          "question": "What stance or attitude do I bring to this matter?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What stance or attitude do I bring to this matter?",
+          "x": 0.82,
+          "y": 0.86,
+          "rotationDeg": 0,
+          "zIndex": 7,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "environment",
+          "order": 8,
+          "name": "Environment",
+          "question": "What people, circumstances, or external conditions affect this?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What people, circumstances, or external conditions affect this?",
+          "x": 0.82,
+          "y": 0.62,
+          "rotationDeg": 0,
+          "zIndex": 8,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "hopes-and-fears",
+          "order": 9,
+          "name": "Hopes and Fears",
+          "question": "What longing or concern colors the interpretation?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What longing or concern colors the interpretation?",
+          "x": 0.82,
+          "y": 0.38,
+          "rotationDeg": 0,
+          "zIndex": 9,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        },
+        {
+          "id": "outcome",
+          "order": 10,
+          "name": "Outcome",
+          "question": "What trajectory may develop if the present pattern continues?",
+          "meaningApplication": "Interpret the drawn card as an answer to the position question: What trajectory may develop if the present pattern continues?",
+          "x": 0.82,
+          "y": 0.14,
+          "rotationDeg": 0,
+          "zIndex": 10,
+          "angleNotes": {
+            "0": "Upright: read the deck’s upright meaning through this position’s question.",
+            "90": "Sideways clockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed.",
+            "180": "Reversed: use the deck’s reversed/shadow meaning if available and interpret it through this position; otherwise indicate that the deck has no separate reverse meaning.",
+            "270": "Sideways counterclockwise: read as a transitional or crosswise relationship only if this position specifies it; do not automatically treat as reversed."
+          }
+        }
+      ],
+      "tileAsset": "visuals/tiles/celtic-cross.svg",
+      "sourceTags": [
+        "biddy",
+        "arcanebra",
+        "reflecta"
+      ]
+    }
+  ],
+  "readme": "Starter templates are per-account editable; never mutate factory content or overwrite user edits. Names are familiar layout families, not a measured global frequency ranking. Table uses progressive side-stack v2 after all N draws; only first card is staged on Table face-down.",
+  "readingExperience": {
+    "mode": "progressive-side-stack-v2",
+    "drawAllBeforeLayout": true,
+    "firstOnTableOrder": 1,
+    "firstOnTableFace": "down",
+    "waitingCardsLocation": "waiting_stack",
+    "nextAction": "tap-side-stack-to-reveal-and-place-face-up",
+    "ghostUnfilledPositions": true,
+    "subsequentCardsArriveFaceUp": true,
+    "showSourceDeckAfterStaging": false,
+    "noAutoAdvance": true,
+    "completionRequiresAllFaceUp": true,
+    "source": "App-wide Table reader behavior; template order/geometry retained unchanged"
+  }
+}

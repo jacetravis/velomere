@@ -1,0 +1,110 @@
+/** Built-in library decks. Faces live in public/cards/catalog. They stay locked. */
+export const LIBRARY = [
+  {
+    name: "Rider-Waite-Smith",
+    slug: "rider-waite-smith",
+    back: "/cards/catalog/rider-waite-smith/back.jpg?v=6",
+    suits: ["major", "wands", "cups", "swords", "pentacles"],
+    look: {
+      edge: 30,
+      edgeColor: 0,
+      edgeSat: 70,
+      edgeLight: 90,
+      cardThickness: 75,
+      cardRadius: 5,
+      cardWidth: 62,
+      cardLength: 64,
+      cardLocked: false,
+      cardTemplate: "long-tarot" as const,
+      backX: 0,
+      backY: 0,
+      backScale: 100,
+      backRotate: 0,
+    },
+  },
+  {
+    name: "Marseille",
+    slug: "marseille",
+    back: "/cards/catalog/marseille/back.jpg?v=4",
+    suits: ["major", "cups", "batons", "epees", "deniers"],
+    look: {
+      edge: 4,
+      edgeColor: 0,
+      edgeSat: 50,
+      edgeLight: 90,
+      cardThickness: 75,
+      cardRadius: 4,
+      cardWidth: 62,
+      cardLength: 73,
+      cardLocked: false,
+      cardTemplate: "long-tarot" as const,
+      backX: 0,
+      backY: 0,
+      backScale: 106,
+      backRotate: 0,
+    },
+  },
+  {
+    name: "Sola Busca",
+    slug: "sola-busca",
+    back: "/cards/catalog/sola-busca/back.jpg?v=4",
+    suits: ["major", "batons", "cups", "swords", "pentacles"],
+    look: {
+      edge: 0,
+      edgeColor: 0,
+      edgeSat: 80,
+      edgeLight: 90,
+      cardThickness: 75,
+      cardRadius: 7,
+      cardWidth: 61,
+      cardLength: 67,
+      cardLocked: false,
+      cardTemplate: "long-tarot" as const,
+      backX: 0,
+      backY: 0,
+      backScale: 100,
+      backRotate: 0,
+    },
+  },
+  {
+    name: "Visconti-Sforza",
+    slug: "visconti-sforza",
+    back: "/cards/catalog/visconti-sforza/back.jpg?v=4",
+    suits: ["major", "cups", "pentacles", "swords", "wands"],
+    look: {
+      edge: 88,
+      edgeColor: 0,
+      edgeSat: 70,
+      edgeLight: 54,
+      cardThickness: 75,
+      cardRadius: 4,
+      cardWidth: 67,
+      cardLength: 81,
+      cardLocked: false,
+      cardTemplate: "long-tarot" as const,
+      backX: 0,
+      backY: 0,
+      backScale: 100,
+      backRotate: 0,
+    },
+  },
+] as const;
+
+export function isLibraryName(name: string): boolean {
+  const key = name.trim().toLowerCase();
+  return LIBRARY.some((deck) => deck.name.toLowerCase() === key);
+}
+
+/** Changes when a library deck's edge is revised, so an open table picks up the new side. */
+export const LIBRARY_LOOK_STAMP = LIBRARY.map((deck) =>
+  [
+    deck.slug,
+    deck.look.edge,
+    deck.look.edgeSat,
+    deck.look.edgeLight,
+    deck.look.edgeColor,
+    deck.look.cardWidth,
+    deck.look.cardLength,
+    deck.look.backScale,
+  ].join(":"),
+).join("|");

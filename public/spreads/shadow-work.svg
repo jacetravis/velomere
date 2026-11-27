@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="525" viewBox="0 0 840 525" role="img" aria-label="Shadow Work 4-card layout">
+<defs><linearGradient id="bg" x2="0" y2="1"><stop stop-color="#101725"/><stop offset="1" stop-color="#070b14"/></linearGradient><linearGradient id="shine" x2="0" y2="1"><stop stop-color="#2c3b56"/><stop offset="1" stop-color="#172338"/></linearGradient></defs>
+<rect width="840" height="525" rx="34" fill="url(#bg)"/>
+<rect x="11" y="11" width="818" height="503" rx="29" fill="none" stroke="#263248" stroke-width="2"/>
+<text x="44" y="482" fill="#e6ecf7" font-size="29" font-family="Georgia,serif">Shadow Work</text>
+<text x="796" y="480" text-anchor="end" fill="#91a4c0" font-size="23" font-family="Arial,sans-serif">4 cards</text>
+<g transform="translate(297.6,156.4)">
+<rect x="-26" y="-42.64" width="52" height="85.28" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-18" y="-34.64" width="36" height="69.28" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -9.1 0 L 0 -9.1 L 9.1 0 L 0 9.1 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="297.6" cy="156.4" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="297.6" y="162.4" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">1</text>
+<g transform="translate(542.4,156.4)">
+<rect x="-26" y="-42.64" width="52" height="85.28" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-18" y="-34.64" width="36" height="69.28" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -9.1 0 L 0 -9.1 L 9.1 0 L 0 9.1 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="542.4" cy="156.4" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="542.4" y="162.4" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">2</text>
+<g transform="translate(420.0,257.2)">
+<rect x="-26" y="-42.64" width="52" height="85.28" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-18" y="-34.64" width="36" height="69.28" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -9.1 0 L 0 -9.1 L 9.1 0 L 0 9.1 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="420.0" cy="257.2" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="420.0" y="263.2" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">3</text>
+<g transform="translate(420.0,358.0)">
+<rect x="-26" y="-42.64" width="52" height="85.28" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-18" y="-34.64" width="36" height="69.28" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -9.1 0 L 0 -9.1 L 9.1 0 L 0 9.1 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="420.0" cy="358.0" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="420.0" y="364.0" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">4</text>
+</svg>

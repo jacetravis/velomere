@@ -1,0 +1,44 @@
+{
+  "profile_version": "velomere-legibility/10",
+  "id": "v10-shared-back",
+  "name": "Dendrite / Common Reverse",
+  "role": "shared-undrawn-field",
+  "source": {
+    "lexicon": "canon/ORIGINAL_CANONIZATION_VERBATIM.txt",
+    "deck_back_baseline": "existing v9 Dendrite; preserve until replacement passes tests"
+  },
+  "first_glance_intent": "A living field of two-ness, separation, possible relation, and return before any one card is revealed.",
+  "recognition_evidence": [
+    "At least two distinct relational influences that do not merge into a single seal",
+    "A perceivable interval or invitation between those influences",
+    "A return or recursive responsiveness that remains unfinished",
+    "A shared field capable of receiving different cards without preselecting an interpretation"
+  ],
+  "causal_visual_mechanism": "Derive an orientation-neutral undrawn-encounter field from the lexicon; vary distances, influences, shared pressure and return possibilities while preserving 180-degree visual parity; no individual card identity or affinity is revealed.",
+  "meaningful_space": "The untaken-card field remains open anywhere; empty area must be intentional and may be central, peripheral, enclosed, interrupted or spanning edges.",
+  "misread_risk": "A merged couple logo, infinity stamp, solitary static mascot, arbitrary mystic wallpaper, orientation cue, or a miniature face card without its name.",
+  "reversed_shadow_tension": "Back has no upright/reversed reading and must not disclose orientation.",
+  "contrast_against": [
+    "The Velomere",
+    "The Null",
+    "Void",
+    "The Dance"
+  ],
+  "physical_card": "1400x2300 pixels, shared identical back for all 78 cards, 3.5x5.75 long tarot ratio",
+  "rotational_neutrality": {
+    "required": true,
+    "half_turn_mean_rgb_difference_target_255": 0.25,
+    "forbid_asymmetric_title_or_watermark": true,
+    "image_comparison_required": true,
+    "optical_balance_manual_check": true
+  },
+  "accessibility": "Do not assume a nonvisual reader can infer the deck philosophy from the pattern; provide a concise accessible back description and deck overview.",
+  "render_is_shared": true,
+  "no_card_affinity_markers": true,
+  "not_a_drawable_card": true,
+  "test_prompts": [
+    "What kind of encounter does this field invite, without suggesting any particular card?",
+    "Does any feature distinguish upright from reversed?",
+    "Is the visual field distinct from each face and meaningful without being a logo?"
+  ]
+}

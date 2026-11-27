@@ -1,0 +1,10 @@
+rollback: v18.0-heightfield
+renderer before veiled default and v18.1 calibration
+restore by copying these files back over src/ and velomere-crystal/engine/
+
+e3ddc9b04403f1b4527e4b20ed96d5c9cf71a628e2c23716b82071ccb1a59b4a  card-art-style.tsx  6514
+db79ff574f047b404d1b9a3b5ac267459fc03b23f23af4d74be9e605ec3608c7  encounter-adoption.tsx  24085
+9bfd89aa25f67d5fa9b30f4f4405c9654863bf5dc2a1a741e754803e373969ea  encounter-style-deck.tsx  10251
+335429c28a5f368bfc88787deb7173322756a77d4248b19451f48c3a8da977b5  encounter-v17.mjs  47635
+5c137a23cc9974359b8b39f9a00605aff28137c790ffa522c2a388bb5dac6ee7  server.ts  18279
+d6f16ba7f26f08f9e1100257eaca680f5e75ed2824f11134152671a8c2d5e0fa  store.mjs  58057

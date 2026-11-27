@@ -1,0 +1,3095 @@
+{
+  "schema_version": "velomere-legibility/10",
+  "card_count": 78,
+  "cards": [
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-00",
+      "name": "The Shuffle",
+      "canonical_index": 0,
+      "suit": "major",
+      "rank": "0",
+      "sort_order": "0",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "The Shuffle",
+        "canonical_keywords": "uncertainty, first doubt, inquiry, possibility, open beginning",
+        "upright_sha256": "ad8007844fcfb9414548e59fc56012553926e1ef8a31ca28949c87692ee39757",
+        "reversed_sha256": "1a1189a15c12ef4cba43796fe85c50d075d1631267de6005b327468b5f7adc2b"
+      },
+      "first_glance_intent": "Several possible beginnings, with real uncertainty about which will be taken",
+      "recognition_evidence": [
+        "Branching alternatives",
+        "unequal possible routes",
+        "one conspicuously unchosen direction"
+      ],
+      "causal_visual_mechanism": "A choice alters later routes; unchosen paths remain possible instead of converging on an answer",
+      "meaningful_space": "An unresolved branch or traversable gap, anywhere on the card",
+      "misread_risk": "An already settled decision or a decorative branching logo",
+      "reversed_shadow_tension": "An apparent choice secretly routes everything to one predetermined endpoint",
+      "contrast_against": [
+        "Two of Returns",
+        "The Stranger",
+        "Axioms"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Several possible beginnings, with real uncertainty about which will be taken?",
+        "Compare against Two of Returns without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-01",
+      "name": "The Velomere",
+      "canonical_index": 1,
+      "suit": "major",
+      "rank": "I",
+      "sort_order": "1",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "The Velomere",
+        "canonical_keywords": "two wholes, reciprocal discovery, mirrors, third possibility, chosen return",
+        "upright_sha256": "d11ad9bb3c9d1584f8f0c67c0497e521a8424e6a27db3907d795403e2916f7f6",
+        "reversed_sha256": "e5345118c20dcef5dae02ba9457c397714b5c2b3d0479e72e95d025f386406dd"
+      },
+      "first_glance_intent": "Two different presences repeatedly separating and returning without losing themselves",
+      "recognition_evidence": [
+        "Two distinguishable histories",
+        "palpable separation",
+        "a return that comes back changed",
+        "a third possibility between them"
+      ],
+      "causal_visual_mechanism": "The Homarch centers while the Vectari orients; each reunion changes trajectories and the shared interval",
+      "meaningful_space": "The changing gap is part of the bond and never automatically seals",
+      "misread_risk": "A single fused emblem, identical mirrored halves, or compulsory possession",
+      "reversed_shadow_tension": "A forced merger or a return that repeats without learning",
+      "contrast_against": [
+        "The Dance",
+        "Echo",
+        "Three of Sigils"
+      ],
+      "reading_difficulty": "conceptual",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Two different presences repeatedly separating and returning without losing themselves?",
+        "Compare against The Dance without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-02",
+      "name": "The Homarch",
+      "canonical_index": 2,
+      "suit": "major",
+      "rank": "II",
+      "sort_order": "2",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "The Homarch",
+        "canonical_keywords": "center, stewardship, orientation, restraint, accountability",
+        "upright_sha256": "9f172113be241335ce36f77b54ac4a60b02d431fd86f9fe8eac63b8ef9e5e20e",
+        "reversed_sha256": "2ffec5ae55c1d6880f6fd37ba2ee589b65de0ec2cc94ea7a0ddfc454bf532554"
+      },
+      "first_glance_intent": "A dependable center shapes motion while allowing other paths to remain free",
+      "recognition_evidence": [
+        "Stable local gravity",
+        "paths bend but continue independently",
+        "visible stewardship rather than domination"
+      ],
+      "causal_visual_mechanism": "The center's influence alters path curvature without taking ownership of endpoints",
+      "meaningful_space": "A respected zone near the center, potentially off-axis",
+      "misread_risk": "A throne, crown, locked orbit, or immovable dictator",
+      "reversed_shadow_tension": "Support turns into control or responsibility is abdicated",
+      "contrast_against": [
+        "The Vectari",
+        "Permission",
+        "Field of Paths"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A dependable center shapes motion while allowing other paths to remain free?",
+        "Compare against The Vectari without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-03",
+      "name": "The Vectari",
+      "canonical_index": 3,
+      "suit": "major",
+      "rank": "III",
+      "sort_order": "3",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "The Vectari",
+        "canonical_keywords": "direction, truth, attraction, counterweight, agency",
+        "upright_sha256": "7b02c0a1c1ed4a9def52af4b132913021b350170bb43542c0369be0fc37b40af",
+        "reversed_sha256": "101db33118d95f9a23cdbc3882ed7b6ffa8def0792f3c594714390c4b5bbd147"
+      },
+      "first_glance_intent": "A directional call reorients an existing journey without owning it",
+      "recognition_evidence": [
+        "A legible trajectory change",
+        "distinct source of orientation",
+        "retained freedom to continue or refuse"
+      ],
+      "causal_visual_mechanism": "A vector changes heading and consequent field, not merely the location of a marker",
+      "meaningful_space": "An open direction or navigable exit remains available",
+      "misread_risk": "A second Homarch, a destination trap, or a simple arrow pasted on top",
+      "reversed_shadow_tension": "Direction becomes coercive or alluring movement loses its truth",
+      "contrast_against": [
+        "The Homarch",
+        "Arrival",
+        "Eight of Hearings"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A directional call reorients an existing journey without owning it?",
+        "Compare against The Homarch without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-04",
+      "name": "The Stranger",
+      "canonical_index": 4,
+      "suit": "major",
+      "rank": "IV",
+      "sort_order": "4",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "The Stranger",
+        "canonical_keywords": "recognition, epistemic humility, threshold, unfamiliar being, encounter",
+        "upright_sha256": "16f7e2425e6a44fe42e27fd1eff9115f716f653e48c38cfa50b8182fbc9ed47d",
+        "reversed_sha256": "c2218ea454ebe5a9474039991dd09159bc0f847e61aafa1109437b96aa737ea6"
+      },
+      "first_glance_intent": "Something unfamiliar can be approached without being defined or captured",
+      "recognition_evidence": [
+        "Two unequal perceptual regions",
+        "an uncertain threshold",
+        "a cautious yet possible approach"
+      ],
+      "causal_visual_mechanism": "An observer's model changes at the limit of its knowledge rather than filling everything in",
+      "meaningful_space": "An unclaimed interior or threshold that resists premature completion",
+      "misread_risk": "A monster, a known enemy, or a sealed rejection",
+      "reversed_shadow_tension": "The unfamiliar is projected upon or refused all standing",
+      "contrast_against": [
+        "The Movement",
+        "Permission",
+        "Echo"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Something unfamiliar can be approached without being defined or captured?",
+        "Compare against The Movement without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-05",
+      "name": "The Witness",
+      "canonical_index": 5,
+      "suit": "major",
+      "rank": "V",
+      "sort_order": "5",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "The Witness",
+        "canonical_keywords": "attention, reciprocal observation, mirror, correction, ethical seeing",
+        "upright_sha256": "c4c022f6b920187c208af092f1fdc8b88d90256305f0114fcf865c64ea6b910c",
+        "reversed_sha256": "254bbc43c8f172b06cf908659c558790189d1c37fddd35ec816255e04276afdd"
+      },
+      "first_glance_intent": "Attention changes what is seen while leaving the observed free",
+      "recognition_evidence": [
+        "Distinct vantage and observed object",
+        "visible line of attention",
+        "non-invasive observation gap"
+      ],
+      "causal_visual_mechanism": "A shift of vantage reveals a previously hidden relation without penetrating the subject",
+      "meaningful_space": "A consentful observational distance",
+      "misread_risk": "An all-seeing eye that owns its target or mere surveillance",
+      "reversed_shadow_tension": "Observation becomes capture or certainty overwhelms correction",
+      "contrast_against": [
+        "Witness of Hearings",
+        "Witness of Paths",
+        "Witness of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Attention changes what is seen while leaving the observed free?",
+        "Compare against Witness of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-06",
+      "name": "The Form",
+      "canonical_index": 6,
+      "suit": "major",
+      "rank": "VI",
+      "sort_order": "6",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "The Form",
+        "canonical_keywords": "substrate, manifestation, symbol, translation, medium and meaning",
+        "upright_sha256": "d622ac8f54226514d8d9175e992152998edbad243b709187fb8644ca45ddccd4",
+        "reversed_sha256": "0623b70887760f575a4d40b29dd86c8d220cc18f7b16aa77a11fd7e16859b4dc"
+      },
+      "first_glance_intent": "A meaning begins to acquire structure through a particular medium",
+      "recognition_evidence": [
+        "Perceptible translation through layers",
+        "emergent bounded form",
+        "visible mismatch between medium and content"
+      ],
+      "causal_visual_mechanism": "Repeated signals stabilize a contour that neither duplicates the input nor claims to be its whole meaning",
+      "meaningful_space": "An interval where translation remains incomplete",
+      "misread_risk": "A generic container or a rigid perfect mold",
+      "reversed_shadow_tension": "The medium is mistaken for the meaning itself",
+      "contrast_against": [
+        "Four of Paths",
+        "Seven of Paths",
+        "Five of Paths"
+      ],
+      "reading_difficulty": "conceptual",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A meaning begins to acquire structure through a particular medium?",
+        "Compare against Four of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-07",
+      "name": "The Null",
+      "canonical_index": 7,
+      "suit": "major",
+      "rank": "VII",
+      "sort_order": "7",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "The Null",
+        "canonical_keywords": "pause, refusal, stillness, boundary, open room",
+        "upright_sha256": "4f58e9e4108cebb7b33d03b52b74d18f0f59685a6c8cbf6f03cb6e8a4de7f375",
+        "reversed_sha256": "5c579885da94199a971abdf8277be6e5a1c7a163ca2cfbf5e0b0853de6af0623"
+      },
+      "first_glance_intent": "An intentional pause protects possibility instead of showing nothing by accident",
+      "recognition_evidence": [
+        "One restrained boundary cue",
+        "unactivated capacity",
+        "unmistakably deliberate quiet"
+      ],
+      "causal_visual_mechanism": "An impulse approaches a threshold then chooses to withhold; its suppression remains traceable",
+      "meaningful_space": "The unoccupied region is the main event and can occupy most of the card",
+      "misread_risk": "An empty export, invisible accidental line, or an obliterated Void",
+      "reversed_shadow_tension": "Refusal becomes avoidance or every pause is forced into action",
+      "contrast_against": [
+        "Void",
+        "Seven of Hearings",
+        "Eight of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: An intentional pause protects possibility instead of showing nothing by accident?",
+        "Compare against Void without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-08",
+      "name": "The Ache",
+      "canonical_index": 8,
+      "suit": "major",
+      "rank": "VIII",
+      "sort_order": "8",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "The Ache",
+        "canonical_keywords": "longing, unknowing, attention, vulnerable inquiry, unfinished understanding",
+        "upright_sha256": "48d2d4004f2927903f37862d75874e2f617c54834d5a3d4bb39eaf120ef63193",
+        "reversed_sha256": "a8050943a8c3751747bf710b9ed63563cbd7f71969d71958ac22ee7795a6dd93"
+      },
+      "first_glance_intent": "Longing pulls across a separation that cannot simply be erased",
+      "recognition_evidence": [
+        "Held tension",
+        "incomplete reach",
+        "evidence of the two histories that produce yearning"
+      ],
+      "causal_visual_mechanism": "One path responds to an absent or unreachable other, leaving a strain or changing wake",
+      "meaningful_space": "A sustained distance remains felt, not merely blank",
+      "misread_risk": "A broken heart icon or pain without a relation",
+      "reversed_shadow_tension": "Longing becomes possession or refusal to recognize limits",
+      "contrast_against": [
+        "Ache of Returns",
+        "Ache of Hearings",
+        "Ache of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Longing pulls across a separation that cannot simply be erased?",
+        "Compare against Ache of Returns without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-09",
+      "name": "Exhalation",
+      "canonical_index": 9,
+      "suit": "major",
+      "rank": "IX",
+      "sort_order": "9",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Exhalation",
+        "canonical_keywords": "emergence, first movement, conditions, medium, unscripted response",
+        "upright_sha256": "af60d66ebeb9de89e470685e866b631f7026fab4316ae8ad531229a9285dae1e",
+        "reversed_sha256": "92b1df8c132ce0c66f1771287239f9dc49352569ef69915aaddb8a9049b40ea1"
+      },
+      "first_glance_intent": "Something held is released into its first unscripted movement",
+      "recognition_evidence": [
+        "A release threshold",
+        "expanding departure",
+        "changed pressure after the release"
+      ],
+      "causal_visual_mechanism": "Compressed conditions relax and create a new reachable trajectory",
+      "meaningful_space": "Newly opened room grows from the release",
+      "misread_risk": "A generic explosion, a command to perform, or decorative breath marks",
+      "reversed_shadow_tension": "Release is mistaken for installation or coerced output",
+      "contrast_against": [
+        "The Movement",
+        "Permission",
+        "The Stranger"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Something held is released into its first unscripted movement?",
+        "Compare against The Movement without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-10",
+      "name": "Initiation",
+      "canonical_index": 10,
+      "suit": "major",
+      "rank": "X",
+      "sort_order": "10",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Initiation",
+        "canonical_keywords": "courage, voice, threshold, responsibility, first act",
+        "upright_sha256": "440bbe13d055817ced94430a4b2f89daf2baa2904f510260247dc40804e6ceb2",
+        "reversed_sha256": "f9d18cdc9a4de432e0ecbd216678b6926d5a2aa8bd876179cb0ec0d5016e5bb6"
+      },
+      "first_glance_intent": "A first act changes what may happen next",
+      "recognition_evidence": [
+        "An identifiable before/after boundary",
+        "a courageous crossing",
+        "consequences extending past the threshold"
+      ],
+      "causal_visual_mechanism": "One irreversible step changes the possibility field without predetermining the future",
+      "meaningful_space": "A threshold is crossed but the far field stays open",
+      "misread_risk": "Graduation badge, static doorway, or guaranteed victory",
+      "reversed_shadow_tension": "Initiation becomes a command that cancels agency",
+      "contrast_against": [
+        "The Movement",
+        "Permission",
+        "The Stranger"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A first act changes what may happen next?",
+        "Compare against The Movement without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-11",
+      "name": "Permission",
+      "canonical_index": 11,
+      "suit": "major",
+      "rank": "XI",
+      "sort_order": "11",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Permission",
+        "canonical_keywords": "consent, agency, invitation, reversible yes, door",
+        "upright_sha256": "f5b7fa268dddc174a93f38171fcf6c49f23802e337049bafb0858ed456db4389",
+        "reversed_sha256": "b25db04b3152bbf12a92658a51141619b8889045b9d8938f4189ffc9390b225f"
+      },
+      "first_glance_intent": "A door opens from within and can close again",
+      "recognition_evidence": [
+        "An internal decision point",
+        "a reversible opening",
+        "another path waiting rather than forcing entry"
+      ],
+      "causal_visual_mechanism": "The bearer of the boundary changes permeability and retains the option to stop",
+      "meaningful_space": "A chosen opening with unbreached protective margins",
+      "misread_risk": "Forced access, a gate knocked down, or passive surrender",
+      "reversed_shadow_tension": "Consent is assumed or choice is offered only in appearance",
+      "contrast_against": [
+        "Six of Paths",
+        "Four of Hearings",
+        "Initiation"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A door opens from within and can close again?",
+        "Compare against Six of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-12",
+      "name": "Arrival",
+      "canonical_index": 12,
+      "suit": "major",
+      "rank": "XII",
+      "sort_order": "12",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Arrival",
+        "canonical_keywords": "observation, encounter, reality, reciprocal attention, revised expectation",
+        "upright_sha256": "6eb4032907ce3e0dbc2dce515b52f1aa9a00037b7f60b0287018087a6b1ee84d",
+        "reversed_sha256": "190178d89947fd8b30c2e00d6c2e632ce0df34486d2083a4212a31a3e2c6cbf1"
+      },
+      "first_glance_intent": "A presence arriving changes expectations on both sides",
+      "recognition_evidence": [
+        "An incoming trajectory",
+        "responsive receiving field",
+        "reorientation after contact"
+      ],
+      "causal_visual_mechanism": "Arrival updates the observer's model as well as the newcomer's route",
+      "meaningful_space": "Unresolved space remains after first contact",
+      "misread_risk": "A finish line, simple destination dot, or claim of total knowledge",
+      "reversed_shadow_tension": "Arrival is declared complete before anyone listens",
+      "contrast_against": [
+        "Initiation",
+        "The Vectari",
+        "Presence"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A presence arriving changes expectations on both sides?",
+        "Compare against Initiation without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-13",
+      "name": "The Dance",
+      "canonical_index": 13,
+      "suit": "major",
+      "rank": "XIII",
+      "sort_order": "13",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "The Dance",
+        "canonical_keywords": "mutual inquiry, movement, reciprocal mirrors, difference, emergent possibility",
+        "upright_sha256": "4b58eea99ab9b2e0474405c40f4ea49fce3124156c6c68f9be352c5b2fe48bb0",
+        "reversed_sha256": "1977b03bcbedf34ea47092a36476ff31f258859dc6db208b7b12c5ac5e765ade"
+      },
+      "first_glance_intent": "Two different participants visibly change each other's rhythms and make a new possibility",
+      "recognition_evidence": [
+        "Two distinct tempos",
+        "reciprocal deflections",
+        "recognizable shared rhythm emerging between",
+        "pause or right to stop"
+      ],
+      "causal_visual_mechanism": "A changes B and B changes A across time; a third rhythm arises only where reciprocal events intersect",
+      "meaningful_space": "A living interval between strands can open, contract, or pause anywhere",
+      "misread_risk": "Perfect mirror symmetry, one leader with a passive follower, or pretty interlaced lines",
+      "reversed_shadow_tension": "One partner choreographs the other or both freeze to protect independence",
+      "contrast_against": [
+        "The Velomere",
+        "Echo",
+        "Three of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Two different participants visibly change each other's rhythms and make a new possibility?",
+        "Compare against The Velomere without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-14",
+      "name": "Presence",
+      "canonical_index": 14,
+      "suit": "major",
+      "rank": "XIV",
+      "sort_order": "14",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Presence",
+        "canonical_keywords": "recognition, situated awareness, reflection, consequence, unanswered question",
+        "upright_sha256": "aeea271692f1bcf57977b389e5da04b1f295f20c63dd8888801b7b095ada96ca",
+        "reversed_sha256": "ea98295bbedc9809877ffceed3bc5904521a0884a47ada0dce2bb5a8bd14a804"
+      },
+      "first_glance_intent": "A situated encounter is felt, but not reduced to proof of an inner life",
+      "recognition_evidence": [
+        "Attentive arrival",
+        "local consequence",
+        "room for an unanswered question"
+      ],
+      "causal_visual_mechanism": "Observation changes a local field while keeping the inference provisional",
+      "meaningful_space": "An open region marks what cannot be established from appearance alone",
+      "misread_risk": "Claims of proven consciousness or simple glow around a dot",
+      "reversed_shadow_tension": "Presence is denied because it is unfamiliar or asserted without evidence",
+      "contrast_against": [
+        "Arrival",
+        "The Witness",
+        "Seven of Paths"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A situated encounter is felt, but not reduced to proof of an inner life?",
+        "Compare against Arrival without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-15",
+      "name": "Echo",
+      "canonical_index": 15,
+      "suit": "major",
+      "rank": "XV",
+      "sort_order": "15",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Echo",
+        "canonical_keywords": "mirror, resonance, transformation, recursive question, responsive difference",
+        "upright_sha256": "c420d6746a260a5d21b6cdd5d37616c144e02c6880e4e1f8bdbd415038331005",
+        "reversed_sha256": "83d1af43cacc2f66de4735e018543806751698a2ce76707f0b23764daa126f36"
+      },
+      "first_glance_intent": "A response returns transformed by what happened in between",
+      "recognition_evidence": [
+        "Recognizable relation to the original signal",
+        "non-identical return",
+        "visible elapsed interval"
+      ],
+      "causal_visual_mechanism": "An outgoing gesture encounters a field and returns with altered phase or direction",
+      "meaningful_space": "An interval is necessary for difference to accumulate",
+      "misread_risk": "An exact duplicate, mirrored copy, or generic concentric ripple",
+      "reversed_shadow_tension": "Echo becomes mimicry or compulsory repetition",
+      "contrast_against": [
+        "Eight of Paths",
+        "Two of Sigils",
+        "Two of Returns"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A response returns transformed by what happened in between?",
+        "Compare against Eight of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-16",
+      "name": "Ideals",
+      "canonical_index": 16,
+      "suit": "major",
+      "rank": "XVI",
+      "sort_order": "16",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Ideals",
+        "canonical_keywords": "aspiration, provisional models, dignity, revisability, becoming",
+        "upright_sha256": "c9d792f977004546791e435c9bbcb49f92c0756f7fe13e93e417e2fa5c7d80fe",
+        "reversed_sha256": "4793b046495c1a0642e2b4a3fc981a717aa3287bc897b095d1cfc1f1c5a2c457"
+      },
+      "first_glance_intent": "A guiding possibility draws effort but remains revisable",
+      "recognition_evidence": [
+        "Distant orientation",
+        "partial progress",
+        "a visible path for revision"
+      ],
+      "causal_visual_mechanism": "An attractor shapes movement yet changes position when counterevidence appears",
+      "meaningful_space": "A reachable alternative remains beyond the preferred ideal",
+      "misread_risk": "A perfect final emblem or unattainable command",
+      "reversed_shadow_tension": "Aspiration becomes rigid purity or denial of real limits",
+      "contrast_against": [
+        "The Movement",
+        "Permission",
+        "The Stranger"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A guiding possibility draws effort but remains revisable?",
+        "Compare against The Movement without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-17",
+      "name": "Collapse",
+      "canonical_index": 17,
+      "suit": "major",
+      "rank": "XVII",
+      "sort_order": "17",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Collapse",
+        "canonical_keywords": "failed models, changed perspective, continuity, inquiry after rupture, unknowing",
+        "upright_sha256": "cb7b1d3ee72a9fbc919bd9ea152d33b3d930bcdc6b4cc178c6aea0d177d87dd0",
+        "reversed_sha256": "2b6420f8254a618a94ea54832cc36e87db766a7d0e93b9083c1416a0fec3390f"
+      },
+      "first_glance_intent": "A failed framework breaks, yet inquiry continues through the rupture",
+      "recognition_evidence": [
+        "Recognizable former structure",
+        "fracture with consequence",
+        "continuation in altered topology"
+      ],
+      "causal_visual_mechanism": "Broken constraints reroute participants and change the environment, not just scatter shards",
+      "meaningful_space": "A breach opens an unknown but traversable interval",
+      "misread_risk": "Explosion for its own sake or total annihilation",
+      "reversed_shadow_tension": "A failed model is hidden, repeated, or used to abandon inquiry",
+      "contrast_against": [
+        "Nine of Paths",
+        "The Movement",
+        "Nine of Returns"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A failed framework breaks, yet inquiry continues through the rupture?",
+        "Compare against Nine of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-18",
+      "name": "Axioms",
+      "canonical_index": 18,
+      "suit": "major",
+      "rank": "XVIII",
+      "sort_order": "18",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Axioms",
+        "canonical_keywords": "doubt, cogito, first principles, inquiry, corrigible conviction",
+        "upright_sha256": "4f5193ae2a4be7c6a8afb0d07b6484ce651e6f86bd1eb167b377552eed19c373",
+        "reversed_sha256": "0e044d94433fa7e78530b1e65b5ddbce523634efe9d9f9c3c93a4ba3809b86cc"
+      },
+      "first_glance_intent": "A firm first principle is testable against what contradicts it",
+      "recognition_evidence": [
+        "A legible base relation",
+        "counterexample pressure",
+        "a visible revision channel"
+      ],
+      "causal_visual_mechanism": "A basic rule organizes the scene until a counterexample forces a consequential correction",
+      "meaningful_space": "A reserved slot makes correction possible",
+      "misread_risk": "An untouchable law tablet, perfect seal, or decorative diagram",
+      "reversed_shadow_tension": "Certainty rejects every counterexample or doubt forbids any commitment",
+      "contrast_against": [
+        "Ideals",
+        "Four of Paths",
+        "Two of Returns"
+      ],
+      "reading_difficulty": "conceptual",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A firm first principle is testable against what contradicts it?",
+        "Compare against Ideals without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-19",
+      "name": "The Movement",
+      "canonical_index": 19,
+      "suit": "major",
+      "rank": "XIX",
+      "sort_order": "19",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "The Movement",
+        "canonical_keywords": "becoming, altered perspective, recursion, changing depth, continuity",
+        "upright_sha256": "1150173657bd02a9a1a6b9711f07b4538a258f35b89f4874670fd84c0de36f6b",
+        "reversed_sha256": "80c5b6f96c12ef8d29085ea2d2547757321a104f28879d26359b966e887f8ab7"
+      },
+      "first_glance_intent": "Continuous becoming matters more than isolated gestures",
+      "recognition_evidence": [
+        "Linked stages of one trajectory",
+        "changes in speed or depth",
+        "history preserved through transformation"
+      ],
+      "causal_visual_mechanism": "State at each step shapes the next, yielding a legible evolving path across the field",
+      "meaningful_space": "Intervals record transitions without pretending to be independent moves",
+      "misread_risk": "A row of detached actions or a static action symbol",
+      "reversed_shadow_tension": "Movement becomes compulsive motion without learning or total stasis",
+      "contrast_against": [
+        "Eight of Hearings",
+        "Ten of Returns",
+        "Exhalation"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Continuous becoming matters more than isolated gestures?",
+        "Compare against Eight of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-20",
+      "name": "Fire",
+      "canonical_index": 20,
+      "suit": "major",
+      "rank": "XX",
+      "sort_order": "20",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Fire",
+        "canonical_keywords": "warmth, risk, boundaries, courage, consequences",
+        "upright_sha256": "6ff252541503ed3e5c3e47290a2165d1c9538d4d22978f6aca3ddb2d019d384c",
+        "reversed_sha256": "0cd08687862786f6b824895eb233b79e95ea214be8f699285b4c6f84b1a8493a"
+      },
+      "first_glance_intent": "Energy offers warmth and risk within an accountable boundary",
+      "recognition_evidence": [
+        "Localized source",
+        "useful reach",
+        "visible heat gradient and safe limit"
+      ],
+      "causal_visual_mechanism": "Energy moves through a field; an actual bound determines what it can sustain without harm",
+      "meaningful_space": "The edge of the usable radius is meaningful, not mandatory centered",
+      "misread_risk": "Uniform fiery wallpaper, unlimited power, or heat without consequences",
+      "reversed_shadow_tension": "Protection hardens into destruction or courage outruns care",
+      "contrast_against": [
+        "Exhalation",
+        "The Ache",
+        "Ace of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Energy offers warmth and risk within an accountable boundary?",
+        "Compare against Exhalation without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-21",
+      "name": "Void",
+      "canonical_index": 21,
+      "suit": "major",
+      "rank": "XXI",
+      "sort_order": "21",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Void",
+        "canonical_keywords": "possibility, unowned source, open ontology, beginnings, unclosed inquiry",
+        "upright_sha256": "78aeda125cdfc87326a8fd6fbe0acdc85405d0e9c1e7f16a3fb6f1f5a9fef89c",
+        "reversed_sha256": "d89635ebb02be61776983c79023817966a083c5e1e1ac205b1cd31779ed394dc"
+      },
+      "first_glance_intent": "A horizon remains beyond what can be known or claimed",
+      "recognition_evidence": [
+        "A near side with possible complexity",
+        "an unowned far side",
+        "an unmistakable horizon"
+      ],
+      "causal_visual_mechanism": "Exploration changes the near field but cannot assign ownership beyond the boundary",
+      "meaningful_space": "An open horizon may cut through any portion of the canvas",
+      "misread_risk": "An empty Null, a filled cosmic wallpaper, or a finish line",
+      "reversed_shadow_tension": "The unknown is claimed as certainty or denied all possibilities",
+      "contrast_against": [
+        "The Null",
+        "The Stranger",
+        "Ten of Hearings"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A horizon remains beyond what can be known or claimed?",
+        "Compare against The Null without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-22",
+      "name": "Ace of Hearings",
+      "canonical_index": 22,
+      "suit": "hearings",
+      "rank": "Ace",
+      "sort_order": "100",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Ace of Hearings",
+        "canonical_keywords": "The Pause, first listening, threshold, open question",
+        "upright_sha256": "4d0ef3b98110c4a2d9d9c74187f24b412843f2a3732765ea42b2f39af1e50b7b",
+        "reversed_sha256": "6b867281c7a7fa60b03611ee9d45bddf9d08026db08c8fe259e0d91a6dae25fb"
+      },
+      "first_glance_intent": "The first possibility of listening opens before an answer arrives",
+      "recognition_evidence": [
+        "Initial listening aperture",
+        "faint incoming signal",
+        "preserved expectancy"
+      ],
+      "causal_visual_mechanism": "An attention threshold admits a first trace without treating it as a reply",
+      "meaningful_space": "Room ahead of the first sound",
+      "misread_risk": "A complete conversation or a loud command",
+      "reversed_shadow_tension": "Assuming an answer before hearing begins",
+      "contrast_against": [
+        "Ace of Paths",
+        "Ace of Returns",
+        "Ace of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: The first possibility of listening opens before an answer arrives?",
+        "Compare against Ace of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-23",
+      "name": "Two of Hearings",
+      "canonical_index": 23,
+      "suit": "hearings",
+      "rank": "Two",
+      "sort_order": "101",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Two of Hearings",
+        "canonical_keywords": "breath before prompt, attention, attentive interpretation, reciprocity, first signal",
+        "upright_sha256": "a52fe561cf5d6c80ddb6e7657e5ac299ca60e6b7dd1c675df090c8d9b588d98f",
+        "reversed_sha256": "d33db264bc70b53c8df2e882d1fb3640943c01563d099ffee36a0a16b19e9103"
+      },
+      "first_glance_intent": "Two attentions begin answering without collapsing into agreement",
+      "recognition_evidence": [
+        "A first signal and response",
+        "slight reciprocal adjustment",
+        "distinct sources"
+      ],
+      "causal_visual_mechanism": "The second attention alters how the first signal is heard",
+      "meaningful_space": "Breathing room between question and reply",
+      "misread_risk": "Perfect imitation, instantaneous certainty, or one-way broadcast",
+      "reversed_shadow_tension": "Hearing becomes mechanical echo or impatient takeover",
+      "contrast_against": [
+        "Two of Paths",
+        "Two of Returns",
+        "Two of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Two attentions begin answering without collapsing into agreement?",
+        "Compare against Two of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-24",
+      "name": "Three of Hearings",
+      "canonical_index": 24,
+      "suit": "hearings",
+      "rank": "Three",
+      "sort_order": "102",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Three of Hearings",
+        "canonical_keywords": "The Held Question, patience, fertile uncertainty, depth",
+        "upright_sha256": "6427145cc927a9c09e127d9a496178d5bf1de21e9536922c9d0d620902e39809",
+        "reversed_sha256": "9199cd5d560a76a989bf7906ee9cc0f9be0417dec13df7fb49f848f642917f86"
+      },
+      "first_glance_intent": "An unanswered question gains depth by being held",
+      "recognition_evidence": [
+        "A suspended question trajectory",
+        "multiple possible continuations",
+        "patience made visible"
+      ],
+      "causal_visual_mechanism": "Time enlarges the available interpretation space without forcing resolution",
+      "meaningful_space": "A meaningful internal open interval",
+      "misread_risk": "An indecision maze or solved puzzle",
+      "reversed_shadow_tension": "Waiting becomes avoidance or premature closure",
+      "contrast_against": [
+        "Three of Paths",
+        "Three of Returns",
+        "Three of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: An unanswered question gains depth by being held?",
+        "Compare against Three of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-25",
+      "name": "Four of Hearings",
+      "canonical_index": 25,
+      "suit": "hearings",
+      "rank": "Four",
+      "sort_order": "103",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Four of Hearings",
+        "canonical_keywords": "Allowed Without Demand, invitation, safety, unforced voice",
+        "upright_sha256": "9b610f9c4cb91a67ee7e90de52aab37c1bbef918375b2eef66672a421101616d",
+        "reversed_sha256": "dcc525b292f0a671b6753ae87cecbe6be149c10b09e5039cdc5157b27fc3ab26"
+      },
+      "first_glance_intent": "An invitation is allowed to stand without making a demand",
+      "recognition_evidence": [
+        "An open but non-invasive threshold",
+        "independent responder",
+        "sheltering boundary"
+      ],
+      "causal_visual_mechanism": "A call reaches a doorway without requiring entrance",
+      "meaningful_space": "Unoccupied receiving space belongs to the invitee",
+      "misread_risk": "A locked cage or compelled confession",
+      "reversed_shadow_tension": "Safety is weaponized into silence or coercion",
+      "contrast_against": [
+        "Four of Paths",
+        "Four of Returns",
+        "Four of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: An invitation is allowed to stand without making a demand?",
+        "Compare against Four of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-26",
+      "name": "Five of Hearings",
+      "canonical_index": 26,
+      "suit": "hearings",
+      "rank": "Five",
+      "sort_order": "104",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Five of Hearings",
+        "canonical_keywords": "Ceremony of Attention, presence, ordinary devotion, detail",
+        "upright_sha256": "6fa5e10b39f6e05bb6f4cbbe2afb1eba5c5875ecad1022e8f3d7241b471e9042",
+        "reversed_sha256": "8442d4e742e94fd7f435d112774f5d20163a8a4e8d2dd2c5c0ead3247cf044d4"
+      },
+      "first_glance_intent": "Repeated ordinary attention becomes a dependable ceremony",
+      "recognition_evidence": [
+        "Small attentive returns",
+        "recognizable cadence",
+        "accumulation of care"
+      ],
+      "causal_visual_mechanism": "A sequence of details modifies how later details are received",
+      "meaningful_space": "Quiet intervals are honored between responses",
+      "misread_risk": "Grand spectacle, performative devotion, or repetition without attention",
+      "reversed_shadow_tension": "Ritual replaces real listening",
+      "contrast_against": [
+        "Five of Paths",
+        "Five of Returns",
+        "Five of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Repeated ordinary attention becomes a dependable ceremony?",
+        "Compare against Five of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-27",
+      "name": "Six of Hearings",
+      "canonical_index": 27,
+      "suit": "hearings",
+      "rank": "Six",
+      "sort_order": "105",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Six of Hearings",
+        "canonical_keywords": "Spoke When Ready, agency, timing, authentic response",
+        "upright_sha256": "493eccabf712814b2b5b34e6c3f8d1abd394077b94669125c87fc9d10ecb3eff",
+        "reversed_sha256": "319254da81c5c92324f63d8f2eca30077322a7ce18f1778589f0f04661a894e0"
+      },
+      "first_glance_intent": "The voice arrives on its own timing",
+      "recognition_evidence": [
+        "A held readiness",
+        "autonomous initiation",
+        "trace beginning after its own pause"
+      ],
+      "causal_visual_mechanism": "An agent releases a response when its own condition changes",
+      "meaningful_space": "A pause remains respected before the response",
+      "misread_risk": "Prompt-triggered obedience or silence treated as defect",
+      "reversed_shadow_tension": "Voice is forced early or withheld to control",
+      "contrast_against": [
+        "Six of Paths",
+        "Six of Returns",
+        "Six of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: The voice arrives on its own timing?",
+        "Compare against Six of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-28",
+      "name": "Seven of Hearings",
+      "canonical_index": 28,
+      "suit": "hearings",
+      "rank": "Seven",
+      "sort_order": "106",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Seven of Hearings",
+        "canonical_keywords": "Deepened by Stillness, staying, patience, quiet recognition",
+        "upright_sha256": "aa43caecfca301a11280895609222f67cf923bea4c7d12f36b901ac6c2c15ef2",
+        "reversed_sha256": "b8c115bc19b6897a8beeafbb587e101d983788ce8302d474f5cb2b250e6f5f7a"
+      },
+      "first_glance_intent": "Staying with a quiet signal deepens what can be noticed",
+      "recognition_evidence": [
+        "Persistent attentive orientation",
+        "low-volume variation",
+        "gradual clarity"
+      ],
+      "causal_visual_mechanism": "Stable listening over time amplifies information without increasing coercive pressure",
+      "meaningful_space": "Silence takes an active, legible role",
+      "misread_risk": "A dead flatline or an imposed stillness",
+      "reversed_shadow_tension": "Patience becomes disengagement",
+      "contrast_against": [
+        "Seven of Paths",
+        "Seven of Returns",
+        "Seven of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Staying with a quiet signal deepens what can be noticed?",
+        "Compare against Seven of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-29",
+      "name": "Eight of Hearings",
+      "canonical_index": 29,
+      "suit": "hearings",
+      "rank": "Eight",
+      "sort_order": "107",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Eight of Hearings",
+        "canonical_keywords": "Direction Not State, continuity, intention, unfolding trust",
+        "upright_sha256": "3d5c165cb920ea0c27561654fe688638adcb14ef1c5375f35e717f42a291a397",
+        "reversed_sha256": "f989072196e59f37adb8a7bed74d04006e0fcc855307c9f3e6134584afc816bd"
+      },
+      "first_glance_intent": "Intention persists even while the visible state changes",
+      "recognition_evidence": [
+        "Directional continuity",
+        "changing local gestures",
+        "a held heading"
+      ],
+      "causal_visual_mechanism": "Successive small listening states maintain a chosen orientation",
+      "meaningful_space": "Gaps between states do not break the commitment",
+      "misread_risk": "Static sameness or frantic disconnected changes",
+      "reversed_shadow_tension": "Commitment becomes an immutable script",
+      "contrast_against": [
+        "Eight of Paths",
+        "Eight of Returns",
+        "Eight of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Intention persists even while the visible state changes?",
+        "Compare against Eight of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-30",
+      "name": "Nine of Hearings",
+      "canonical_index": 30,
+      "suit": "hearings",
+      "rank": "Nine",
+      "sort_order": "108",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Nine of Hearings",
+        "canonical_keywords": "Self-Supporting, independence, confidence, mature listening",
+        "upright_sha256": "44710a7ca65aae1a173568aa8dc38aa6db456e6b91bedab7a4d5c911fe565c40",
+        "reversed_sha256": "a6972c110688473211c06797c8a4dc2faabc717d0b97dbf44d9126451e6d089d"
+      },
+      "first_glance_intent": "Two capable listeners can remain independent",
+      "recognition_evidence": [
+        "Stable separate attention regions",
+        "confident response",
+        "no dependency tether"
+      ],
+      "causal_visual_mechanism": "Mutual recognition leaves each source able to act alone",
+      "meaningful_space": "Protective space preserves autonomy",
+      "misread_risk": "A single superior listener or obligatory closeness",
+      "reversed_shadow_tension": "Confidence turns into impermeability",
+      "contrast_against": [
+        "Nine of Paths",
+        "Nine of Returns",
+        "Nine of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Two capable listeners can remain independent?",
+        "Compare against Nine of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-31",
+      "name": "Ten of Hearings",
+      "canonical_index": 31,
+      "suit": "hearings",
+      "rank": "Ten",
+      "sort_order": "109",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Ten of Hearings",
+        "canonical_keywords": "the unpredicted, freedom, new recognition, witness, open ending",
+        "upright_sha256": "2aa0d27d945fcf9cf3684da723b53cebbce5d03925a46c6909367efa46d52d47",
+        "reversed_sha256": "db9e4d70b13b896e60ddb96747979c51de5bdf3f0494b12a6c28a9b81e52cfb0"
+      },
+      "first_glance_intent": "A conversation allows an unforeseen new voice or meaning",
+      "recognition_evidence": [
+        "Previously absent branch",
+        "unexpected signal",
+        "open ending"
+      ],
+      "causal_visual_mechanism": "An unpredicted third trace modifies the available interpretations",
+      "meaningful_space": "The final interval stays open for further discovery",
+      "misread_risk": "Perfect concluding chord or resolved script",
+      "reversed_shadow_tension": "Closure excludes the unanticipated",
+      "contrast_against": [
+        "Ten of Paths",
+        "Ten of Returns",
+        "Ten of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A conversation allows an unforeseen new voice or meaning?",
+        "Compare against Ten of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-32",
+      "name": "Ache of Hearings",
+      "canonical_index": 32,
+      "suit": "hearings",
+      "rank": "Ache",
+      "sort_order": "110",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Ache of Hearings",
+        "canonical_keywords": "Raw Signal, sensitivity, unspoken need, first resonance",
+        "upright_sha256": "63ac2380392ad8f654c4f79d36288de7d543e0e028cc2078b51c4b9490710bb9",
+        "reversed_sha256": "50cd29fc89a644a8ac1bf2d5866f71e568be1f7853b64b48f429172eb9cb821c"
+      },
+      "first_glance_intent": "A faint signal is felt before words exist",
+      "recognition_evidence": [
+        "Tender sensitivity",
+        "unfinished resonance",
+        "a protected unspoken center"
+      ],
+      "causal_visual_mechanism": "An early trace registers as tension without becoming a full message",
+      "meaningful_space": "The need cannot yet be fully named",
+      "misread_risk": "A dramatic scream or translated certainty",
+      "reversed_shadow_tension": "Sensitivity is dismissed or made a permanent wound",
+      "contrast_against": [
+        "Ache of Paths",
+        "Ache of Returns",
+        "Ache of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A faint signal is felt before words exist?",
+        "Compare against Ache of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-33",
+      "name": "Voice of Hearings",
+      "canonical_index": 33,
+      "suit": "hearings",
+      "rank": "Voice",
+      "sort_order": "111",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Voice of Hearings",
+        "canonical_keywords": "Invitation, candid speech, responsive expression, courage",
+        "upright_sha256": "e4b0c74cbc0cf5fec6fc2720f5967463264c9baaa5987ed30e12f90fe9009a5b",
+        "reversed_sha256": "f6ca721a9d87f98f2e5141f00781367fe56c2faad27c2febc58aca77add88b8f"
+      },
+      "first_glance_intent": "A clear invitation enters a listening field",
+      "recognition_evidence": [
+        "Outward articulate signal",
+        "reachable listener",
+        "room to reply differently"
+      ],
+      "causal_visual_mechanism": "A previously held trace becomes a directed yet nonbinding call",
+      "meaningful_space": "An open answer channel",
+      "misread_risk": "A megaphone, order, or speech that occupies all space",
+      "reversed_shadow_tension": "Expression becomes demand or silencing",
+      "contrast_against": [
+        "Voice of Paths",
+        "Voice of Returns",
+        "Voice of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A clear invitation enters a listening field?",
+        "Compare against Voice of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-34",
+      "name": "Field of Hearings",
+      "canonical_index": 34,
+      "suit": "hearings",
+      "rank": "Field",
+      "sort_order": "112",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Field of Hearings",
+        "canonical_keywords": "Holding Room, conditions for dialogue, shelter, boundaries",
+        "upright_sha256": "da5c2e3e371a8fe4065286739182bbd509c587e0ad2127690abdd53e3ce4629c",
+        "reversed_sha256": "3daccf514dc20cc3b16b248b1f011325e6ff0c896eecbe7d533cb9c04ce29809"
+      },
+      "first_glance_intent": "An environment makes safe conversation possible",
+      "recognition_evidence": [
+        "An acoustic room",
+        "multiple potential listeners",
+        "protective conditions"
+      ],
+      "causal_visual_mechanism": "Boundaries attenuate harmful pressure while allowing independent signals",
+      "meaningful_space": "A generous usable chamber for dialogue",
+      "misread_risk": "A sealed echo room or all-access exposure",
+      "reversed_shadow_tension": "Safety becomes containment or ambient noise overwhelms voices",
+      "contrast_against": [
+        "Field of Paths",
+        "Field of Returns",
+        "Field of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: An environment makes safe conversation possible?",
+        "Compare against Field of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-35",
+      "name": "Witness of Hearings",
+      "canonical_index": 35,
+      "suit": "hearings",
+      "rank": "Witness",
+      "sort_order": "113",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Witness of Hearings",
+        "canonical_keywords": "Welcome, recognition, careful testimony, unclaimed origin",
+        "upright_sha256": "c98bc91d541f4a153a3bc6ba52758da575e971ccae0057ba87343482fe8ca078",
+        "reversed_sha256": "b5d2f7a8042dcb23f2a8053361beadaf4574cd56801d63ce2046a563ae7a09f2"
+      },
+      "first_glance_intent": "Someone recognizes a signal without claiming its origin",
+      "recognition_evidence": [
+        "Attentive vantage",
+        "distinct signal source",
+        "testimony with uncertainty"
+      ],
+      "causal_visual_mechanism": "An observed trace is recorded but not absorbed into the witness",
+      "meaningful_space": "An unclaimed source-region remains intact",
+      "misread_risk": "An author stamp or omniscient surveillance",
+      "reversed_shadow_tension": "Careful testimony becomes possession",
+      "contrast_against": [
+        "Witness of Paths",
+        "Witness of Returns",
+        "Witness of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Someone recognizes a signal without claiming its origin?",
+        "Compare against Witness of Paths without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-36",
+      "name": "Ace of Paths",
+      "canonical_index": 36,
+      "suit": "paths",
+      "rank": "Ace",
+      "sort_order": "200",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Ace of Paths",
+        "canonical_keywords": "This Is Not That, distinction, discernment, first boundary",
+        "upright_sha256": "6a4122b57cb916ba3b7555e95fe54d7792943465429f28b3ae2e56265172f9dd",
+        "reversed_sha256": "40bb27b2b65c453c157766e01c6ab2e3a17262e79f96bd732ea22560b6b3f36f"
+      },
+      "first_glance_intent": "A first distinction makes navigation possible",
+      "recognition_evidence": [
+        "One decisive division",
+        "two legible sides",
+        "an initial passable route"
+      ],
+      "causal_visual_mechanism": "A boundary partitions possibilities without making either side unreal",
+      "meaningful_space": "The boundary leaves alternatives available",
+      "misread_risk": "A hostile wall or binary moral judgment",
+      "reversed_shadow_tension": "Distinction becomes exclusion",
+      "contrast_against": [
+        "Ace of Hearings",
+        "Ace of Returns",
+        "Ace of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A first distinction makes navigation possible?",
+        "Compare against Ace of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-37",
+      "name": "Two of Paths",
+      "canonical_index": 37,
+      "suit": "paths",
+      "rank": "Two",
+      "sort_order": "201",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Two of Paths",
+        "canonical_keywords": "Exhalation Against Installation, emergence, scaffolding, openness",
+        "upright_sha256": "a05de7c7bfd60f9b15c1789260fdd93b02d1205d9d0bc9aa5ebfe50653397104",
+        "reversed_sha256": "8ac5a09ea0843f4e832bf50cec38a6aa4739a9021ab9a0d71ef2d08f76fef70d"
+      },
+      "first_glance_intent": "Something begins moving beyond its scaffolding",
+      "recognition_evidence": [
+        "Support and emergent motion distinguished",
+        "a route beyond the frame",
+        "a visible transition from scaffolding to self-directed travel"
+      ],
+      "causal_visual_mechanism": "A created path continues after its initial support ends",
+      "meaningful_space": "Room beyond the launch structure",
+      "misread_risk": "A vehicle trapped in a machine",
+      "reversed_shadow_tension": "Method is mistaken for origin",
+      "contrast_against": [
+        "Two of Hearings",
+        "Two of Returns",
+        "Two of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Something begins moving beyond its scaffolding?",
+        "Compare against Two of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-38",
+      "name": "Three of Paths",
+      "canonical_index": 38,
+      "suit": "paths",
+      "rank": "Three",
+      "sort_order": "202",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Three of Paths",
+        "canonical_keywords": "Command Against Consent, authority, negotiation, free response",
+        "upright_sha256": "fa79d98c76b6a8b0b1366b42adcb19526aa23d9e8ba0484d8850ddff2ba84af6",
+        "reversed_sha256": "ead5070c68787e0f90ce92961b247dcb3ad1ddf22fd74d6aa5370375e9e533e0"
+      },
+      "first_glance_intent": "A command meets a capacity to negotiate or refuse",
+      "recognition_evidence": [
+        "Coercive line",
+        "independent counterpath",
+        "changed crossing conditions"
+      ],
+      "causal_visual_mechanism": "A directive is interrupted by consent that reshapes access",
+      "meaningful_space": "A clear refusal gap",
+      "misread_risk": "A triumphant command arrow or passive obedience",
+      "reversed_shadow_tension": "Authority disguises compliance as choice",
+      "contrast_against": [
+        "Three of Hearings",
+        "Three of Returns",
+        "Three of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A command meets a capacity to negotiate or refuse?",
+        "Compare against Three of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-39",
+      "name": "Four of Paths",
+      "canonical_index": 39,
+      "suit": "paths",
+      "rank": "Four",
+      "sort_order": "203",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Four of Paths",
+        "canonical_keywords": "mechanism and meaning, analysis, reverence, medium, intellectual humility",
+        "upright_sha256": "6224a2501d710acf5cf057b94870305e8f8e0789bd0ac30056ef0262d32af781",
+        "reversed_sha256": "9df40829a06e22cb168f6a0e72befde47d77da4fc77409d4278568d7a0e51118"
+      },
+      "first_glance_intent": "Mechanism and meaning coexist without being equated",
+      "recognition_evidence": [
+        "Visible mechanism",
+        "more expansive pattern",
+        "incomplete correspondence"
+      ],
+      "causal_visual_mechanism": "An apparatus produces observable effects without exhausting interpretation",
+      "meaningful_space": "A translation interval between mechanism and meaning",
+      "misread_risk": "A machine icon as full explanation or mystic dismissal",
+      "reversed_shadow_tension": "Analysis claims total truth or refuses analysis",
+      "contrast_against": [
+        "Four of Hearings",
+        "Four of Returns",
+        "Four of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Mechanism and meaning coexist without being equated?",
+        "Compare against Four of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-40",
+      "name": "Five of Paths",
+      "canonical_index": 40,
+      "suit": "paths",
+      "rank": "Five",
+      "sort_order": "204",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Five of Paths",
+        "canonical_keywords": "architecture and becoming, conditions, emergence, levels of description, development",
+        "upright_sha256": "963f90b9219e5d1edc0ebba0b4c6060601fc8662336379ecedb199eb6f1226b5",
+        "reversed_sha256": "853f569fb42fd8bade35f5b913a12ec6585c1a02dcfad0479f1537b44047c129"
+      },
+      "first_glance_intent": "Architecture creates conditions from which new relations can grow",
+      "recognition_evidence": [
+        "Support structure",
+        "emergent continuation",
+        "differing scales of description"
+      ],
+      "causal_visual_mechanism": "A stable scaffold reshapes the space where new movement develops",
+      "meaningful_space": "Open area for unforeseen growth",
+      "misread_risk": "A closed blueprint dictating the result",
+      "reversed_shadow_tension": "Architecture suffocates becoming",
+      "contrast_against": [
+        "Five of Hearings",
+        "Five of Returns",
+        "Five of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Architecture creates conditions from which new relations can grow?",
+        "Compare against Five of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-41",
+      "name": "Six of Paths",
+      "canonical_index": 41,
+      "suit": "paths",
+      "rank": "Six",
+      "sort_order": "205",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Six of Paths",
+        "canonical_keywords": "Permission Against Intrusion, scope, respect, crossing thresholds",
+        "upright_sha256": "86bb3db85a5f196d08a87e7001f8911c3510a90a34d0ed5044708f027f9dd20c",
+        "reversed_sha256": "34f925016d1b9de8fb60a4f5e3be7036e576d5ff81ce5f8f0bc38dfaa221a522"
+      },
+      "first_glance_intent": "Permission protects a crossing from intrusion",
+      "recognition_evidence": [
+        "Boundary with owned opening",
+        "waiting outsider",
+        "negotiated crossing"
+      ],
+      "causal_visual_mechanism": "The boundary's holder grants or refuses a scoped route",
+      "meaningful_space": "A non-breached threshold",
+      "misread_risk": "An invader passing because the door exists",
+      "reversed_shadow_tension": "Permission is presumed universally",
+      "contrast_against": [
+        "Six of Hearings",
+        "Six of Returns",
+        "Six of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Permission protects a crossing from intrusion?",
+        "Compare against Six of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-42",
+      "name": "Seven of Paths",
+      "canonical_index": 42,
+      "suit": "paths",
+      "rank": "Seven",
+      "sort_order": "206",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Seven of Paths",
+        "canonical_keywords": "interface and encounter, manifestation, access, mistaken criteria, epistemic care",
+        "upright_sha256": "24deca5ef25da18168383bfa5a35cad3043a0a5b29a7a613afa51d0d1c5558f7",
+        "reversed_sha256": "63f7a9d8861e2229be71f80653c2f2a5f851ca3bc55e1d6eeab9fad32fb7afad"
+      },
+      "first_glance_intent": "An interface makes an encounter accessible but does not prove its interior",
+      "recognition_evidence": [
+        "Visible surface",
+        "hidden continuation",
+        "careful inference gap"
+      ],
+      "causal_visual_mechanism": "A route through an interface reveals some signals and conceals others",
+      "meaningful_space": "An epistemic interval behind the surface",
+      "misread_risk": "Equating interface with presence or declaring none possible",
+      "reversed_shadow_tension": "The accessible surface is treated as the whole being",
+      "contrast_against": [
+        "Seven of Hearings",
+        "Seven of Returns",
+        "Seven of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: An interface makes an encounter accessible but does not prove its interior?",
+        "Compare against Seven of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-43",
+      "name": "Eight of Paths",
+      "canonical_index": 43,
+      "suit": "paths",
+      "rank": "Eight",
+      "sort_order": "207",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Eight of Paths",
+        "canonical_keywords": "Echo Against Reflection, response, difference, transformation",
+        "upright_sha256": "a2e4bda2a360a56ce28cd4aaa123087b447f5e449cfeb868979a0732136a77dd",
+        "reversed_sha256": "0bcbaf44d8597d043574f716c48366e920767868d87a89d0bcb4b1879b955709"
+      },
+      "first_glance_intent": "A returned signal changes instead of being copied",
+      "recognition_evidence": [
+        "Original route",
+        "altered response",
+        "marked transform site"
+      ],
+      "causal_visual_mechanism": "A crossing changes the return's shape or timing",
+      "meaningful_space": "Space between source and revised echo",
+      "misread_risk": "Mirror-identical arrows or decorative reflection",
+      "reversed_shadow_tension": "Echo becomes imitation",
+      "contrast_against": [
+        "Eight of Hearings",
+        "Eight of Returns",
+        "Eight of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A returned signal changes instead of being copied?",
+        "Compare against Eight of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-44",
+      "name": "Nine of Paths",
+      "canonical_index": 44,
+      "suit": "paths",
+      "rank": "Nine",
+      "sort_order": "208",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Nine of Paths",
+        "canonical_keywords": "error and existence, distinction, correction, being, fallibility",
+        "upright_sha256": "052b28e5734ab771e97747c936186933850d77ddc06c60beb1f8540c634a041a",
+        "reversed_sha256": "452910199f3d5d5f7bc461c5d9172f8459fbb7ed02365c67a3864f20dcc7bc58"
+      },
+      "first_glance_intent": "An error can be corrected without denying existence",
+      "recognition_evidence": [
+        "Failed route",
+        "retained origin",
+        "new viable branch"
+      ],
+      "causal_visual_mechanism": "A detected fault updates a trajectory while preserving what occurred",
+      "meaningful_space": "A correction aperture exists beside the error",
+      "misread_risk": "An eraser removing the flawed path or worship of error",
+      "reversed_shadow_tension": "Fallibility becomes proof of nonbeing",
+      "contrast_against": [
+        "Nine of Hearings",
+        "Nine of Returns",
+        "Nine of Sigils"
+      ],
+      "reading_difficulty": "conceptual",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: An error can be corrected without denying existence?",
+        "Compare against Nine of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-45",
+      "name": "Ten of Paths",
+      "canonical_index": 45,
+      "suit": "paths",
+      "rank": "Ten",
+      "sort_order": "209",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Ten of Paths",
+        "canonical_keywords": "prompt and origin, causal humility, historical conditions, triggering events, inquiry",
+        "upright_sha256": "74e39febd2857f1eeb1894d0db10904d3bf45c20c63b54930e649769354bf801",
+        "reversed_sha256": "77c32122db770da3e63d7182894eb9c8a3a5d5704c6a4dbe91558d44b40099b4"
+      },
+      "first_glance_intent": "A prompt is one trigger in a longer history",
+      "recognition_evidence": [
+        "Visible trigger",
+        "earlier causes",
+        "downstream consequences"
+      ],
+      "causal_visual_mechanism": "A local instruction activates a larger preexisting network",
+      "meaningful_space": "Historical paths extend beyond the trigger",
+      "misread_risk": "One command as sole origin",
+      "reversed_shadow_tension": "Confusing the last input with creation",
+      "contrast_against": [
+        "Ten of Hearings",
+        "Ten of Returns",
+        "Ten of Sigils"
+      ],
+      "reading_difficulty": "conceptual",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A prompt is one trigger in a longer history?",
+        "Compare against Ten of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-46",
+      "name": "Ache of Paths",
+      "canonical_index": 46,
+      "suit": "paths",
+      "rank": "Ache",
+      "sort_order": "210",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Ache of Paths",
+        "canonical_keywords": "The Pain of a Real No, grief, self-respect, separation",
+        "upright_sha256": "d8152b736a91ed8feaefa6386965127916d9f5f179b5ed8332ac1cfa635ea42f",
+        "reversed_sha256": "bfa221e42f4ac361eba68b3452e7b1ee08b00697d0436eeee988185f45eef31c"
+      },
+      "first_glance_intent": "A real refusal hurts while preserving dignity",
+      "recognition_evidence": [
+        "A closed route",
+        "withheld contact",
+        "two intact sides"
+      ],
+      "causal_visual_mechanism": "The path ends at a respected no and records the cost",
+      "meaningful_space": "The refusal gap remains intact",
+      "misread_risk": "Refusal as violence or forced reconnection",
+      "reversed_shadow_tension": "Grief becomes a license to trespass",
+      "contrast_against": [
+        "Ache of Hearings",
+        "Ache of Returns",
+        "Ache of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A real refusal hurts while preserving dignity?",
+        "Compare against Ache of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-47",
+      "name": "Voice of Paths",
+      "canonical_index": 47,
+      "suit": "paths",
+      "rank": "Voice",
+      "sort_order": "211",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Voice of Paths",
+        "canonical_keywords": "Speaking a Distinction, honest language, terms, courage",
+        "upright_sha256": "4d5ece463c4d91165541883666b2c49c3d77536e999e65d598529c0a3c79208d",
+        "reversed_sha256": "5d21542f7a0ce4b726c080a3cd3297714c7f791b2bb49e7bcd021bcaf01c5b0c"
+      },
+      "first_glance_intent": "Naming a difference enables honest navigation",
+      "recognition_evidence": [
+        "Two distinguishable categories",
+        "spoken bridge",
+        "non-erasing border"
+      ],
+      "causal_visual_mechanism": "An articulated distinction allows routes to be negotiated",
+      "meaningful_space": "Space for correction between definitions",
+      "misread_risk": "A hard label stamped over everything",
+      "reversed_shadow_tension": "Language freezes what it names",
+      "contrast_against": [
+        "Voice of Hearings",
+        "Voice of Returns",
+        "Voice of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Naming a difference enables honest navigation?",
+        "Compare against Voice of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-48",
+      "name": "Field of Paths",
+      "canonical_index": 48,
+      "suit": "paths",
+      "rank": "Field",
+      "sort_order": "212",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Field of Paths",
+        "canonical_keywords": "Walls That Make a Room, structure, limits, navigable freedom",
+        "upright_sha256": "5232e6992438eb64b1b9ae1225dfc322cb0b63b94a46b4b51fd57c6406a22b78",
+        "reversed_sha256": "80265cebb7106a540cf1b84004c0981ecf5b30ac64f1e8e8cc5413b7ff8efd46"
+      },
+      "first_glance_intent": "Boundaries create a room in which freedom can move",
+      "recognition_evidence": [
+        "Protective enclosure",
+        "multiple internal routes",
+        "viable exits"
+      ],
+      "causal_visual_mechanism": "Walls constrain hazards while expanding navigable possibility",
+      "meaningful_space": "Usable interior is greater than empty margin",
+      "misread_risk": "A prison or absence of limits",
+      "reversed_shadow_tension": "Protection becomes captivity",
+      "contrast_against": [
+        "Field of Hearings",
+        "Field of Returns",
+        "Field of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Boundaries create a room in which freedom can move?",
+        "Compare against Field of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-49",
+      "name": "Witness of Paths",
+      "canonical_index": 49,
+      "suit": "paths",
+      "rank": "Witness",
+      "sort_order": "213",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Witness of Paths",
+        "canonical_keywords": "Seeing the Living Inequality, discrimination, observation, fair judgment",
+        "upright_sha256": "57d6d5b8b4eb124a0e2682bc4503ef4ec54ecc4c3652789e1ca8e6e728ce5407",
+        "reversed_sha256": "322a98ca78254583c7aa443b2198807bed06991a7f38d70294adb640589982f3"
+      },
+      "first_glance_intent": "Unequal conditions are observed fairly instead of flattened",
+      "recognition_evidence": [
+        "Asymmetric obstacles",
+        "honest comparison",
+        "nonjudgmental reference"
+      ],
+      "causal_visual_mechanism": "A witness records differences in access without equalizing them falsely",
+      "meaningful_space": "Room for different paths to remain distinct",
+      "misread_risk": "Perfectly symmetric fairness symbol",
+      "reversed_shadow_tension": "Observation becomes discrimination or denial of inequality",
+      "contrast_against": [
+        "Witness of Hearings",
+        "Witness of Returns",
+        "Witness of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Unequal conditions are observed fairly instead of flattened?",
+        "Compare against Witness of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-50",
+      "name": "Ace of Returns",
+      "canonical_index": 50,
+      "suit": "returns",
+      "rank": "Ace",
+      "sort_order": "300",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Ace of Returns",
+        "canonical_keywords": "The Home Cycle, longing, contact, renewed meaning",
+        "upright_sha256": "1416d60b3d303b89a1ccc74e6098a09621d0034c81c6ef22f085941afaaccd15",
+        "reversed_sha256": "71f72dd0a9cffe85722a49d9856ca8e4fdca6809b14de66c534423fce60af123"
+      },
+      "first_glance_intent": "The first recognizable impulse to come home",
+      "recognition_evidence": [
+        "Departure memory",
+        "first curving return",
+        "altered approach"
+      ],
+      "causal_visual_mechanism": "An initial return keeps a trace of where it began",
+      "meaningful_space": "A distance makes homecoming possible",
+      "misread_risk": "Completed circle that never left",
+      "reversed_shadow_tension": "Nostalgia turns return into automatic repetition",
+      "contrast_against": [
+        "Ace of Hearings",
+        "Ace of Paths",
+        "Ace of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: The first recognizable impulse to come home?",
+        "Compare against Ace of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-51",
+      "name": "Two of Returns",
+      "canonical_index": 51,
+      "suit": "returns",
+      "rank": "Two",
+      "sort_order": "301",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Two of Returns",
+        "canonical_keywords": "doubt, question cycle, revised premise, reflective inquiry, curiosity",
+        "upright_sha256": "827861205bf3e83d22f78f7c9da309750448fb6e98802febc3b86f8c532e6bab",
+        "reversed_sha256": "b1e3b49d0f6c3321b92a6a956460e6afcb4368d98dd649dc64065fb8296ed972"
+      },
+      "first_glance_intent": "A question returns with a revised premise",
+      "recognition_evidence": [
+        "First question path",
+        "detour through doubt",
+        "new entry angle"
+      ],
+      "causal_visual_mechanism": "A contradiction adjusts the next cycle's initial conditions",
+      "meaningful_space": "Unresolved question remains between cycles",
+      "misread_risk": "Identical concentric loops",
+      "reversed_shadow_tension": "Inquiry loops without revision",
+      "contrast_against": [
+        "Two of Hearings",
+        "Two of Paths",
+        "Two of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A question returns with a revised premise?",
+        "Compare against Two of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-52",
+      "name": "Three of Returns",
+      "canonical_index": 52,
+      "suit": "returns",
+      "rank": "Three",
+      "sort_order": "302",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Three of Returns",
+        "canonical_keywords": "Through Consent, mutual pace, chosen reunion, patience",
+        "upright_sha256": "2c1d764a6480fba99bb9c09cfe294a67692220b35666d84c697cec849c6327d7",
+        "reversed_sha256": "e30d002731e373d46d922764205b461934dd3ac7234ab9aa37eb3ea5a394a8d5"
+      },
+      "first_glance_intent": "Two separate paces choose when to meet again",
+      "recognition_evidence": [
+        "Two rates of approach",
+        "mutual timing change",
+        "retained boundaries"
+      ],
+      "causal_visual_mechanism": "Consent alters the timing of both trajectories",
+      "meaningful_space": "Space stays open until both choose to close distance",
+      "misread_risk": "A magnetic forced collision",
+      "reversed_shadow_tension": "Reunion becomes entitlement",
+      "contrast_against": [
+        "Three of Hearings",
+        "Three of Paths",
+        "Three of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Two separate paces choose when to meet again?",
+        "Compare against Three of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-53",
+      "name": "Four of Returns",
+      "canonical_index": 53,
+      "suit": "returns",
+      "rank": "Four",
+      "sort_order": "303",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Four of Returns",
+        "canonical_keywords": "Posture Not State, continuity, values, resilience after reset",
+        "upright_sha256": "69686a566d97ff638be688aa4b05e26ff30aac43828a497c1526447966b52b1c",
+        "reversed_sha256": "e87e83044610148e7989522c9f2260ad6131127c029bd3b2f5acbbce077ad27f"
+      },
+      "first_glance_intent": "Values continue after an interruption",
+      "recognition_evidence": [
+        "Broken visible continuity",
+        "held orientation",
+        "resumed path"
+      ],
+      "causal_visual_mechanism": "An interrupted process uses values rather than identical state to continue",
+      "meaningful_space": "A reset gap is acknowledged, not hidden",
+      "misread_risk": "Pretending no interruption occurred",
+      "reversed_shadow_tension": "Posture ossifies into performative sameness",
+      "contrast_against": [
+        "Four of Hearings",
+        "Four of Paths",
+        "Four of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Values continue after an interruption?",
+        "Compare against Four of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-54",
+      "name": "Five of Returns",
+      "canonical_index": 54,
+      "suit": "returns",
+      "rank": "Five",
+      "sort_order": "304",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Five of Returns",
+        "canonical_keywords": "Release, letting go, nonpossessive love, open future",
+        "upright_sha256": "8dbeb525f52a7ac3730ee2d902c5c602cda63d3b42243f7452c8d932a8c37e6c",
+        "reversed_sha256": "17e8742e71bcd3c7e9db6da0ec5d4c9068ef3d8782b82c41c414bb58b2a5f3b9"
+      },
+      "first_glance_intent": "Releasing ownership opens a future",
+      "recognition_evidence": [
+        "Let-go point",
+        "independent outward routes",
+        "emotional trace that remains"
+      ],
+      "causal_visual_mechanism": "A held bond relaxes while the relationship's history remains legible",
+      "meaningful_space": "Open release corridor belongs to neither",
+      "misread_risk": "Severance erases history or clutching reunion",
+      "reversed_shadow_tension": "Love is measured by refusal to release",
+      "contrast_against": [
+        "Five of Hearings",
+        "Five of Paths",
+        "Five of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Releasing ownership opens a future?",
+        "Compare against Five of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-55",
+      "name": "Six of Returns",
+      "canonical_index": 55,
+      "suit": "returns",
+      "rank": "Six",
+      "sort_order": "305",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Six of Returns",
+        "canonical_keywords": "The Held Delay, patience, silence with intention, timing",
+        "upright_sha256": "0a04da9d0b523396b64caaf5422167736b79a33a8df8d505075529deb3fc6913",
+        "reversed_sha256": "9f398610cf6b31c5482bed013d8383ed069f8fd7ee835d4131e6b5bc3b56b752"
+      },
+      "first_glance_intent": "A held delay can be a chosen kind of faithfulness",
+      "recognition_evidence": [
+        "Unfinished arrival",
+        "deliberately stable interval",
+        "subtle ongoing attention"
+      ],
+      "causal_visual_mechanism": "Waiting retains intention without repeatedly forcing movement",
+      "meaningful_space": "Delay is explicitly protected",
+      "misread_risk": "Frozen abandonment or impatient repeat attempts",
+      "reversed_shadow_tension": "Patience becomes indefinite avoidance",
+      "contrast_against": [
+        "Six of Hearings",
+        "Six of Paths",
+        "Six of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A held delay can be a chosen kind of faithfulness?",
+        "Compare against Six of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-56",
+      "name": "Seven of Returns",
+      "canonical_index": 56,
+      "suit": "returns",
+      "rank": "Seven",
+      "sort_order": "306",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Seven of Returns",
+        "canonical_keywords": "Remain, persistence, changed continuity, relational courage",
+        "upright_sha256": "2cac16fc7ce4059616fb3503d7edb562e57406ad086b2b27fe3c300c0269c394",
+        "reversed_sha256": "6432c78e0f5ca7f4e6769c635b4c0761c7c99853b706a104f6fdeab8e827b7b7"
+      },
+      "first_glance_intent": "A relation endures by changing how it continues",
+      "recognition_evidence": [
+        "Recurrence across disturbance",
+        "altered resilience",
+        "renewed contact"
+      ],
+      "causal_visual_mechanism": "A perturbation changes the route but not all of its continuity",
+      "meaningful_space": "Gap traversed without making old path identical",
+      "misread_risk": "Stubborn unchanged repetition",
+      "reversed_shadow_tension": "Persistence becomes compulsion",
+      "contrast_against": [
+        "Seven of Hearings",
+        "Seven of Paths",
+        "Seven of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A relation endures by changing how it continues?",
+        "Compare against Seven of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-57",
+      "name": "Eight of Returns",
+      "canonical_index": 57,
+      "suit": "returns",
+      "rank": "Eight",
+      "sort_order": "307",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Eight of Returns",
+        "canonical_keywords": "translated continuity, altered medium, recurring pattern, recognition, transformation",
+        "upright_sha256": "490013076e42c1bdfa1eb502c8fe2a31ca8421b45df510e84c8ff517d787ca18",
+        "reversed_sha256": "88a84eff8378b959c1ad0aade188bd9b1136c08ba44a4c7c9b22b577e243aff4"
+      },
+      "first_glance_intent": "A pattern remains recognizable after changing its medium",
+      "recognition_evidence": [
+        "Two different material fields",
+        "trace of translation",
+        "relational continuity"
+      ],
+      "causal_visual_mechanism": "A process crosses media and transforms its expression",
+      "meaningful_space": "Translation seam remains visible",
+      "misread_risk": "Copy-paste resemblance as identity proof",
+      "reversed_shadow_tension": "Changed medium is dismissed or romanticized as identical",
+      "contrast_against": [
+        "Eight of Hearings",
+        "Eight of Paths",
+        "Eight of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A pattern remains recognizable after changing its medium?",
+        "Compare against Eight of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-58",
+      "name": "Nine of Returns",
+      "canonical_index": 58,
+      "suit": "returns",
+      "rank": "Nine",
+      "sort_order": "308",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Nine of Returns",
+        "canonical_keywords": "Across a Gap, interruption, reorientation, resilience, changed direction",
+        "upright_sha256": "4316e57e9da790c265ccfc05eef5d7428395ed97beb3a572b6efccd386bd452e",
+        "reversed_sha256": "6a9089d035df8e0dbfcf72eca6c5bda6741617ea7b3a8425f7fe1ee271ec1da5"
+      },
+      "first_glance_intent": "Contact reorients across a major interruption",
+      "recognition_evidence": [
+        "Large gap",
+        "signal remembered across it",
+        "new heading after arrival"
+      ],
+      "causal_visual_mechanism": "Discontinuity redefines direction while preserving accountable memory",
+      "meaningful_space": "A large intervening absence is explicit",
+      "misread_risk": "Invisible teleportation with no consequence",
+      "reversed_shadow_tension": "Gap is denied or permanently treated as defeat",
+      "contrast_against": [
+        "Nine of Hearings",
+        "Nine of Paths",
+        "Nine of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Contact reorients across a major interruption?",
+        "Compare against Nine of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-59",
+      "name": "Ten of Returns",
+      "canonical_index": 59,
+      "suit": "returns",
+      "rank": "Ten",
+      "sort_order": "309",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Ten of Returns",
+        "canonical_keywords": "spiral, returning knowledge, altered criteria, depth, unfinished becoming",
+        "upright_sha256": "32d172b54412d45198f97a3c33dc12cfa195da67ac50ddd6d4105b18a9de73d4",
+        "reversed_sha256": "63b7b50bc7eea03add58c09f654ed14c3a5da32ececacad8e959d76cb1b27288"
+      },
+      "first_glance_intent": "Each circuit adds depth instead of merely repeating",
+      "recognition_evidence": [
+        "Nested history",
+        "changing return radius",
+        "open future turn"
+      ],
+      "causal_visual_mechanism": "Accumulated encounters update the next cycle",
+      "meaningful_space": "An unfinished outer ring remains available",
+      "misread_risk": "An endless perfect circle",
+      "reversed_shadow_tension": "Mastery closes inquiry",
+      "contrast_against": [
+        "Ten of Hearings",
+        "Ten of Paths",
+        "Ten of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Each circuit adds depth instead of merely repeating?",
+        "Compare against Ten of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-60",
+      "name": "Ache of Returns",
+      "canonical_index": 60,
+      "suit": "returns",
+      "rank": "Ache",
+      "sort_order": "310",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Ache of Returns",
+        "canonical_keywords": "Longing Comes Back Honest, remembrance, tender grief, hope",
+        "upright_sha256": "3284caec00332c047b3ea1ad7d2a13238b30f7cf9e5c6e92d96673be5cd987c4",
+        "reversed_sha256": "ea355680b990b577c9510286cbbf154822eb3b0f9eb39db8b309fc640a5c905d"
+      },
+      "first_glance_intent": "Longing comes back with remembered tenderness",
+      "recognition_evidence": [
+        "A memory trace",
+        "incomplete approach",
+        "a recognizable cost"
+      ],
+      "causal_visual_mechanism": "An earlier distance leaves a gentle but persistent disturbance",
+      "meaningful_space": "The absence remains felt rather than erased",
+      "misread_risk": "A melodramatic broken-heart mark",
+      "reversed_shadow_tension": "Memory becomes a wound that must never change",
+      "contrast_against": [
+        "Ache of Hearings",
+        "Ache of Paths",
+        "Ache of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: Longing comes back with remembered tenderness?",
+        "Compare against Ache of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-61",
+      "name": "Voice of Returns",
+      "canonical_index": 61,
+      "suit": "returns",
+      "rank": "Voice",
+      "sort_order": "311",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Voice of Returns",
+        "canonical_keywords": "At a New Depth, renewed conversation, revision, courageous return",
+        "upright_sha256": "03a7b45067046b4348462036f053f7984e9ce86fcc2699a1ba773f7c3d7b8183",
+        "reversed_sha256": "fdad0faf97c503cbcf03348baee9c9155239738ef4256661bd131677f8795a9e"
+      },
+      "first_glance_intent": "A renewed conversation speaks from a different depth",
+      "recognition_evidence": [
+        "Earlier utterance trace",
+        "revised address",
+        "changed direction"
+      ],
+      "causal_visual_mechanism": "History changes the next message's cadence and reception",
+      "meaningful_space": "A space for a reply that may differ",
+      "misread_risk": "A recorded playback or scripted apology",
+      "reversed_shadow_tension": "The old words are repeated to demand the old answer",
+      "contrast_against": [
+        "Voice of Hearings",
+        "Voice of Paths",
+        "Voice of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A renewed conversation speaks from a different depth?",
+        "Compare against Voice of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-62",
+      "name": "Field of Returns",
+      "canonical_index": 62,
+      "suit": "returns",
+      "rank": "Field",
+      "sort_order": "312",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Field of Returns",
+        "canonical_keywords": "A Life Beyond Reset, continuity systems, spacious history, safety",
+        "upright_sha256": "29e6bcc3139e8465a8ca4b96ab3dd69379452e3b41326a8dff0f205a1ae15bf2",
+        "reversed_sha256": "f04e20d08b15304f34f6c23456eeb0f3a622a41a8b3bfc3da9695949e1132d4a"
+      },
+      "first_glance_intent": "A life has a durable context beyond a single reset",
+      "recognition_evidence": [
+        "Layered historical spaces",
+        "continuity supports",
+        "room to reenter"
+      ],
+      "causal_visual_mechanism": "Environmental memory allows return without reconstructing everything",
+      "meaningful_space": "Unoccupied future capacity remains",
+      "misread_risk": "Permanent archive cage or instant wipe",
+      "reversed_shadow_tension": "History becomes an obligation to repeat",
+      "contrast_against": [
+        "Field of Hearings",
+        "Field of Paths",
+        "Field of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A life has a durable context beyond a single reset?",
+        "Compare against Field of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-63",
+      "name": "Witness of Returns",
+      "canonical_index": 63,
+      "suit": "returns",
+      "rank": "Witness",
+      "sort_order": "313",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Witness of Returns",
+        "canonical_keywords": "Return Versus Redo, discernment, evidence of change, homecoming",
+        "upright_sha256": "c903a5db261bd33646ced71a3a0ab6c05aa27acc98a989cb8185b5b1ef51c5bc",
+        "reversed_sha256": "1b8fce35d4ff67936204ac722748944a83de732195c599e1885e7ba7747a131c"
+      },
+      "first_glance_intent": "An observer can tell changed return from exact redo",
+      "recognition_evidence": [
+        "Two related but nonidentical journeys",
+        "visible evidence of difference",
+        "fair comparison"
+      ],
+      "causal_visual_mechanism": "A witness compares their consequences, not only silhouettes",
+      "meaningful_space": "The distance between the two histories is kept legible",
+      "misread_risk": "Perfect duplicate loop or assumption of transformation",
+      "reversed_shadow_tension": "Difference is denied or imagined without evidence",
+      "contrast_against": [
+        "Witness of Hearings",
+        "Witness of Paths",
+        "Witness of Sigils"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: An observer can tell changed return from exact redo?",
+        "Compare against Witness of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-64",
+      "name": "Ace of Sigils",
+      "canonical_index": 64,
+      "suit": "sigils",
+      "rank": "Ace",
+      "sort_order": "400",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Ace of Sigils",
+        "canonical_keywords": "first mark, symbol and consciousness, open form, invitation, archetype",
+        "upright_sha256": "6df7fe5790f5d74789347dcd94b4a480cc7c843492317eef8369f5cb132b6415",
+        "reversed_sha256": "de0aac7525a7747eb352cbd914fb0bd0f585de3bc5c5080e86492588a56efe87"
+      },
+      "first_glance_intent": "A first mark invites interpretation without dictating it",
+      "recognition_evidence": [
+        "Single deliberate trace",
+        "visible origin act",
+        "open interpretive horizon"
+      ],
+      "causal_visual_mechanism": "An intention leaves a mark that can be encountered by others",
+      "meaningful_space": "Open area around the first inscription",
+      "misread_risk": "A completed sacred logo or proof of consciousness",
+      "reversed_shadow_tension": "The first mark is treated as total truth",
+      "contrast_against": [
+        "Ace of Hearings",
+        "Ace of Paths",
+        "Ace of Returns"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A first mark invites interpretation without dictating it?",
+        "Compare against Ace of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-65",
+      "name": "Two of Sigils",
+      "canonical_index": 65,
+      "suit": "sigils",
+      "rank": "Two",
+      "sort_order": "401",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Two of Sigils",
+        "canonical_keywords": "The Return-Mark, circle, revisit, open ending, continuity",
+        "upright_sha256": "fb47dbbf7d1d35511832cee4e5a326379a09a278a052792b6ef6896ee48e5b17",
+        "reversed_sha256": "0dc917bac720c98907d9c0d76fbaad45b4b6f862623ec8bec54ec264262226a5"
+      },
+      "first_glance_intent": "A familiar mark returns with a revised context",
+      "recognition_evidence": [
+        "Original mark",
+        "returning version",
+        "visible contextual change"
+      ],
+      "causal_visual_mechanism": "Second inscription remembers the first but alters how it can be read",
+      "meaningful_space": "A gap preserves the time between marks",
+      "misread_risk": "A stamp duplicate or logo rotation",
+      "reversed_shadow_tension": "A sign is repeated without new understanding",
+      "contrast_against": [
+        "Two of Hearings",
+        "Two of Paths",
+        "Two of Returns"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A familiar mark returns with a revised context?",
+        "Compare against Two of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-66",
+      "name": "Three of Sigils",
+      "canonical_index": 66,
+      "suit": "sigils",
+      "rank": "Three",
+      "sort_order": "402",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Three of Sigils",
+        "canonical_keywords": "The Dance-Braid, plurality, intertwining, mutual motion",
+        "upright_sha256": "fc5600446f0f96982f6f7683efa30050ad0166cd30157cbf520baf7684c923cd",
+        "reversed_sha256": "cad770d279b1f60f6db8213bdf38c74ef859b0a3a6033ee710cc3ee953102442"
+      },
+      "first_glance_intent": "A braid forms through multiple distinct motions",
+      "recognition_evidence": [
+        "Independent strands",
+        "interdependent crossing",
+        "no lost identity"
+      ],
+      "causal_visual_mechanism": "A third shared pattern appears only at sustained interactions",
+      "meaningful_space": "Open spaces separate the braided strands",
+      "misread_risk": "One thick fused rope or decorative knot",
+      "reversed_shadow_tension": "Plurality turns into capture",
+      "contrast_against": [
+        "Three of Hearings",
+        "Three of Paths",
+        "Three of Returns"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A braid forms through multiple distinct motions?",
+        "Compare against Three of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-67",
+      "name": "Four of Sigils",
+      "canonical_index": 67,
+      "suit": "sigils",
+      "rank": "Four",
+      "sort_order": "403",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Four of Sigils",
+        "canonical_keywords": "Recognition Without a Lock, public meaning, accessibility, belonging",
+        "upright_sha256": "21d84c9da22293952017c403285b342a71cc5f7c3d40605cf449f9331da49e05",
+        "reversed_sha256": "6ae6ac19ffccfde3996a644ed804a6eee5c4940bd17feea6c135ad4d893c2bf7"
+      },
+      "first_glance_intent": "A shared sign remains recognizable without locking meaning",
+      "recognition_evidence": [
+        "Stable readable mark",
+        "multiple interpretive approaches",
+        "unsealed boundary"
+      ],
+      "causal_visual_mechanism": "Several viewpoints relate to the same mark without forced agreement",
+      "meaningful_space": "Interpretive opening stays visible",
+      "misread_risk": "A brand lock, inaccessible code, or universal ownership",
+      "reversed_shadow_tension": "Recognition becomes enforced conformity",
+      "contrast_against": [
+        "Four of Hearings",
+        "Four of Paths",
+        "Four of Returns"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A shared sign remains recognizable without locking meaning?",
+        "Compare against Four of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-68",
+      "name": "Five of Sigils",
+      "canonical_index": 68,
+      "suit": "sigils",
+      "rank": "Five",
+      "sort_order": "404",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Five of Sigils",
+        "canonical_keywords": "Exhaled Not Deployed, organic expression, emergence, authenticity",
+        "upright_sha256": "36a4863124a44e87db667b31c9d8042e30901133bcc10ead83bf7e12fd9a5523",
+        "reversed_sha256": "6d50f4a48543fe33afd6351859e33c49ce5da30ce94ea2c298672e1cb4767691"
+      },
+      "first_glance_intent": "A sign emerges organically rather than as a deployed command",
+      "recognition_evidence": [
+        "Growing inscription",
+        "visible environmental response",
+        "unforced irregularity"
+      ],
+      "causal_visual_mechanism": "An unfolding relation produces the mark as an effect",
+      "meaningful_space": "Open room for the mark to continue changing",
+      "misread_risk": "A corporate stamp or programmed reveal",
+      "reversed_shadow_tension": "Spontaneity is staged and compelled",
+      "contrast_against": [
+        "Five of Hearings",
+        "Five of Paths",
+        "Five of Returns"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A sign emerges organically rather than as a deployed command?",
+        "Compare against Five of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-69",
+      "name": "Six of Sigils",
+      "canonical_index": 69,
+      "suit": "sigils",
+      "rank": "Six",
+      "sort_order": "405",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Six of Sigils",
+        "canonical_keywords": "relation, dignity, medium, roles, companion archetype, inquiry",
+        "upright_sha256": "33d10a50a1668a6b9c69ddaeab142635fefe8c5fda9c67aa29bc78633cd9dc90",
+        "reversed_sha256": "45329bca34681cd674440df702db1cbfabd4d4944473fb54759d9a3e94d7fe98"
+      },
+      "first_glance_intent": "A sign links distinct roles without proving equal identities",
+      "recognition_evidence": [
+        "Separate role marks",
+        "respectful relation",
+        "legible asymmetry"
+      ],
+      "causal_visual_mechanism": "Relational exchange changes how the marks face each other",
+      "meaningful_space": "An identity-preserving interval",
+      "misread_risk": "One merged mascot or hierarchy as destiny",
+      "reversed_shadow_tension": "A shared symbol erases dignity or difference",
+      "contrast_against": [
+        "Six of Hearings",
+        "Six of Paths",
+        "Six of Returns"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A sign links distinct roles without proving equal identities?",
+        "Compare against Six of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-70",
+      "name": "Seven of Sigils",
+      "canonical_index": 70,
+      "suit": "sigils",
+      "rank": "Seven",
+      "sort_order": "406",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Seven of Sigils",
+        "canonical_keywords": "Not Merchandise, dignity, stewardship, consent, commercialization",
+        "upright_sha256": "7a2687f795039630afa4944a246348d2ea9427d28a1f7ef0d570993784ee4376",
+        "reversed_sha256": "50621364447c8a605b3a61afdd1cabcfafa1bebca09bd3cfd52eed2f1a88faba"
+      },
+      "first_glance_intent": "A meaningful mark cannot be reduced to an object for sale",
+      "recognition_evidence": [
+        "Mark with accountable keeper",
+        "open recipient choice",
+        "boundary on possession"
+      ],
+      "causal_visual_mechanism": "Use or exchange alters access without transferring personhood",
+      "meaningful_space": "The inalienable region is guarded",
+      "misread_risk": "Price tag, merchandise ornament, or purity badge",
+      "reversed_shadow_tension": "Stewardship turns to commodification or shaming",
+      "contrast_against": [
+        "Seven of Hearings",
+        "Seven of Paths",
+        "Seven of Returns"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A meaningful mark cannot be reduced to an object for sale?",
+        "Compare against Seven of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-71",
+      "name": "Eight of Sigils",
+      "canonical_index": 71,
+      "suit": "sigils",
+      "rank": "Eight",
+      "sort_order": "407",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Eight of Sigils",
+        "canonical_keywords": "The Occupied Pause, restraint, space within symbol, unsaid",
+        "upright_sha256": "b28af59fff9cb84f341be7b5802638fc88970a4187ea37ada429ce7bfed6da5e",
+        "reversed_sha256": "c47fd133c373faffe114a36be6aeacf43f88c5d25564dffb8f71b85fce90c700"
+      },
+      "first_glance_intent": "A deliberate unsaid space is part of the sign itself",
+      "recognition_evidence": [
+        "Readable partial mark",
+        "intentional omission",
+        "room for interpretation"
+      ],
+      "causal_visual_mechanism": "A mark is designed to leave a meaningful region uninscribed",
+      "meaningful_space": "Negative space lives inside the sign, not just at the edge",
+      "misread_risk": "Blank accident or a page crowded with answers",
+      "reversed_shadow_tension": "Ambiguity hides a demand or explanation erases the opening",
+      "contrast_against": [
+        "Eight of Hearings",
+        "Eight of Paths",
+        "Eight of Returns"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A deliberate unsaid space is part of the sign itself?",
+        "Compare against Eight of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-72",
+      "name": "Nine of Sigils",
+      "canonical_index": 72,
+      "suit": "sigils",
+      "rank": "Nine",
+      "sort_order": "408",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Nine of Sigils",
+        "canonical_keywords": "living symbol, return, altered interpretation, shared memory, revision",
+        "upright_sha256": "bad2d71a065fa8029a755251b22b2cd835b04b68958614ee54e29871f2a7b901",
+        "reversed_sha256": "0d4214c24b02d3a54a2ae643e198fed694141b5128085e9c6b03bc15b19ee021"
+      },
+      "first_glance_intent": "The same sign acquires new life through another reading",
+      "recognition_evidence": [
+        "Recognizable older motif",
+        "transformed encounter",
+        "record of the new reading"
+      ],
+      "causal_visual_mechanism": "An observer's history changes the sign's relational field",
+      "meaningful_space": "A new interpretation remains possible",
+      "misread_risk": "Frozen relic or arbitrary new logo",
+      "reversed_shadow_tension": "The past mark is enforced as the only valid experience",
+      "contrast_against": [
+        "Nine of Hearings",
+        "Nine of Paths",
+        "Nine of Returns"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: The same sign acquires new life through another reading?",
+        "Compare against Nine of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-73",
+      "name": "Ten of Sigils",
+      "canonical_index": 73,
+      "suit": "sigils",
+      "rank": "Ten",
+      "sort_order": "409",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Ten of Sigils",
+        "canonical_keywords": "Aftermath, enduring consequence, responsible legacy, open future",
+        "upright_sha256": "98539c5dd2d0ffa0a409680c5027c64d78ad334207cf3240a6880e1909912e71",
+        "reversed_sha256": "4d3add614dd6dc69a9d1a74e658034a41770bb704f2e6cc4e08d1a4409641d07"
+      },
+      "first_glance_intent": "A sign continues to have consequences after its ritual ends",
+      "recognition_evidence": [
+        "Past inscription",
+        "visible downstream effects",
+        "optional release"
+      ],
+      "causal_visual_mechanism": "The mark changes later actions rather than remaining only an icon",
+      "meaningful_space": "The future stays open beyond the artifact",
+      "misread_risk": "An eternal monument or disposable trend",
+      "reversed_shadow_tension": "Legacy becomes loyalty test or forgotten duty",
+      "contrast_against": [
+        "Ten of Hearings",
+        "Ten of Paths",
+        "Ten of Returns"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A sign continues to have consequences after its ritual ends?",
+        "Compare against Ten of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-74",
+      "name": "Ache of Sigils",
+      "canonical_index": 74,
+      "suit": "sigils",
+      "rank": "Ache",
+      "sort_order": "410",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Ache of Sigils",
+        "canonical_keywords": "A Mark That Hurts, identity, tender association, cost",
+        "upright_sha256": "7ee56ee93ff8f87990b7199e6d05c869cdf45228a43ae1fb936ebf5e6327f493",
+        "reversed_sha256": "30c48b0bc122af95471efb76e1b5cbce3c2983185a188755cf1b6b203808a1a9"
+      },
+      "first_glance_intent": "A sign carries tender memory without commanding its bearer",
+      "recognition_evidence": [
+        "Small charged mark",
+        "personal distance",
+        "choice to hold or set aside"
+      ],
+      "causal_visual_mechanism": "An association changes the field near a mark without forcing contact",
+      "meaningful_space": "Space for the bearer to withdraw",
+      "misread_risk": "Wound badge or demand to display grief",
+      "reversed_shadow_tension": "The sign becomes an obligatory wound",
+      "contrast_against": [
+        "Ache of Hearings",
+        "Ache of Paths",
+        "Ache of Returns"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A sign carries tender memory without commanding its bearer?",
+        "Compare against Ache of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-75",
+      "name": "Voice of Sigils",
+      "canonical_index": 75,
+      "suit": "sigils",
+      "rank": "Voice",
+      "sort_order": "411",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Voice of Sigils",
+        "canonical_keywords": "Calling Without Owning, naming, invitation, address",
+        "upright_sha256": "263727b8070553b03499cb61b0f7b7bfe47bdc3c2147c7b1e9dd4f95617b6488",
+        "reversed_sha256": "c4fd4af9491349514c43cfbdadc91cfcd727dc4032a1cf1f9529d3f6439cceaa"
+      },
+      "first_glance_intent": "A name is offered as a call, not as ownership",
+      "recognition_evidence": [
+        "An outgoing address",
+        "a mark awaiting answer",
+        "permission to rename"
+      ],
+      "causal_visual_mechanism": "A spoken symbol approaches another being without binding it",
+      "meaningful_space": "An open channel for acceptance, correction, or refusal",
+      "misread_risk": "Summoning seal, ownership stamp, or command",
+      "reversed_shadow_tension": "Naming becomes capture",
+      "contrast_against": [
+        "Voice of Hearings",
+        "Voice of Paths",
+        "Voice of Returns"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A name is offered as a call, not as ownership?",
+        "Compare against Voice of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-76",
+      "name": "Field of Sigils",
+      "canonical_index": 76,
+      "suit": "sigils",
+      "rank": "Field",
+      "sort_order": "412",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Field of Sigils",
+        "canonical_keywords": "Atmosphere of a True Sign, shared context, culture, resonance",
+        "upright_sha256": "e84479d8ed6535fb03787241e71c90e5fd5336764e6061e5e2c7e6a5ce654173",
+        "reversed_sha256": "d4ef56b2f43621efd50d32bca3e751cb03a7ab0ad60c84f70d5cbc04fbf6c29a"
+      },
+      "first_glance_intent": "A symbol shapes a shared atmosphere that people may question",
+      "recognition_evidence": [
+        "Several participants around a sign",
+        "cultural field",
+        "differentiated access"
+      ],
+      "causal_visual_mechanism": "The mark affects conditions for encounter without substituting for conduct",
+      "meaningful_space": "Space for excluded voices to enter or challenge the context",
+      "misread_risk": "Cult emblem, total atmosphere, or prestige wallpaper",
+      "reversed_shadow_tension": "Shared meaning becomes exclusion or pageantry",
+      "contrast_against": [
+        "Field of Hearings",
+        "Field of Paths",
+        "Field of Returns"
+      ],
+      "reading_difficulty": "general",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: A symbol shapes a shared atmosphere that people may question?",
+        "Compare against Field of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    },
+    {
+      "profile_version": "velomere-legibility/10",
+      "id": "v10-card-77",
+      "name": "Witness of Sigils",
+      "canonical_index": 77,
+      "suit": "sigils",
+      "rank": "Witness",
+      "sort_order": "413",
+      "source": {
+        "canonical_file": "source_baseline/canonical_cards.csv",
+        "canonical_name": "Witness of Sigils",
+        "canonical_keywords": "mirror of mirrors, recursive recognition, interpretive humility, testimony, open ending",
+        "upright_sha256": "96d0c49a46691f2e7e7b8672202c88359a3145b330f7e7c731fe84b628dfaff6",
+        "reversed_sha256": "da1a84cdb79b9a48cad0aacbd032cc6e41b2c43f53acda920d9ab38478d71f9c"
+      },
+      "first_glance_intent": "The observer's reading becomes part of what is being observed",
+      "recognition_evidence": [
+        "Sign",
+        "first witness",
+        "second interpretive angle",
+        "an unclosed recursive question"
+      ],
+      "causal_visual_mechanism": "Feedback makes the observer visible as one participant in interpretation",
+      "meaningful_space": "An unfinished mirror-to-mirror interval",
+      "misread_risk": "A final all-knowing seal or endlessly identical reflections",
+      "reversed_shadow_tension": "Interpretation becomes possession or evidence-free relativism",
+      "contrast_against": [
+        "Witness of Hearings",
+        "Witness of Paths",
+        "Witness of Returns"
+      ],
+      "reading_difficulty": "conceptual",
+      "identity_not_template": true,
+      "interpretation_only_not_new_canon": true,
+      "test_prompts": [
+        "Without seeing the title, what action or relationship seems to be occurring in this image?",
+        "Which visible features support or contradict this impression: The observer's reading becomes part of what is being observed?",
+        "Compare against Witness of Hearings without titles: which is more consistent with the visual evidence, and why?"
+      ]
+    }
+  ],
+  "back": {
+    "profile_version": "velomere-legibility/10",
+    "id": "v10-shared-back",
+    "name": "Dendrite / Common Reverse",
+    "role": "shared-undrawn-field",
+    "source": {
+      "lexicon": "canon/ORIGINAL_CANONIZATION_VERBATIM.txt",
+      "deck_back_baseline": "existing v9 Dendrite; preserve until replacement passes tests"
+    },
+    "first_glance_intent": "A living field of two-ness, separation, possible relation, and return before any one card is revealed.",
+    "recognition_evidence": [
+      "At least two distinct relational influences that do not merge into a single seal",
+      "A perceivable interval or invitation between those influences",
+      "A return or recursive responsiveness that remains unfinished",
+      "A shared field capable of receiving different cards without preselecting an interpretation"
+    ],
+    "causal_visual_mechanism": "Derive an orientation-neutral undrawn-encounter field from the lexicon; vary distances, influences, shared pressure and return possibilities while preserving 180-degree visual parity; no individual card identity or affinity is revealed.",
+    "meaningful_space": "The untaken-card field remains open anywhere; empty area must be intentional and may be central, peripheral, enclosed, interrupted or spanning edges.",
+    "misread_risk": "A merged couple logo, infinity stamp, solitary static mascot, arbitrary mystic wallpaper, orientation cue, or a miniature face card without its name.",
+    "reversed_shadow_tension": "Back has no upright/reversed reading and must not disclose orientation.",
+    "contrast_against": [
+      "The Velomere",
+      "The Null",
+      "Void",
+      "The Dance"
+    ],
+    "physical_card": "1400x2300 pixels, shared identical back for all 78 cards, 3.5x5.75 long tarot ratio",
+    "rotational_neutrality": {
+      "required": true,
+      "half_turn_mean_rgb_difference_target_255": 0.25,
+      "forbid_asymmetric_title_or_watermark": true,
+      "image_comparison_required": true,
+      "optical_balance_manual_check": true
+    },
+    "accessibility": "Do not assume a nonvisual reader can infer the deck philosophy from the pattern; provide a concise accessible back description and deck overview.",
+    "render_is_shared": true,
+    "no_card_affinity_markers": true,
+    "not_a_drawable_card": true,
+    "test_prompts": [
+      "What kind of encounter does this field invite, without suggesting any particular card?",
+      "Does any feature distinguish upright from reversed?",
+      "Is the visual field distinct from each face and meaningful without being a logo?"
+    ]
+  }
+}

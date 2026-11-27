@@ -1,0 +1,1 @@
+- User is working on an app called "Threshold of Solace" (https://threshold-of-solace.grok.me) — draw a card, learn its meaning, keep a journal. Sign-in with Gmail or Grok. [2026-11-10]

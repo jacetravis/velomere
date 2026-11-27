@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="525" viewBox="0 0 840 525" role="img" aria-label="The Week 7-card layout">
+<defs><linearGradient id="bg" x2="0" y2="1"><stop stop-color="#101725"/><stop offset="1" stop-color="#070b14"/></linearGradient><linearGradient id="shine" x2="0" y2="1"><stop stop-color="#2c3b56"/><stop offset="1" stop-color="#172338"/></linearGradient></defs>
+<rect width="840" height="525" rx="34" fill="url(#bg)"/>
+<rect x="11" y="11" width="818" height="503" rx="29" fill="none" stroke="#263248" stroke-width="2"/>
+<text x="44" y="482" fill="#e6ecf7" font-size="29" font-family="Georgia,serif">The Week</text>
+<text x="796" y="480" text-anchor="end" fill="#91a4c0" font-size="23" font-family="Arial,sans-serif">7 cards</text>
+<g transform="translate(175.2,185.2)">
+<rect x="-22" y="-36.08" width="44" height="72.16" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-14" y="-28.08" width="28" height="56.16" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -7.7 0 L 0 -7.7 L 7.7 0 L 0 7.7 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="175.2" cy="185.2" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="175.2" y="191.2" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">1</text>
+<g transform="translate(338.4,185.2)">
+<rect x="-22" y="-36.08" width="44" height="72.16" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-14" y="-28.08" width="28" height="56.16" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -7.7 0 L 0 -7.7 L 7.7 0 L 0 7.7 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="338.4" cy="185.2" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="338.4" y="191.2" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">2</text>
+<g transform="translate(501.6,185.2)">
+<rect x="-22" y="-36.08" width="44" height="72.16" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-14" y="-28.08" width="28" height="56.16" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -7.7 0 L 0 -7.7 L 7.7 0 L 0 7.7 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="501.6" cy="185.2" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="501.6" y="191.2" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">3</text>
+<g transform="translate(664.8,185.2)">
+<rect x="-22" y="-36.08" width="44" height="72.16" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-14" y="-28.08" width="28" height="56.16" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -7.7 0 L 0 -7.7 L 7.7 0 L 0 7.7 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="664.8" cy="185.2" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="664.8" y="191.2" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">4</text>
+<g transform="translate(270.4,329.2)">
+<rect x="-22" y="-36.08" width="44" height="72.16" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-14" y="-28.08" width="28" height="56.16" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -7.7 0 L 0 -7.7 L 7.7 0 L 0 7.7 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="270.4" cy="329.2" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="270.4" y="335.2" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">5</text>
+<g transform="translate(420.0,329.2)">
+<rect x="-22" y="-36.08" width="44" height="72.16" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-14" y="-28.08" width="28" height="56.16" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -7.7 0 L 0 -7.7 L 7.7 0 L 0 7.7 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="420.0" cy="329.2" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="420.0" y="335.2" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">6</text>
+<g transform="translate(569.6,329.2)">
+<rect x="-22" y="-36.08" width="44" height="72.16" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-14" y="-28.08" width="28" height="56.16" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -7.7 0 L 0 -7.7 L 7.7 0 L 0 7.7 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="569.6" cy="329.2" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="569.6" y="335.2" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">7</text>
+</svg>

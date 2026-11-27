@@ -1,0 +1,16 @@
+node_modules
+.git
+.project_id
+.github_repo
+.env
+.env.*
+PHOTOS
+attachments
+artifacts
+screenshots
+public/cards/owned
+public/velomere-photo/*.zip
+data/cards/owned
+archive
+vendor
+.vercel

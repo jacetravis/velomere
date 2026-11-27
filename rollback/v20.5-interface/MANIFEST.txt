@@ -1,0 +1,3 @@
+v20.5-interface
+Taken before navigation, settings, ceremony, move/copy, and 100MB deck import.
+Routes and Encounter engine were not rewritten.

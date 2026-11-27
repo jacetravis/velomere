@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 2300" width="1400" height="2300">
+  <defs>
+    <filter id="codex-settle" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+  </defs>
+  <g id="codex-overlay" data-style="velomere_codex_becoming_v1" data-contacts="0">
+    <g id="interval-field" data-operator="INTERVAL" data-epistemic="attested" data-event="" transform="translate(154 1058)">
+    <g transform="translate(-62 -58) scale(1.22)">
+      <ellipse cx="50" cy="48" rx="58" ry="50" fill="#07090f" opacity="0.55" filter="url(#codex-settle)"/>
+      <g fill="none" stroke="#140e08" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(0.6 1.4)"><path d="M15 24 V72 M85 24 V72"/><path d="M24 80 H76" stroke-dasharray="4 5"/></g>
+      <g fill="none" stroke="#E7C98F" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"><path d="M15 24 V72 M85 24 V72"/><path d="M24 80 H76" stroke-dasharray="4 5"/></g>
+    </g>
+  </g>
+<g id="permission-gate" data-operator="PERMISSION" data-epistemic="attested-by-meaning" data-event="" transform="translate(154 414)">
+    <g transform="translate(-62 -58) scale(1.22)">
+      <ellipse cx="50" cy="48" rx="58" ry="50" fill="#07090f" opacity="0.55" filter="url(#codex-settle)"/>
+      <g fill="none" stroke="#140e08" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(0.6 1.4)"><path d="M20 16 V42 M20 59 V84 M80 16 V42 M80 59 V84"/><path d="M20 43 L34 56 M80 43 L66 56"/></g>
+      <g fill="none" stroke="#E7C98F" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 16 V42 M20 59 V84 M80 16 V42 M80 59 V84"/><path d="M20 43 L34 56 M80 43 L66 56"/></g>
+    </g>
+  </g>
+<g id="shadow-countertrace" data-operator="SHADOW" data-epistemic="counterreading" data-event="" transform="translate(1246 2070)" opacity="0.55">
+    <g transform="translate(-62 -58) scale(1.22)">
+      <ellipse cx="50" cy="48" rx="58" ry="50" fill="#07090f" opacity="0.55" filter="url(#codex-settle)"/>
+      <g fill="none" stroke="#140e08" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(0.6 1.4)"><path d="M16 74 C8 18 78 6 84 42" stroke-dasharray="3 6"/><path d="M84 42 L74 36" stroke-dasharray="3 6"/></g>
+      <g fill="none" stroke="#9479C2" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"><path d="M16 74 C8 18 78 6 84 42" stroke-dasharray="3 6"/><path d="M84 42 L74 36" stroke-dasharray="3 6"/></g>
+    </g>
+  </g>
+    
+  </g>
+</svg>

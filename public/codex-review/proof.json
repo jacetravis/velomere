@@ -1,0 +1,89 @@
+{
+  "approved": false,
+  "locked": false,
+  "deckWrite": false,
+  "date": "2026-11-14",
+  "questionParents": [
+    "Void",
+    "Ace of Hearings"
+  ],
+  "questionJoins": [
+    "host-join",
+    "guest-join",
+    "shared-stem"
+  ],
+  "results": [
+    {
+      "file": "velomere-veiled-60.png",
+      "styleId": "veiled_luminescence",
+      "freedom": 60,
+      "sha256": "103ef2ef71e5ff5181ee7a3d4257bc721edf810b926361c79464ead7040df6f5",
+      "width": 1400,
+      "height": 2300,
+      "model": "grok-imagine-image-2.0",
+      "generationMode": "scene-first-then-reconcile",
+      "contacts": null,
+      "approved": false
+    },
+    {
+      "file": "velomere-codex-20.png",
+      "styleId": "velomere_codex_becoming_v1",
+      "freedom": 20,
+      "sha256": "fb99f9aa75bb14e768604345a2a5eabf99f29843287f78753157c404c894b8f2",
+      "width": 1400,
+      "height": 2300,
+      "model": "grok-imagine-image-2.0",
+      "generationMode": "geometry-edit",
+      "contacts": 0,
+      "approved": false
+    },
+    {
+      "file": "velomere-codex-60.png",
+      "styleId": "velomere_codex_becoming_v1",
+      "freedom": 60,
+      "sha256": "1f1e763aafb4e21b7c1d287e6f372d065555762f38ac3094a78cd8ca825ff798",
+      "width": 1400,
+      "height": 2300,
+      "model": "grok-imagine-image-2.0",
+      "generationMode": "scene-first-then-reconcile",
+      "contacts": 0,
+      "approved": false
+    },
+    {
+      "file": "question-codex-60.png",
+      "styleId": "velomere_codex_becoming_v1",
+      "freedom": 60,
+      "sha256": "7e51cf4299688c4f536af3bff125213a45ca7076ae53d6ff1f3d4ce5fe681a6c",
+      "width": 1400,
+      "height": 2300,
+      "model": "grok-imagine-image-2.0",
+      "generationMode": "scene-first-then-reconcile",
+      "contacts": 3,
+      "approved": false
+    },
+    {
+      "file": "velomere-codex-95.png",
+      "styleId": "velomere_codex_becoming_v1",
+      "freedom": 95,
+      "sha256": "2e0570f245499dfe3bbf90f5b087da7c84ae5f7f269fd29cbe7f61607c0aaa5d",
+      "width": 1400,
+      "height": 2300,
+      "model": "grok-imagine-image-2.0",
+      "generationMode": "scene-first-then-reconcile",
+      "contacts": 0,
+      "approved": false
+    },
+    {
+      "file": "null-codex-60.png",
+      "styleId": "velomere_codex_becoming_v1",
+      "freedom": 60,
+      "sha256": "4344d02fc0e4dbee6f24c9446e9b8e62932fefd86e277b6a6add4e7ad3f2ef51",
+      "width": 1400,
+      "height": 2300,
+      "model": "grok-imagine-image-2.0",
+      "generationMode": "scene-first-then-reconcile",
+      "contacts": 0,
+      "approved": false
+    }
+  ]
+}

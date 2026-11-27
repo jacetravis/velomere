@@ -1,0 +1,37 @@
+node_modules/
+.project_id
+.github_repo
+.env
+.env.*
+
+# Masters and transfer files. Create uses velomere-crystal/PHOTO_WORK.
+PHOTOS/
+attachments/
+artifacts/
+screenshots/
+
+# Local copies of saved decks. The published app reads them from the database.
+public/cards/owned/
+
+# Same copies, written beside the database. Not part of the published site.
+data/cards/owned/
+
+# Solace seed texts stay on this machine. They are not part of the public repository.
+src/lib/solace/base-*.txt
+src/lib/solace/seed.txt
+src/lib/solace/cycle.txt
+src/lib/solace/sources/
+rollback/solace-pre-seed-*/
+
+# Unused Python runtime archive. The published generator is Node.
+vendor/
+
+# Full press archives. The three reference sheets stay.
+public/velomere-photo/*.zip
+
+# Recreated by the production build.
+.vercel/
+
+__pycache__/
+*.pyc
+

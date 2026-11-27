@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="525" viewBox="0 0 840 525" role="img" aria-label="One Card 1-card layout">
+<defs><linearGradient id="bg" x2="0" y2="1"><stop stop-color="#101725"/><stop offset="1" stop-color="#070b14"/></linearGradient><linearGradient id="shine" x2="0" y2="1"><stop stop-color="#2c3b56"/><stop offset="1" stop-color="#172338"/></linearGradient></defs>
+<rect width="840" height="525" rx="34" fill="url(#bg)"/>
+<rect x="11" y="11" width="818" height="503" rx="29" fill="none" stroke="#263248" stroke-width="2"/>
+<text x="44" y="482" fill="#e6ecf7" font-size="29" font-family="Georgia,serif">One Card</text>
+<text x="796" y="480" text-anchor="end" fill="#91a4c0" font-size="23" font-family="Arial,sans-serif">1 card</text>
+<g transform="translate(420.00,247.50) rotate(0)">
+<rect x="-47.5" y="-78.0" width="95" height="156.0" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-39.5" y="-70.0" width="79" height="140.0" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -20.9 0 L 0 -20.9 L 20.9 0 L 0 20.9 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="420.00" cy="247.50" r="17" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="420.00" y="253.50" text-anchor="middle" font-size="18" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">1</text>
+</svg>

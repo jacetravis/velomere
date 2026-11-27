@@ -1,0 +1,4 @@
+v18.1 heightfield snapshot, taken before v19 companion-art edits.
+Restore by copying these files back over src/, src/routes/, and velomere-crystal/engine/.
+Does not include the v18.0 rollback. Do not overwrite rollback/v18.0-heightfield.
+Backend at snapshot: procedural_heightfield/18.1, default style veiled_luminescence.

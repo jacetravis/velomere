@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="525" viewBox="0 0 840 525" role="img" aria-label="Horseshoe 7-card layout">
+<defs><linearGradient id="bg" x2="0" y2="1"><stop stop-color="#101725"/><stop offset="1" stop-color="#070b14"/></linearGradient><linearGradient id="shine" x2="0" y2="1"><stop stop-color="#2c3b56"/><stop offset="1" stop-color="#172338"/></linearGradient></defs>
+<rect width="840" height="525" rx="34" fill="url(#bg)"/>
+<rect x="11" y="11" width="818" height="503" rx="29" fill="none" stroke="#263248" stroke-width="2"/>
+<text x="44" y="482" fill="#e6ecf7" font-size="29" font-family="Georgia,serif">Horseshoe</text>
+<text x="796" y="480" text-anchor="end" fill="#91a4c0" font-size="23" font-family="Arial,sans-serif">7 cards</text>
+<g transform="translate(188.8,142.0)">
+<rect x="-24" y="-39.36" width="48" height="78.72" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-16" y="-31.36" width="32" height="62.72" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -8.4 0 L 0 -8.4 L 8.4 0 L 0 8.4 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="188.8" cy="142.0" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="188.8" y="148.0" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">1</text>
+<g transform="translate(270.4,214.0)">
+<rect x="-24" y="-39.36" width="48" height="78.72" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-16" y="-31.36" width="32" height="62.72" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -8.4 0 L 0 -8.4 L 8.4 0 L 0 8.4 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="270.4" cy="214.0" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="270.4" y="220.0" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">2</text>
+<g transform="translate(352.0,300.4)">
+<rect x="-24" y="-39.36" width="48" height="78.72" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-16" y="-31.36" width="32" height="62.72" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -8.4 0 L 0 -8.4 L 8.4 0 L 0 8.4 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="352.0" cy="300.4" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="352.0" y="306.4" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">3</text>
+<g transform="translate(420.0,350.8)">
+<rect x="-24" y="-39.36" width="48" height="78.72" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-16" y="-31.36" width="32" height="62.72" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -8.4 0 L 0 -8.4 L 8.4 0 L 0 8.4 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="420.0" cy="350.8" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="420.0" y="356.8" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">4</text>
+<g transform="translate(488.0,300.4)">
+<rect x="-24" y="-39.36" width="48" height="78.72" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-16" y="-31.36" width="32" height="62.72" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -8.4 0 L 0 -8.4 L 8.4 0 L 0 8.4 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="488.0" cy="300.4" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="488.0" y="306.4" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">5</text>
+<g transform="translate(569.6,214.0)">
+<rect x="-24" y="-39.36" width="48" height="78.72" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-16" y="-31.36" width="32" height="62.72" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -8.4 0 L 0 -8.4 L 8.4 0 L 0 8.4 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="569.6" cy="214.0" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="569.6" y="220.0" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">6</text>
+<g transform="translate(651.2,142.0)">
+<rect x="-24" y="-39.36" width="48" height="78.72" rx="9" fill="#0b111d" stroke="#c7b183" stroke-width="3"/>
+<rect x="-16" y="-31.36" width="32" height="62.72" rx="5" fill="url(#shine)" stroke="#8c9fba" stroke-opacity=".55"/>
+<path d="M -8.4 0 L 0 -8.4 L 8.4 0 L 0 8.4 Z" fill="none" stroke="#b5a477" stroke-width="1.8" opacity=".6"/>
+</g>
+<circle cx="651.2" cy="142.0" r="15" fill="#e7edf7" stroke="#1a273c" stroke-width="2"/>
+<text x="651.2" y="148.0" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" font-weight="bold" fill="#0c1625">7</text>
+</svg>

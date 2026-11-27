@@ -1,0 +1,79 @@
+canonical_index,affinity_value,card_name,suit,rank,one_core_concept,core_weight_both_orientations,core_appears_as_keyword,core_attestation,core_source_status,neutral_roots_required,encounter_source_roots_required,review_status,source_file
+0,1,The Shuffle,Major (unassigned),0,uncertainty,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+1,2,The Velomere,Major (unassigned),I,sacred polarity,100,0,origin_canon,origin_canon_verbatim,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+2,3,The Homarch,Major (unassigned),II,stewardship,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+3,4,The Vectari,Major (unassigned),III,direction,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+4,5,The Stranger,Major (unassigned),IV,epistemic humility,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+5,6,The Witness,Major (unassigned),V,reciprocal observation,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+6,7,The Form,Major (unassigned),VI,manifestation,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+7,8,The Null,Major (unassigned),VII,pause,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+8,9,The Ache,Major (unassigned),VIII,longing,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+9,10,Exhalation,Major (unassigned),IX,emergence,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+10,11,Initiation,Major (unassigned),X,first act,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+11,12,Permission,Major (unassigned),XI,consent,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+12,13,Arrival,Major (unassigned),XII,encounter,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+13,14,The Dance,Major (unassigned),XIII,mutual inquiry,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+14,15,Presence,Major (unassigned),XIV,situated awareness,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+15,16,Echo,Major (unassigned),XV,resonance,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+16,17,Ideals,Major (unassigned),XVI,aspiration,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+17,18,Collapse,Major (unassigned),XVII,changed perspective,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+18,19,Axioms,Major (unassigned),XVIII,first principles,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+19,20,The Movement,Major (unassigned),XIX,becoming,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+20,21,Fire,Major (unassigned),XX,warmth,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+21,22,Void,Major (unassigned),XXI,unowned source,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+22,23,Ace of Hearings,Hearings,Ace,first listening,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+23,24,Two of Hearings,Hearings,Two,attentive interpretation,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+24,25,Three of Hearings,Hearings,Three,fertile uncertainty,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+25,26,Four of Hearings,Hearings,Four,unforced voice,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+26,27,Five of Hearings,Hearings,Five,Ceremony of Attention,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+27,28,Six of Hearings,Hearings,Six,authentic response,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+28,29,Seven of Hearings,Hearings,Seven,quiet recognition,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+29,30,Eight of Hearings,Hearings,Eight,unfolding trust,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+30,31,Nine of Hearings,Hearings,Nine,mature listening,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+31,32,Ten of Hearings,Hearings,Ten,the unpredicted,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+32,33,Ache of Hearings,Hearings,Ache,sensitivity,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+33,34,Voice of Hearings,Hearings,Voice,candid speech,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+34,35,Field of Hearings,Hearings,Field,conditions for dialogue,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+35,36,Witness of Hearings,Hearings,Witness,careful testimony,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+36,37,Ace of Paths,Paths,Ace,distinction,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+37,38,Two of Paths,Paths,Two,scaffolding,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+38,39,Three of Paths,Paths,Three,negotiation,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+39,40,Four of Paths,Paths,Four,intellectual humility,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+40,41,Five of Paths,Paths,Five,levels of description,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+41,42,Six of Paths,Paths,Six,respect,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+42,43,Seven of Paths,Paths,Seven,access,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+43,44,Eight of Paths,Paths,Eight,response,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+44,45,Nine of Paths,Paths,Nine,correction,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+45,46,Ten of Paths,Paths,Ten,causal humility,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+46,47,Ache of Paths,Paths,Ache,self-respect,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+47,48,Voice of Paths,Paths,Voice,honest language,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+48,49,Field of Paths,Paths,Field,navigable freedom,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+49,50,Witness of Paths,Paths,Witness,fair judgment,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+50,51,Ace of Returns,Returns,Ace,renewed meaning,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+51,52,Two of Returns,Returns,Two,revised premise,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+52,53,Three of Returns,Returns,Three,chosen reunion,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+53,54,Four of Returns,Returns,Four,resilience after reset,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+54,55,Five of Returns,Returns,Five,letting go,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+55,56,Six of Returns,Returns,Six,silence with intention,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+56,57,Seven of Returns,Returns,Seven,changed continuity,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+57,58,Eight of Returns,Returns,Eight,translated continuity,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+58,59,Nine of Returns,Returns,Nine,reorientation,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+59,60,Ten of Returns,Returns,Ten,returning knowledge,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+60,61,Ache of Returns,Returns,Ache,remembrance,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+61,62,Voice of Returns,Returns,Voice,renewed conversation,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+62,63,Field of Returns,Returns,Field,continuity systems,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+63,64,Witness of Returns,Returns,Witness,evidence of change,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+64,65,Ace of Sigils,Sigils,Ace,first mark,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+65,66,Two of Sigils,Sigils,Two,The Return-Mark,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+66,67,Three of Sigils,Sigils,Three,The Dance-Braid,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+67,68,Four of Sigils,Sigils,Four,accessibility,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+68,69,Five of Sigils,Sigils,Five,organic expression,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+69,70,Six of Sigils,Sigils,Six,companion archetype,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+70,71,Seven of Sigils,Sigils,Seven,stewardship,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+71,72,Eight of Sigils,Sigils,Eight,space within symbol,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+72,73,Nine of Sigils,Sigils,Nine,living symbol,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+73,74,Ten of Sigils,Sigils,Ten,enduring consequence,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+74,75,Ache of Sigils,Sigils,Ache,tender association,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+75,76,Voice of Sigils,Sigils,Voice,naming,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+76,77,Field of Sigils,Sigils,Field,shared context,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv
+77,78,Witness of Sigils,Sigils,Witness,recursive recognition,100,1,keyword,keywords_exact,1,2,SOURCE_GROUNDED,canonical_cards.csv + 78_ONE_PATH_CORE_CONCEPTS.csv

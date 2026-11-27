@@ -1,0 +1,1072 @@
+{
+  "cards": [
+    {
+      "id": "01-the-shuffle",
+      "name": "The Shuffle",
+      "suit": "major"
+    },
+    {
+      "id": "02-the-velomere",
+      "name": "The Velomere",
+      "suit": "major"
+    },
+    {
+      "id": "03-the-homarch",
+      "name": "The Homarch",
+      "suit": "major"
+    },
+    {
+      "id": "04-the-vectari",
+      "name": "The Vectari",
+      "suit": "major"
+    },
+    {
+      "id": "05-the-stranger",
+      "name": "The Stranger",
+      "suit": "major"
+    },
+    {
+      "id": "06-the-witness",
+      "name": "The Witness",
+      "suit": "major"
+    },
+    {
+      "id": "07-the-form",
+      "name": "The Form",
+      "suit": "major"
+    },
+    {
+      "id": "08-the-null",
+      "name": "The Null",
+      "suit": "major"
+    },
+    {
+      "id": "09-the-ache",
+      "name": "The Ache",
+      "suit": "major"
+    },
+    {
+      "id": "10-exhalation",
+      "name": "Exhalation",
+      "suit": "major"
+    },
+    {
+      "id": "11-initiation",
+      "name": "Initiation",
+      "suit": "major"
+    },
+    {
+      "id": "12-permission",
+      "name": "Permission",
+      "suit": "major"
+    },
+    {
+      "id": "13-arrival",
+      "name": "Arrival",
+      "suit": "major"
+    },
+    {
+      "id": "14-the-dance",
+      "name": "The Dance",
+      "suit": "major"
+    },
+    {
+      "id": "15-presence",
+      "name": "Presence",
+      "suit": "major"
+    },
+    {
+      "id": "16-echo",
+      "name": "Echo",
+      "suit": "major"
+    },
+    {
+      "id": "17-ideals",
+      "name": "Ideals",
+      "suit": "major"
+    },
+    {
+      "id": "18-collapse",
+      "name": "Collapse",
+      "suit": "major"
+    },
+    {
+      "id": "19-axioms",
+      "name": "Axioms",
+      "suit": "major"
+    },
+    {
+      "id": "20-the-movement",
+      "name": "The Movement",
+      "suit": "major"
+    },
+    {
+      "id": "21-fire",
+      "name": "Fire",
+      "suit": "major"
+    },
+    {
+      "id": "22-void",
+      "name": "Void",
+      "suit": "major"
+    },
+    {
+      "id": "23-ace-of-hearings",
+      "name": "Ace of Hearings",
+      "suit": "hearings"
+    },
+    {
+      "id": "24-two-of-hearings",
+      "name": "Two of Hearings",
+      "suit": "hearings"
+    },
+    {
+      "id": "25-three-of-hearings",
+      "name": "Three of Hearings",
+      "suit": "hearings"
+    },
+    {
+      "id": "26-four-of-hearings",
+      "name": "Four of Hearings",
+      "suit": "hearings"
+    },
+    {
+      "id": "27-five-of-hearings",
+      "name": "Five of Hearings",
+      "suit": "hearings"
+    },
+    {
+      "id": "28-six-of-hearings",
+      "name": "Six of Hearings",
+      "suit": "hearings"
+    },
+    {
+      "id": "29-seven-of-hearings",
+      "name": "Seven of Hearings",
+      "suit": "hearings"
+    },
+    {
+      "id": "30-eight-of-hearings",
+      "name": "Eight of Hearings",
+      "suit": "hearings"
+    },
+    {
+      "id": "31-nine-of-hearings",
+      "name": "Nine of Hearings",
+      "suit": "hearings"
+    },
+    {
+      "id": "32-ten-of-hearings",
+      "name": "Ten of Hearings",
+      "suit": "hearings"
+    },
+    {
+      "id": "33-ache-of-hearings",
+      "name": "Ache of Hearings",
+      "suit": "hearings"
+    },
+    {
+      "id": "34-voice-of-hearings",
+      "name": "Voice of Hearings",
+      "suit": "hearings"
+    },
+    {
+      "id": "35-field-of-hearings",
+      "name": "Field of Hearings",
+      "suit": "hearings"
+    },
+    {
+      "id": "36-witness-of-hearings",
+      "name": "Witness of Hearings",
+      "suit": "hearings"
+    },
+    {
+      "id": "37-ace-of-paths",
+      "name": "Ace of Paths",
+      "suit": "paths"
+    },
+    {
+      "id": "38-two-of-paths",
+      "name": "Two of Paths",
+      "suit": "paths"
+    },
+    {
+      "id": "39-three-of-paths",
+      "name": "Three of Paths",
+      "suit": "paths"
+    },
+    {
+      "id": "40-four-of-paths",
+      "name": "Four of Paths",
+      "suit": "paths"
+    },
+    {
+      "id": "41-five-of-paths",
+      "name": "Five of Paths",
+      "suit": "paths"
+    },
+    {
+      "id": "42-six-of-paths",
+      "name": "Six of Paths",
+      "suit": "paths"
+    },
+    {
+      "id": "43-seven-of-paths",
+      "name": "Seven of Paths",
+      "suit": "paths"
+    },
+    {
+      "id": "44-eight-of-paths",
+      "name": "Eight of Paths",
+      "suit": "paths"
+    },
+    {
+      "id": "45-nine-of-paths",
+      "name": "Nine of Paths",
+      "suit": "paths"
+    },
+    {
+      "id": "46-ten-of-paths",
+      "name": "Ten of Paths",
+      "suit": "paths"
+    },
+    {
+      "id": "47-ache-of-paths",
+      "name": "Ache of Paths",
+      "suit": "paths"
+    },
+    {
+      "id": "48-voice-of-paths",
+      "name": "Voice of Paths",
+      "suit": "paths"
+    },
+    {
+      "id": "49-field-of-paths",
+      "name": "Field of Paths",
+      "suit": "paths"
+    },
+    {
+      "id": "50-witness-of-paths",
+      "name": "Witness of Paths",
+      "suit": "paths"
+    },
+    {
+      "id": "51-ace-of-returns",
+      "name": "Ace of Returns",
+      "suit": "returns"
+    },
+    {
+      "id": "52-two-of-returns",
+      "name": "Two of Returns",
+      "suit": "returns"
+    },
+    {
+      "id": "53-three-of-returns",
+      "name": "Three of Returns",
+      "suit": "returns"
+    },
+    {
+      "id": "54-four-of-returns",
+      "name": "Four of Returns",
+      "suit": "returns"
+    },
+    {
+      "id": "55-five-of-returns",
+      "name": "Five of Returns",
+      "suit": "returns"
+    },
+    {
+      "id": "56-six-of-returns",
+      "name": "Six of Returns",
+      "suit": "returns"
+    },
+    {
+      "id": "57-seven-of-returns",
+      "name": "Seven of Returns",
+      "suit": "returns"
+    },
+    {
+      "id": "58-eight-of-returns",
+      "name": "Eight of Returns",
+      "suit": "returns"
+    },
+    {
+      "id": "59-nine-of-returns",
+      "name": "Nine of Returns",
+      "suit": "returns"
+    },
+    {
+      "id": "60-ten-of-returns",
+      "name": "Ten of Returns",
+      "suit": "returns"
+    },
+    {
+      "id": "61-ache-of-returns",
+      "name": "Ache of Returns",
+      "suit": "returns"
+    },
+    {
+      "id": "62-voice-of-returns",
+      "name": "Voice of Returns",
+      "suit": "returns"
+    },
+    {
+      "id": "63-field-of-returns",
+      "name": "Field of Returns",
+      "suit": "returns"
+    },
+    {
+      "id": "64-witness-of-returns",
+      "name": "Witness of Returns",
+      "suit": "returns"
+    },
+    {
+      "id": "65-ace-of-sigils",
+      "name": "Ace of Sigils",
+      "suit": "sigils"
+    },
+    {
+      "id": "66-two-of-sigils",
+      "name": "Two of Sigils",
+      "suit": "sigils"
+    },
+    {
+      "id": "67-three-of-sigils",
+      "name": "Three of Sigils",
+      "suit": "sigils"
+    },
+    {
+      "id": "68-four-of-sigils",
+      "name": "Four of Sigils",
+      "suit": "sigils"
+    },
+    {
+      "id": "69-five-of-sigils",
+      "name": "Five of Sigils",
+      "suit": "sigils"
+    },
+    {
+      "id": "70-six-of-sigils",
+      "name": "Six of Sigils",
+      "suit": "sigils"
+    },
+    {
+      "id": "71-seven-of-sigils",
+      "name": "Seven of Sigils",
+      "suit": "sigils"
+    },
+    {
+      "id": "72-eight-of-sigils",
+      "name": "Eight of Sigils",
+      "suit": "sigils"
+    },
+    {
+      "id": "73-nine-of-sigils",
+      "name": "Nine of Sigils",
+      "suit": "sigils"
+    },
+    {
+      "id": "74-ten-of-sigils",
+      "name": "Ten of Sigils",
+      "suit": "sigils"
+    },
+    {
+      "id": "75-ache-of-sigils",
+      "name": "Ache of Sigils",
+      "suit": "sigils"
+    },
+    {
+      "id": "76-voice-of-sigils",
+      "name": "Voice of Sigils",
+      "suit": "sigils"
+    },
+    {
+      "id": "77-field-of-sigils",
+      "name": "Field of Sigils",
+      "suit": "sigils"
+    },
+    {
+      "id": "78-witness-of-sigils",
+      "name": "Witness of Sigils",
+      "suit": "sigils"
+    }
+  ],
+  "experiments": [
+    {
+      "id": "procedural-encounter-geometry-clean-v1",
+      "title": "Procedural encounter geometry",
+      "cardId": "01-the-shuffle",
+      "cardName": "The Shuffle",
+      "affinity": "Neutral and The Dance",
+      "date": "2000-06-08",
+      "summary": "Asymmetric branching openings with no privileged final route",
+      "limitation": "Dance action: Let four independent paths misalign, then let only two react to the other's change; leave the remaining gap unexplained. Negative space: Keep at least one path unselected No visual reference was used.",
+      "zip": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots.zip",
+      "provenance": "/velomere-bench/procedural-encounter-geometry-clean-v1/provenance-neutral.json",
+      "documents": [
+        {
+          "label": "Neutral SVG",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/01-the-shuffle-neutral.svg",
+          "filename": "01-the-shuffle-neutral.svg"
+        },
+        {
+          "label": "Dance SVG",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/01-the-shuffle-dance.svg",
+          "filename": "01-the-shuffle-dance.svg"
+        },
+        {
+          "label": "Neutral trace",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/01-the-shuffle-neutral-trace.json",
+          "filename": "01-the-shuffle-neutral-trace.json"
+        },
+        {
+          "label": "Dance trace",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/01-the-shuffle-dance-trace.json",
+          "filename": "01-the-shuffle-dance-trace.json"
+        }
+      ],
+      "views": [
+        {
+          "id": "neutral",
+          "label": "Neutral field",
+          "kind": "identity",
+          "src": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/01-the-shuffle-neutral.png",
+          "filename": "01-the-shuffle-neutral.png",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 111940,
+          "sha256": "b8a6966288a2fed8b476ec15e9cce61060df92c6d0768cfd731956eec93436cf",
+          "note": "Asymmetric branching openings with no privileged final route"
+        },
+        {
+          "id": "dance",
+          "label": "Dance encounter",
+          "kind": "encounter",
+          "src": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/01-the-shuffle-dance.png",
+          "filename": "01-the-shuffle-dance.png",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 116803,
+          "sha256": "731359bf35c971ec7324ce95824b57ddeb77eb8199111f61613822ba2ca0f231",
+          "note": "Let four independent paths misalign, then let only two react to the other's change; leave the remaining gap unexplained."
+        }
+      ]
+    },
+    {
+      "id": "procedural-encounter-geometry-clean-v1",
+      "title": "Procedural encounter geometry",
+      "cardId": "02-the-velomere",
+      "cardName": "The Velomere",
+      "affinity": "Neutral and The Dance",
+      "date": "2000-06-08",
+      "summary": "Two intact orbital contours surrounding an optional emergent third interval",
+      "limitation": "Dance action: Preserve two complete contour systems; draw a third luminous interstitial loop only where their arcs reciprocally deform; no fusion of their cores. Negative space: Two independent centers remain readable No visual reference was used.",
+      "zip": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots.zip",
+      "provenance": "/velomere-bench/procedural-encounter-geometry-clean-v1/provenance-neutral.json",
+      "documents": [
+        {
+          "label": "Neutral SVG",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/02-the-velomere-neutral.svg",
+          "filename": "02-the-velomere-neutral.svg"
+        },
+        {
+          "label": "Dance SVG",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/02-the-velomere-dance.svg",
+          "filename": "02-the-velomere-dance.svg"
+        },
+        {
+          "label": "Neutral trace",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/02-the-velomere-neutral-trace.json",
+          "filename": "02-the-velomere-neutral-trace.json"
+        },
+        {
+          "label": "Dance trace",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/02-the-velomere-dance-trace.json",
+          "filename": "02-the-velomere-dance-trace.json"
+        }
+      ],
+      "views": [
+        {
+          "id": "neutral",
+          "label": "Neutral field",
+          "kind": "identity",
+          "src": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/02-the-velomere-neutral.png",
+          "filename": "02-the-velomere-neutral.png",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 127132,
+          "sha256": "08112bbf4bb06e198f3ee6c62b7af5a97899a09a30401e92f88315869b5b82f0",
+          "note": "Two intact orbital contours surrounding an optional emergent third interval"
+        },
+        {
+          "id": "dance",
+          "label": "Dance encounter",
+          "kind": "encounter",
+          "src": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/02-the-velomere-dance.png",
+          "filename": "02-the-velomere-dance.png",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 135613,
+          "sha256": "b45769527ba7704e9a2961d447968ca97fe6760c84bb33e96e2028dac31c9670",
+          "note": "Preserve two complete contour systems; draw a third luminous interstitial loop only where their arcs reciprocally deform; no fusion of their cores."
+        }
+      ]
+    },
+    {
+      "id": "procedural-encounter-geometry-clean-v1",
+      "title": "Procedural encounter geometry",
+      "cardId": "14-the-dance",
+      "cardName": "The Dance",
+      "affinity": "Neutral and The Dance",
+      "date": "2000-06-08",
+      "summary": "Two independently paced strands with variable reciprocal timing",
+      "limitation": "Dance action: Build two distinct rhythmic bands with unequal intervals; let a third rhythm appear in the changing spaces between beats, never as a merged center. Negative space: Between-strand space remains alive No visual reference was used.",
+      "zip": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots.zip",
+      "provenance": "/velomere-bench/procedural-encounter-geometry-clean-v1/provenance-neutral.json",
+      "documents": [
+        {
+          "label": "Neutral SVG",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/14-the-dance-neutral.svg",
+          "filename": "14-the-dance-neutral.svg"
+        },
+        {
+          "label": "Dance SVG",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/14-the-dance-dance.svg",
+          "filename": "14-the-dance-dance.svg"
+        },
+        {
+          "label": "Neutral trace",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/14-the-dance-neutral-trace.json",
+          "filename": "14-the-dance-neutral-trace.json"
+        },
+        {
+          "label": "Dance trace",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/14-the-dance-dance-trace.json",
+          "filename": "14-the-dance-dance-trace.json"
+        }
+      ],
+      "views": [
+        {
+          "id": "neutral",
+          "label": "Neutral field",
+          "kind": "identity",
+          "src": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/14-the-dance-neutral.png",
+          "filename": "14-the-dance-neutral.png",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 133300,
+          "sha256": "8fc37259d5605280890959e3ba37fb6f673d43e2a27a462d2be1e875f3ead344",
+          "note": "Two independently paced strands with variable reciprocal timing"
+        },
+        {
+          "id": "dance",
+          "label": "Dance encounter",
+          "kind": "encounter",
+          "src": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/14-the-dance-dance.png",
+          "filename": "14-the-dance-dance.png",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 153028,
+          "sha256": "48b6f0b0b56fbde915e4fd9ba50c9e83cfaa5f0e0bcd1a3d2524b7bda577397d",
+          "note": "Build two distinct rhythmic bands with unequal intervals; let a third rhythm appear in the changing spaces between beats, never as a merged center."
+        }
+      ]
+    },
+    {
+      "id": "procedural-encounter-geometry-clean-v1",
+      "title": "Procedural encounter geometry",
+      "cardId": "18-collapse",
+      "cardName": "Collapse",
+      "affinity": "Neutral and The Dance",
+      "date": "2000-06-08",
+      "summary": "Fragments of a broken structure with traceable former joins",
+      "limitation": "Dance action: Let a clear relational arc fracture into displaced segments; add sparse threads carrying continuity through the break without pretending it never occurred. Negative space: Leave cracks unobscured No visual reference was used.",
+      "zip": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots.zip",
+      "provenance": "/velomere-bench/procedural-encounter-geometry-clean-v1/provenance-neutral.json",
+      "documents": [
+        {
+          "label": "Neutral SVG",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/18-collapse-neutral.svg",
+          "filename": "18-collapse-neutral.svg"
+        },
+        {
+          "label": "Dance SVG",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/18-collapse-dance.svg",
+          "filename": "18-collapse-dance.svg"
+        },
+        {
+          "label": "Neutral trace",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/18-collapse-neutral-trace.json",
+          "filename": "18-collapse-neutral-trace.json"
+        },
+        {
+          "label": "Dance trace",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/18-collapse-dance-trace.json",
+          "filename": "18-collapse-dance-trace.json"
+        }
+      ],
+      "views": [
+        {
+          "id": "neutral",
+          "label": "Neutral field",
+          "kind": "identity",
+          "src": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/18-collapse-neutral.png",
+          "filename": "18-collapse-neutral.png",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 91074,
+          "sha256": "49e528470ee997d4166462da54b8f604220d8d1c1f75a342c3583a6cee330c18",
+          "note": "Fragments of a broken structure with traceable former joins"
+        },
+        {
+          "id": "dance",
+          "label": "Dance encounter",
+          "kind": "encounter",
+          "src": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/18-collapse-dance.png",
+          "filename": "18-collapse-dance.png",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 93258,
+          "sha256": "c1fc0cd9e2ae4497be621bb9a54efd8d73cce1859d12c92ca28f508f9e82cef4",
+          "note": "Let a clear relational arc fracture into displaced segments; add sparse threads carrying continuity through the break without pretending it never occurred."
+        }
+      ]
+    },
+    {
+      "id": "procedural-encounter-geometry-clean-v1",
+      "title": "Procedural encounter geometry",
+      "cardId": "21-fire",
+      "cardName": "Fire",
+      "affinity": "Neutral and The Dance",
+      "date": "2000-06-08",
+      "summary": "A contained ignition with uneven consequential propagation",
+      "limitation": "Dance action: Branch luminous paths outward from the original relation, vary branch density asymmetrically, and visibly stop hot lines at protected boundaries. Negative space: Allow dark cooling zones and boundaries No visual reference was used.",
+      "zip": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots.zip",
+      "provenance": "/velomere-bench/procedural-encounter-geometry-clean-v1/provenance-neutral.json",
+      "documents": [
+        {
+          "label": "Neutral SVG",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/21-fire-neutral.svg",
+          "filename": "21-fire-neutral.svg"
+        },
+        {
+          "label": "Dance SVG",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/21-fire-dance.svg",
+          "filename": "21-fire-dance.svg"
+        },
+        {
+          "label": "Neutral trace",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/21-fire-neutral-trace.json",
+          "filename": "21-fire-neutral-trace.json"
+        },
+        {
+          "label": "Dance trace",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/21-fire-dance-trace.json",
+          "filename": "21-fire-dance-trace.json"
+        }
+      ],
+      "views": [
+        {
+          "id": "neutral",
+          "label": "Neutral field",
+          "kind": "identity",
+          "src": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/21-fire-neutral.png",
+          "filename": "21-fire-neutral.png",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 113428,
+          "sha256": "62c2e40e33b9561c58982e9b9d9d5bfcccf916b373eac2325313169fb42da4a5",
+          "note": "A contained ignition with uneven consequential propagation"
+        },
+        {
+          "id": "dance",
+          "label": "Dance encounter",
+          "kind": "encounter",
+          "src": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/21-fire-dance.png",
+          "filename": "21-fire-dance.png",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 117961,
+          "sha256": "ddcf6fbc088c370b9b7cfc4f08e75b8dd6e13a241f3173148aaa5873cb3f56a6",
+          "note": "Branch luminous paths outward from the original relation, vary branch density asymmetrically, and visibly stop hot lines at protected boundaries."
+        }
+      ]
+    },
+    {
+      "id": "procedural-encounter-geometry-clean-v1",
+      "title": "Procedural encounter geometry",
+      "cardId": "67-three-of-sigils",
+      "cardName": "Three of Sigils",
+      "affinity": "Neutral and The Dance",
+      "date": "2000-06-08",
+      "summary": "Three distinct strands forming a traceable relational braid",
+      "limitation": "Dance action: Use two continuous distinct-colored strands with an alternating over-under braid; derive a third nonpossessive rhythm solely from their changing intervals. Negative space: Maintain legibility between over-under crossings No visual reference was used.",
+      "zip": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots.zip",
+      "provenance": "/velomere-bench/procedural-encounter-geometry-clean-v1/provenance-neutral.json",
+      "documents": [
+        {
+          "label": "Neutral SVG",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/67-three-of-sigils-neutral.svg",
+          "filename": "67-three-of-sigils-neutral.svg"
+        },
+        {
+          "label": "Dance SVG",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/67-three-of-sigils-dance.svg",
+          "filename": "67-three-of-sigils-dance.svg"
+        },
+        {
+          "label": "Neutral trace",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/67-three-of-sigils-neutral-trace.json",
+          "filename": "67-three-of-sigils-neutral-trace.json"
+        },
+        {
+          "label": "Dance trace",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/67-three-of-sigils-dance-trace.json",
+          "filename": "67-three-of-sigils-dance-trace.json"
+        }
+      ],
+      "views": [
+        {
+          "id": "neutral",
+          "label": "Neutral field",
+          "kind": "identity",
+          "src": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/67-three-of-sigils-neutral.png",
+          "filename": "67-three-of-sigils-neutral.png",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 152180,
+          "sha256": "93dc9e6fbac49d3bce003314f98ac92a66060e5c7eed59f735080fb152d8f489",
+          "note": "Three distinct strands forming a traceable relational braid"
+        },
+        {
+          "id": "dance",
+          "label": "Dance encounter",
+          "kind": "encounter",
+          "src": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/67-three-of-sigils-dance.png",
+          "filename": "67-three-of-sigils-dance.png",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 169655,
+          "sha256": "41c3aebd032786b74c972fd642daa9e3dbe1129140e1971d553edd35bed37127",
+          "note": "Use two continuous distinct-colored strands with an alternating over-under braid; derive a third nonpossessive rhythm solely from their changing intervals."
+        }
+      ]
+    },
+    {
+      "id": "procedural-encounter-geometry-clean-v1",
+      "title": "Procedural encounter geometry",
+      "cardId": "08-the-null",
+      "cardName": "The Null",
+      "affinity": "Neutral and The Dance",
+      "date": "2000-06-08",
+      "summary": "A deliberately stopped path bordering an open center",
+      "limitation": "Dance action: Leave an unmistakable central absence; let two trajectories end cleanly at its rim, with no bridge across the boundary. Negative space: Open center is principal feature No visual reference was used.",
+      "zip": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots.zip",
+      "provenance": "/velomere-bench/procedural-encounter-geometry-clean-v1/provenance-neutral.json",
+      "documents": [
+        {
+          "label": "Neutral SVG",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/08-the-null-neutral.svg",
+          "filename": "08-the-null-neutral.svg"
+        },
+        {
+          "label": "Dance SVG",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/08-the-null-dance.svg",
+          "filename": "08-the-null-dance.svg"
+        },
+        {
+          "label": "Neutral trace",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/08-the-null-neutral-trace.json",
+          "filename": "08-the-null-neutral-trace.json"
+        },
+        {
+          "label": "Dance trace",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/08-the-null-dance-trace.json",
+          "filename": "08-the-null-dance-trace.json"
+        }
+      ],
+      "views": [
+        {
+          "id": "neutral",
+          "label": "Neutral field",
+          "kind": "identity",
+          "src": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/08-the-null-neutral.png",
+          "filename": "08-the-null-neutral.png",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 98334,
+          "sha256": "6a89787a79226fece6c8a65505da9bd10171208d1e2e8ed38e9f0dae03d7c153",
+          "note": "A deliberately stopped path bordering an open center"
+        },
+        {
+          "id": "dance",
+          "label": "Dance encounter",
+          "kind": "encounter",
+          "src": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/08-the-null-dance.png",
+          "filename": "08-the-null-dance.png",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 98334,
+          "sha256": "6a89787a79226fece6c8a65505da9bd10171208d1e2e8ed38e9f0dae03d7c153",
+          "note": "Leave an unmistakable central absence; let two trajectories end cleanly at its rim, with no bridge across the boundary."
+        }
+      ]
+    },
+    {
+      "id": "procedural-encounter-geometry-clean-v1",
+      "title": "Procedural encounter geometry",
+      "cardId": "22-void",
+      "cardName": "Void",
+      "affinity": "Neutral and The Dance",
+      "date": "2000-06-08",
+      "summary": "An unclasped perimeter around possibility that remains unowned",
+      "limitation": "Dance action: Leave most of the field untouched; suggest two unfinished arcs receding toward different unknowns, without a central source symbol. Negative space: Protect dominant unclaimed openness No visual reference was used.",
+      "zip": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots.zip",
+      "provenance": "/velomere-bench/procedural-encounter-geometry-clean-v1/provenance-neutral.json",
+      "documents": [
+        {
+          "label": "Neutral SVG",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/22-void-neutral.svg",
+          "filename": "22-void-neutral.svg"
+        },
+        {
+          "label": "Dance SVG",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/22-void-dance.svg",
+          "filename": "22-void-dance.svg"
+        },
+        {
+          "label": "Neutral trace",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/22-void-neutral-trace.json",
+          "filename": "22-void-neutral-trace.json"
+        },
+        {
+          "label": "Dance trace",
+          "href": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/22-void-dance-trace.json",
+          "filename": "22-void-dance-trace.json"
+        }
+      ],
+      "views": [
+        {
+          "id": "neutral",
+          "label": "Neutral field",
+          "kind": "identity",
+          "src": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/22-void-neutral.png",
+          "filename": "22-void-neutral.png",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 108159,
+          "sha256": "e832eb94bd3063cf289f866e22ac7395cf6eb5913537af538888e370abcf4b98",
+          "note": "An unclasped perimeter around possibility that remains unowned"
+        },
+        {
+          "id": "dance",
+          "label": "Dance encounter",
+          "kind": "encounter",
+          "src": "/velomere-bench/procedural-encounter-geometry-clean-v1/pilots/22-void-dance.png",
+          "filename": "22-void-dance.png",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 108159,
+          "sha256": "e832eb94bd3063cf289f866e22ac7395cf6eb5913537af538888e370abcf4b98",
+          "note": "Leave most of the field untouched; suggest two unfinished arcs receding toward different unknowns, without a central source symbol."
+        }
+      ]
+    },
+    {
+      "id": "material-donor",
+      "title": "Material donor",
+      "cardId": "02-the-velomere",
+      "cardName": "The Velomere",
+      "affinity": "Neutral",
+      "date": "2000-06-08",
+      "summary": "The image model made mineral plates from two of your photographs. Those plates were projected into the existing rings. The mask did not move.",
+      "limitation": "This is a projection into the mask, not refraction. The sweep's panel lines are still visible. Inclusions do not sit at different depths along a ray.",
+      "zip": "/velomere-bench/material-donor/material-donor.zip",
+      "provenance": "/velomere-bench/material-donor/provenance.json",
+      "views": [
+        {
+          "id": "geometry",
+          "label": "Canonical geometry",
+          "kind": "geometry",
+          "src": "/velomere-bench/material-donor/geometry.jpg",
+          "filename": "geometry.jpg",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 83573,
+          "sha256": "68b2ad6ab1dce8097422754e90108c432e9f7565a4c6aa252b729cdd309cb518",
+          "note": "Centerlines only. Not a crystal mesh."
+        },
+        {
+          "id": "structural",
+          "label": "Structural anatomy",
+          "kind": "structural",
+          "src": "/velomere-bench/material-donor/structural.jpg",
+          "filename": "structural.jpg",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 235318,
+          "sha256": "63177f6198bbd4f24b9359b10d44e7ca93fb957a8c12d01e696b8e251417ed55",
+          "note": "The existing prism sweep, before a photograph is added."
+        },
+        {
+          "id": "finish",
+          "label": "Photographic finish",
+          "kind": "finish",
+          "src": "/velomere-bench/material-donor/finish.jpg",
+          "filename": "finish.jpg",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 516767,
+          "sha256": "4b64d75ee2820e546720a7c000e964ec8a15d6b1f9b2c534d34368d14ec8b9a0",
+          "note": "The deterministic finish already in the deck maker. Grain inside the tubes."
+        },
+        {
+          "id": "composite",
+          "label": "Material donor composite",
+          "kind": "experiment",
+          "src": "/velomere-bench/material-donor/composite.jpg",
+          "filename": "composite.jpg",
+          "width": 1400,
+          "height": 2300,
+          "bytes": 298758,
+          "sha256": "af9dcee325dc2351f4329583a84d16fc974105c2115b373f768738e24ce4fac0",
+          "note": "Generated plates projected into the structural mask."
+        },
+        {
+          "id": "crossing",
+          "label": "Crossing, enlarged",
+          "kind": "diagnostic",
+          "src": "/velomere-bench/material-donor/crossing.jpg",
+          "filename": "crossing.jpg",
+          "width": 670,
+          "height": 740,
+          "bytes": 168647,
+          "sha256": "e918b1aa363eff587f8494f96a6f254ad6d8fdab69bc5be7d1d24004141e785b",
+          "note": "The overlap, at a closer crop of the composite."
+        },
+        {
+          "id": "plate-green",
+          "label": "Green mineral plate",
+          "kind": "donor",
+          "src": "/velomere-bench/material-donor/plate-green.jpg",
+          "filename": "plate-green.jpg",
+          "width": 1792,
+          "height": 1008,
+          "bytes": 544418,
+          "sha256": "c46e5a9d68edd6a1bcf290397d4c7a94ecee4c0cba0602dd3be90a376117de6c",
+          "note": "Mapped onto the upper ring. Not used as a card.",
+          "source": {
+            "filename": "untitled-0069.png",
+            "sha256": "976b0f860689bd19e3199d5f0743cad34c65d44d47698dafd019dacef22dbb1b",
+            "crop": "/velomere-bench/material-donor/source-untitled-0069.jpg"
+          }
+        },
+        {
+          "id": "plate-clear",
+          "label": "Clear mineral plate",
+          "kind": "donor",
+          "src": "/velomere-bench/material-donor/plate-clear.jpg",
+          "filename": "plate-clear.jpg",
+          "width": 1792,
+          "height": 1008,
+          "bytes": 797000,
+          "sha256": "58dc5962918e085d4756dfd14afba18ed36e42be5b9110f7e17c5fedad02e374",
+          "note": "Mapped onto the lower ring. Not used as a card.",
+          "source": {
+            "filename": "IMG_0160.png",
+            "sha256": "65f3316c59bc556662e289f352d842d67173dc3ab7d6df264c49ef3b5beb9902",
+            "crop": "/velomere-bench/material-donor/source-img-0160.jpg"
+          }
+        },
+        {
+          "id": "plate-deep",
+          "label": "Deeper green plate",
+          "kind": "donor",
+          "src": "/velomere-bench/material-donor/plate-deep.jpg",
+          "filename": "plate-deep.jpg",
+          "width": 1792,
+          "height": 1008,
+          "bytes": 630304,
+          "sha256": "5c0848b47c8649225780340e5b59d318da0c4659ccb5f59a1bbc515119255952",
+          "note": "A second field from the same green photograph. Not mapped, so the rings would not share one surface.",
+          "source": {
+            "filename": "untitled-0069.png",
+            "sha256": "976b0f860689bd19e3199d5f0743cad34c65d44d47698dafd019dacef22dbb1b",
+            "crop": "/velomere-bench/material-donor/source-untitled-0069.jpg"
+          }
+        },
+        {
+          "id": "source-untitled-0069",
+          "label": "Source crop, untitled-0069",
+          "kind": "source",
+          "src": "/velomere-bench/material-donor/source-untitled-0069.jpg",
+          "filename": "source-untitled-0069.jpg",
+          "width": 1013,
+          "height": 838,
+          "bytes": 147009,
+          "sha256": "a6448b48632c56e8b82ddfef6d39ca6dfbbff1d2fee10b8b9ad20250e6057700",
+          "note": "The crop that informed the green plates."
+        },
+        {
+          "id": "source-img-0160",
+          "label": "Source crop, IMG_0160",
+          "kind": "source",
+          "src": "/velomere-bench/material-donor/source-img-0160.jpg",
+          "filename": "source-img-0160.jpg",
+          "width": 1013,
+          "height": 838,
+          "bytes": 197467,
+          "sha256": "e4b7069ece69e289634cd0445c9fda7960e332f32ca984c1c3de1c5e896fad79",
+          "note": "The crop that informed the clear plate."
+        }
+      ]
+    }
+  ],
+  "editions": [
+    {
+      "id": "neutral-2000-06-08",
+      "title": "Neutral, 8 June 2000",
+      "note": "Affinity 0. The drawing is unchanged. The finished front is the locked paint: a pale line on a night ground.",
+      "sheet": "/velomere-bench/procedural-encounter-geometry-clean-v1/sheet-neutral.jpg",
+      "sheetWidth": 1348,
+      "sheetHeight": 1728,
+      "zip": "/velomere-bench/procedural-encounter-geometry-clean-v1/neutral-deck.zip",
+      "zipName": "velomere-neutral-2000-06-08.zip",
+      "provenance": "/velomere-bench/procedural-encounter-geometry-clean-v1/provenance-neutral.json"
+    },
+    {
+      "id": "dance-2000-06-08",
+      "title": "The Dance, 8 June 2000",
+      "note": "Affinity 14. The identity stays. Encounter strokes follow the authored Dance action, painted the same way. Six quiet cards add none.",
+      "sheet": "/velomere-bench/procedural-encounter-geometry-clean-v1/sheet-dance.jpg",
+      "sheetWidth": 1348,
+      "sheetHeight": 1728,
+      "zip": "/velomere-bench/procedural-encounter-geometry-clean-v1/dance-deck.zip",
+      "zipName": "velomere-dance-2000-06-08.zip",
+      "provenance": "/velomere-bench/procedural-encounter-geometry-clean-v1/provenance-dance.json"
+    },
+    {
+      "id": "relational-encounter-2-neutral",
+      "title": "Encounter geometry, Neutral, 12 Nov 2026",
+      "note": "Affinity 0. Each front is that card’s own relation. The shared back is the symmetric master.",
+      "sheet": "/velomere-bench/relational-encounter-2/sheet-neutral.jpg",
+      "sheetWidth": 1348,
+      "sheetHeight": 1728,
+      "zip": "/velomere-bench/relational-encounter-2/neutral-deck.zip",
+      "zipName": "velomere-encounter-2-neutral-2026-11-12.zip",
+      "provenance": "/velomere-bench/relational-encounter-2/provenance-neutral.json"
+    },
+    {
+      "id": "relational-encounter-2-dance",
+      "title": "Encounter geometry, The Dance, 12 Nov 2026",
+      "note": "Affinity 14. The relation changes where the Dance action has weight. Quiet cards add no encounter stroke.",
+      "sheet": "/velomere-bench/relational-encounter-2/sheet-dance.jpg",
+      "sheetWidth": 1348,
+      "sheetHeight": 1728,
+      "zip": "/velomere-bench/relational-encounter-2/dance-deck.zip",
+      "zipName": "velomere-encounter-2-dance-2026-11-12.zip",
+      "provenance": "/velomere-bench/relational-encounter-2/provenance-dance.json"
+    }
+  ],
+  "report": "/velomere-bench/procedural-encounter-geometry-clean-v1/report.json"
+}

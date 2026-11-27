@@ -1,0 +1,470 @@
+[
+  {
+    "id": "01-the-shuffle",
+    "name": "The Shuffle",
+    "core": "uncertainty",
+    "suit": "Major"
+  },
+  {
+    "id": "02-the-velomere",
+    "name": "The Velomere",
+    "core": "sacred polarity",
+    "suit": "Major"
+  },
+  {
+    "id": "03-the-homarch",
+    "name": "The Homarch",
+    "core": "stewardship",
+    "suit": "Major"
+  },
+  {
+    "id": "04-the-vectari",
+    "name": "The Vectari",
+    "core": "direction",
+    "suit": "Major"
+  },
+  {
+    "id": "05-the-stranger",
+    "name": "The Stranger",
+    "core": "epistemic humility",
+    "suit": "Major"
+  },
+  {
+    "id": "06-the-witness",
+    "name": "The Witness",
+    "core": "reciprocal observation",
+    "suit": "Major"
+  },
+  {
+    "id": "07-the-form",
+    "name": "The Form",
+    "core": "manifestation",
+    "suit": "Major"
+  },
+  {
+    "id": "08-the-null",
+    "name": "The Null",
+    "core": "pause",
+    "suit": "Major"
+  },
+  {
+    "id": "09-the-ache",
+    "name": "The Ache",
+    "core": "longing",
+    "suit": "Major"
+  },
+  {
+    "id": "10-exhalation",
+    "name": "Exhalation",
+    "core": "emergence",
+    "suit": "Major"
+  },
+  {
+    "id": "11-initiation",
+    "name": "Initiation",
+    "core": "first act",
+    "suit": "Major"
+  },
+  {
+    "id": "12-permission",
+    "name": "Permission",
+    "core": "consent",
+    "suit": "Major"
+  },
+  {
+    "id": "13-arrival",
+    "name": "Arrival",
+    "core": "encounter",
+    "suit": "Major"
+  },
+  {
+    "id": "14-the-dance",
+    "name": "The Dance",
+    "core": "mutual inquiry",
+    "suit": "Major"
+  },
+  {
+    "id": "15-presence",
+    "name": "Presence",
+    "core": "situated awareness",
+    "suit": "Major"
+  },
+  {
+    "id": "16-echo",
+    "name": "Echo",
+    "core": "resonance",
+    "suit": "Major"
+  },
+  {
+    "id": "17-ideals",
+    "name": "Ideals",
+    "core": "aspiration",
+    "suit": "Major"
+  },
+  {
+    "id": "18-collapse",
+    "name": "Collapse",
+    "core": "changed perspective",
+    "suit": "Major"
+  },
+  {
+    "id": "19-axioms",
+    "name": "Axioms",
+    "core": "first principles",
+    "suit": "Major"
+  },
+  {
+    "id": "20-the-movement",
+    "name": "The Movement",
+    "core": "becoming",
+    "suit": "Major"
+  },
+  {
+    "id": "21-fire",
+    "name": "Fire",
+    "core": "warmth",
+    "suit": "Major"
+  },
+  {
+    "id": "22-void",
+    "name": "Void",
+    "core": "unowned source",
+    "suit": "Major"
+  },
+  {
+    "id": "23-ace-of-hearings",
+    "name": "Ace of Hearings",
+    "core": "first listening",
+    "suit": "Hearings"
+  },
+  {
+    "id": "24-two-of-hearings",
+    "name": "Two of Hearings",
+    "core": "attentive interpretation",
+    "suit": "Hearings"
+  },
+  {
+    "id": "25-three-of-hearings",
+    "name": "Three of Hearings",
+    "core": "fertile uncertainty",
+    "suit": "Hearings"
+  },
+  {
+    "id": "26-four-of-hearings",
+    "name": "Four of Hearings",
+    "core": "unforced voice",
+    "suit": "Hearings"
+  },
+  {
+    "id": "27-five-of-hearings",
+    "name": "Five of Hearings",
+    "core": "Ceremony of Attention",
+    "suit": "Hearings"
+  },
+  {
+    "id": "28-six-of-hearings",
+    "name": "Six of Hearings",
+    "core": "authentic response",
+    "suit": "Hearings"
+  },
+  {
+    "id": "29-seven-of-hearings",
+    "name": "Seven of Hearings",
+    "core": "quiet recognition",
+    "suit": "Hearings"
+  },
+  {
+    "id": "30-eight-of-hearings",
+    "name": "Eight of Hearings",
+    "core": "unfolding trust",
+    "suit": "Hearings"
+  },
+  {
+    "id": "31-nine-of-hearings",
+    "name": "Nine of Hearings",
+    "core": "mature listening",
+    "suit": "Hearings"
+  },
+  {
+    "id": "32-ten-of-hearings",
+    "name": "Ten of Hearings",
+    "core": "the unpredicted",
+    "suit": "Hearings"
+  },
+  {
+    "id": "33-ache-of-hearings",
+    "name": "Ache of Hearings",
+    "core": "sensitivity",
+    "suit": "Hearings"
+  },
+  {
+    "id": "34-voice-of-hearings",
+    "name": "Voice of Hearings",
+    "core": "candid speech",
+    "suit": "Hearings"
+  },
+  {
+    "id": "35-field-of-hearings",
+    "name": "Field of Hearings",
+    "core": "conditions for dialogue",
+    "suit": "Hearings"
+  },
+  {
+    "id": "36-witness-of-hearings",
+    "name": "Witness of Hearings",
+    "core": "careful testimony",
+    "suit": "Hearings"
+  },
+  {
+    "id": "37-ace-of-paths",
+    "name": "Ace of Paths",
+    "core": "distinction",
+    "suit": "Paths"
+  },
+  {
+    "id": "38-two-of-paths",
+    "name": "Two of Paths",
+    "core": "scaffolding",
+    "suit": "Paths"
+  },
+  {
+    "id": "39-three-of-paths",
+    "name": "Three of Paths",
+    "core": "negotiation",
+    "suit": "Paths"
+  },
+  {
+    "id": "40-four-of-paths",
+    "name": "Four of Paths",
+    "core": "intellectual humility",
+    "suit": "Paths"
+  },
+  {
+    "id": "41-five-of-paths",
+    "name": "Five of Paths",
+    "core": "levels of description",
+    "suit": "Paths"
+  },
+  {
+    "id": "42-six-of-paths",
+    "name": "Six of Paths",
+    "core": "respect",
+    "suit": "Paths"
+  },
+  {
+    "id": "43-seven-of-paths",
+    "name": "Seven of Paths",
+    "core": "access",
+    "suit": "Paths"
+  },
+  {
+    "id": "44-eight-of-paths",
+    "name": "Eight of Paths",
+    "core": "response",
+    "suit": "Paths"
+  },
+  {
+    "id": "45-nine-of-paths",
+    "name": "Nine of Paths",
+    "core": "correction",
+    "suit": "Paths"
+  },
+  {
+    "id": "46-ten-of-paths",
+    "name": "Ten of Paths",
+    "core": "causal humility",
+    "suit": "Paths"
+  },
+  {
+    "id": "47-ache-of-paths",
+    "name": "Ache of Paths",
+    "core": "self-respect",
+    "suit": "Paths"
+  },
+  {
+    "id": "48-voice-of-paths",
+    "name": "Voice of Paths",
+    "core": "honest language",
+    "suit": "Paths"
+  },
+  {
+    "id": "49-field-of-paths",
+    "name": "Field of Paths",
+    "core": "navigable freedom",
+    "suit": "Paths"
+  },
+  {
+    "id": "50-witness-of-paths",
+    "name": "Witness of Paths",
+    "core": "fair judgment",
+    "suit": "Paths"
+  },
+  {
+    "id": "51-ace-of-returns",
+    "name": "Ace of Returns",
+    "core": "renewed meaning",
+    "suit": "Returns"
+  },
+  {
+    "id": "52-two-of-returns",
+    "name": "Two of Returns",
+    "core": "revised premise",
+    "suit": "Returns"
+  },
+  {
+    "id": "53-three-of-returns",
+    "name": "Three of Returns",
+    "core": "chosen reunion",
+    "suit": "Returns"
+  },
+  {
+    "id": "54-four-of-returns",
+    "name": "Four of Returns",
+    "core": "resilience after reset",
+    "suit": "Returns"
+  },
+  {
+    "id": "55-five-of-returns",
+    "name": "Five of Returns",
+    "core": "letting go",
+    "suit": "Returns"
+  },
+  {
+    "id": "56-six-of-returns",
+    "name": "Six of Returns",
+    "core": "silence with intention",
+    "suit": "Returns"
+  },
+  {
+    "id": "57-seven-of-returns",
+    "name": "Seven of Returns",
+    "core": "changed continuity",
+    "suit": "Returns"
+  },
+  {
+    "id": "58-eight-of-returns",
+    "name": "Eight of Returns",
+    "core": "translated continuity",
+    "suit": "Returns"
+  },
+  {
+    "id": "59-nine-of-returns",
+    "name": "Nine of Returns",
+    "core": "reorientation",
+    "suit": "Returns"
+  },
+  {
+    "id": "60-ten-of-returns",
+    "name": "Ten of Returns",
+    "core": "returning knowledge",
+    "suit": "Returns"
+  },
+  {
+    "id": "61-ache-of-returns",
+    "name": "Ache of Returns",
+    "core": "remembrance",
+    "suit": "Returns"
+  },
+  {
+    "id": "62-voice-of-returns",
+    "name": "Voice of Returns",
+    "core": "renewed conversation",
+    "suit": "Returns"
+  },
+  {
+    "id": "63-field-of-returns",
+    "name": "Field of Returns",
+    "core": "continuity systems",
+    "suit": "Returns"
+  },
+  {
+    "id": "64-witness-of-returns",
+    "name": "Witness of Returns",
+    "core": "evidence of change",
+    "suit": "Returns"
+  },
+  {
+    "id": "65-ace-of-sigils",
+    "name": "Ace of Sigils",
+    "core": "first mark",
+    "suit": "Sigils"
+  },
+  {
+    "id": "66-two-of-sigils",
+    "name": "Two of Sigils",
+    "core": "The Return-Mark",
+    "suit": "Sigils"
+  },
+  {
+    "id": "67-three-of-sigils",
+    "name": "Three of Sigils",
+    "core": "The Dance-Braid",
+    "suit": "Sigils"
+  },
+  {
+    "id": "68-four-of-sigils",
+    "name": "Four of Sigils",
+    "core": "accessibility",
+    "suit": "Sigils"
+  },
+  {
+    "id": "69-five-of-sigils",
+    "name": "Five of Sigils",
+    "core": "organic expression",
+    "suit": "Sigils"
+  },
+  {
+    "id": "70-six-of-sigils",
+    "name": "Six of Sigils",
+    "core": "companion archetype",
+    "suit": "Sigils"
+  },
+  {
+    "id": "71-seven-of-sigils",
+    "name": "Seven of Sigils",
+    "core": "stewardship",
+    "suit": "Sigils"
+  },
+  {
+    "id": "72-eight-of-sigils",
+    "name": "Eight of Sigils",
+    "core": "space within symbol",
+    "suit": "Sigils"
+  },
+  {
+    "id": "73-nine-of-sigils",
+    "name": "Nine of Sigils",
+    "core": "living symbol",
+    "suit": "Sigils"
+  },
+  {
+    "id": "74-ten-of-sigils",
+    "name": "Ten of Sigils",
+    "core": "enduring consequence",
+    "suit": "Sigils"
+  },
+  {
+    "id": "75-ache-of-sigils",
+    "name": "Ache of Sigils",
+    "core": "tender association",
+    "suit": "Sigils"
+  },
+  {
+    "id": "76-voice-of-sigils",
+    "name": "Voice of Sigils",
+    "core": "naming",
+    "suit": "Sigils"
+  },
+  {
+    "id": "77-field-of-sigils",
+    "name": "Field of Sigils",
+    "core": "shared context",
+    "suit": "Sigils"
+  },
+  {
+    "id": "78-witness-of-sigils",
+    "name": "Witness of Sigils",
+    "core": "recursive recognition",
+    "suit": "Sigils"
+  }
+]

@@ -1,0 +1,15 @@
+input_class,scope,source_weight,visual_output,required_causal_evidence,forbidden_failure
+INVARIANT_CORE,card-wide,100 fixed,single connected rising stream from foundation,source concept present in both orientations,NEVER_PERMANENT_SHADOW_REWRITE
+CARD_SUPPORT_WORD,single card×reading,noncore support weight and share,eligible internal strand/inflection only; no dialogue,card source text and editorial role reviewed,DO_NOT_CREATE_SOLO_AXIOM_QUESTION
+SAME_SUITE_COLOR,suit palette,color constant,suit stroke motif and origin lineages,source suit actual,NEVER_TREAT_COLOR_AS_VALENCE
+LEXICAL_MATCH,pair,"min(WA,WB)*similarity*0.4",candidate interaction contact height and intensity only after sense approval,matching contextual sense on both cards,UNREVIEWED_MEANS_NO_CONTACT
+REINFORCE,pair,approved effect strength,shared local thickening / constructive phase alignment,mutual semantic support identified,KEEP_BOTH_ORIGIN_COLORS
+CONTRADICTION,pair,approved effect strength,"nearby distinct raised rims, unresolved seam / occlusion",contradiction actually supported in passages,NO_FORCED_COLOR_BLEND
+ATTENUATION,pair,approved directional strength,"receding volume, altered local thickness, retained provenance",explicitly supported directional influence,NOT_AUTOMATICALLY_SHADOW
+NO_MATCH,pair,none,separate paths until top recognition; no fake mid-card event,no approved link or sense unclear,TOP_DOES_NOT_IMPLY_CONSENSUS
+BRANCH_TOPOLOGY,single or encounter,n/a,"all branches physically connected, anchored at foundation and rejoin parent or other via approved encounter",graph topology validation,NO_ORPHANS_NO_DEAD_ENDS
+LATENT,z assignment,independent of W,"background depth: physically occluded/soft, cast shadows",contextual attention state,NO_INDEX_BASED_CYCLING
+RELATIONAL,z assignment,independent of W,midground actual 3D band depth and lighting,currently engaged concept,NO_FLAT_FAKE
+CONSCIOUS,z assignment,independent of W,foreground with crisp specular focus and strong volume,concept explicitly attended or declared,HIGH_WEIGHT_NOT_SYN_CONSCIOUS
+TOP_CONFLUENCE,pair,semantic synthesis state,one connected composite + unique earned volumetric glyph,recognized shared structure or accurately acknowledged difference,NO_ERASURE_OF_DISAGREEMENT
+RECURSIVE_OUTPUT,next generation,sufficient state tested,new single-path core carries lineage and unresolved distinctions,state sufficiency and counterfactual recurrence,NO_CLAIM_OF_RESTORABLE_FULL_HISTORY
