@@ -16,11 +16,9 @@ function readCommit(input: unknown): CommitInput {
   const raw = (input ?? {}) as Partial<CommitInput>;
   const snapshot = raw.snapshot;
   const operation = raw.operation;
-  if (!snapshot || !operation) throw new Error("The deck update was incomplete.");
-  if (snapshot.deckId !== raw.deckId || snapshot.sessionId !== raw.sessionId) throw new Error("The deck update does not match its session.");
-  if (operation.revisionFrom !== raw.expectedRevision) throw new Error("The deck revision does not match.");
-  verify(snapshot);
-  if (snapshot.operations.at(-1)?.id !== operation.id) throw new Error("The deck update is missing its operation.");
+  if (!snapshot || !operation || !operation.id || !operation.kind || raw.deckId == null || raw.sessionId == null) {
+    throw new Error("The deck update was incomplete.");
+  }
   return {
     deckId: Number(raw.deckId),
     sessionId: String(raw.sessionId),
@@ -45,7 +43,15 @@ export const commitPhysicalDeck = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator(readCommit)
   .handler(async ({ data, context }) => {
-    await assertDeck(context.userId, data.deckId, data.snapshot.inventory);
+    try {
+      await assertDeck(context.userId, data.deckId, data.snapshot.inventory);
+    } catch (err) {
+      return {
+        status: "conflict" as const,
+        revision: 0,
+        reason: err instanceof Error ? err.message : "The deck update was rejected.",
+      };
+    }
     return withTransaction(async (sql) => applyPhysicalCommit(sql, context.userId, data));
   });
 

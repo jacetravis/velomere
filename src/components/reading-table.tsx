@@ -37,10 +37,14 @@ import {
   peekPhysical,
   physicalLoading,
   physicalPause,
+  physicalReading,
   physicalState,
+  setPhysicalReading,
   startFreshPhysical,
   subscribePhysical,
 } from "@/lib/physical-deck/runtime";
+import { repairSpreadSession } from "@/lib/physical-deck/spread-sync";
+import { waitingSheets } from "@/lib/physical-deck/waiting-stack";
 import { edgeLook, paperTone, sheetLean } from "@/lib/cards/edge";
 import { cardFrame } from "@/lib/cards/shape";
 import { cutDepth, cutPace, cutSections, latchShuffleCount, SHUFFLE_MAX, SHUFFLE_MIN } from "@/lib/cards/shuffle-count";
@@ -104,14 +108,35 @@ function cardsIn(ids: readonly number[], source: readonly Card[]) {
   return ids.map((id) => byId.get(id)).filter((card): card is Card => !!card);
 }
 
-function spreadAgrees(next: PhysicalState, cardIds: readonly number[]) {
-  const spreadCards = Object.entries(next.table)
-    .filter(([key]) => key.startsWith("spread:"))
-    .map(([, value]) => value.cardId);
-  const out = [...next.waitingStack, ...spreadCards];
-  if (out.length !== cardIds.length) return false;
-  const have = new Set(out);
-  return cardIds.every((id) => have.has(id));
+function healOpenSpread(next: PhysicalState, cards: readonly Card[], deckName: string) {
+  const store = useSpreads.getState();
+  const link = physicalReading();
+  const owned = store.session?.assignments.some((item) => item.deckId === next.deckId) ? store.session.spread : null;
+  const spread = owned ?? (link ? store.effective(link.spreadId) : null) ?? store.effective(store.activeSpreadId);
+  const plan = repairSpreadSession(
+    next,
+    store.session,
+    cards.map((card) => ({
+      id: card.id,
+      name: card.name,
+      upright: card.upright,
+      reversed: card.reversed,
+      imageUrl: card.imageUrl,
+      keywords: card.keywords,
+      suit: card.suit,
+      rank: card.rank,
+    })),
+    spread,
+    next.deckId,
+    deckName,
+  );
+  if (plan.action === "pause") {
+    pausePhysical(plan.reason);
+    return false;
+  }
+  if (plan.action === "clear") store.adopt(null);
+  if (plan.action === "replace") store.adopt(plan.session);
+  return true;
 }
 
 export function ReadingTable() {
@@ -360,8 +385,7 @@ export function ReadingTable() {
         if (!historical) setPhase("still");
         return;
       }
-      if (!spreadAgrees(next, openIds)) {
-        pausePhysical("The open reading does not match the remembered deck. Handling is paused so cards are not moved.");
+      if (!healOpenSpread(next, deck, active?.name ?? "Deck")) {
         setPhysicalNote(physicalPause());
         setCanFresh(true);
         orderRef.current = [];
@@ -428,13 +452,7 @@ export function ReadingTable() {
       const next = physicalState();
       if (!next) return;
       if (phaseRef.current === "shuffling" || phaseRef.current === "cutting") return;
-      const openIds = (useSpreads.getState().session?.assignments ?? [])
-        .filter((item) => item.deckId === next.deckId)
-        .map((item) => item.cardId);
-      if (!spreadAgrees(next, openIds)) {
-        pausePhysical("The open reading does not match the remembered deck. Handling is paused so cards are not moved.");
-        return;
-      }
+      if (!healOpenSpread(next, deckRef.current, "Deck")) return;
       const cards = cardsIn(next.drawPile, deckRef.current);
       orderRef.current = cards;
       setOrder(cards);
@@ -820,6 +838,7 @@ export function ReadingTable() {
       if (!live || live.spread.id !== spread.id) state.begin();
       const current = useSpreads.getState().session;
       if (!current || current.status !== "collecting") return "blocked";
+      setPhysicalReading({ spreadId: current.spread.id, sessionId: current.id });
       const physical = physicalState();
       if (physical?.slippedCard === card.id) applyAcceptSlip("waiting");
       else if (physical?.drawPile[0] === card.id && physical.slippedCard == null) applyDrawWaiting();
@@ -1008,6 +1027,7 @@ export function ReadingTable() {
       return;
     }
     try {
+      setPhysicalReading(null);
       if (physicalState()) {
         const next = applyGather();
         showPile(next?.drawPile);
@@ -1034,6 +1054,7 @@ export function ReadingTable() {
       return;
     }
     try {
+      setPhysicalReading(null);
       if (physicalState()) {
         const next = applyGather();
         showPile(next?.drawPile);
@@ -1094,6 +1115,8 @@ export function ReadingTable() {
         }
         useSpreads.getState().stage(`stage-${id}`);
       } catch (err) {
+        const livePhysical = physicalState();
+        if (livePhysical) healOpenSpread(livePhysical, deckRef.current, active?.name ?? "Deck");
         toast(err instanceof Error ? err.message : "The spread could not be laid out.");
       }
     }, 860);
@@ -1328,19 +1351,19 @@ export function ReadingTable() {
               ref={pileRef}
               className="absolute right-3 bottom-3 z-30 disabled:pointer-events-none"
               style={{ width: `calc(${frame.width} * 0.46)`, visibility: waitingCount - (flight > 0 ? 1 : 0) > 0 ? "visible" : "hidden" }}
-              aria-label="Return the top card to the deck"
+              aria-label="Return the latest card to the deck"
               disabled={waitingCount < 1 || phase === "shuffling" || phase === "cutting" || !!slip}
               onClick={returnWaiting}
             >
               <div className="relative" style={{ aspectRatio: frame.aspect }}>
-                {Array.from({ length: Math.max(0, Math.min(waitingCount - (flight > 0 ? 1 : 0), 6)) }, (_, index) => (
+                {waitingSheets(waitingCount - (flight > 0 ? 1 : 0)).map((sheet) => (
                   <div
-                    key={index}
+                    key={sheet.index}
                     className="absolute inset-0 overflow-hidden shadow-card"
                     style={{
                       borderRadius: `${Math.max(1, (cardRadius ?? 5) * 0.46)}px`,
-                      transform: `translate(${index * 1.2}px, ${index * 1.6}px)`,
-                      zIndex: index + 1,
+                      transform: `translate(${sheet.offset * 1.2}px, ${sheet.offset * 1.6}px)`,
+                      zIndex: sheet.zIndex,
                     }}
                   >
                     <img src={backSrc} alt="" draggable={false} className="h-full w-full object-cover" style={backStyle} />

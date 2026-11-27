@@ -17,7 +17,8 @@ import { project, SpreadCommandError, type Assignment, type Session } from "@/li
 import { fittedCardWidth, expandedPositions } from "@/lib/spreads/fit";
 import { PhysicalCard } from "@/components/tarot-card";
 import { useSpreads } from "@/lib/spreads/store";
-import { applyDeliver, applyDrawWaiting, applyFlip, applyGather, physicalState } from "@/lib/physical-deck/runtime";
+import { applyDeliver, applyDrawWaiting, applyFlip, applyGather, pausePhysical, physicalState, setPhysicalReading } from "@/lib/physical-deck/runtime";
+import { repairSpreadSession } from "@/lib/physical-deck/spread-sync";
 import { useJournal } from "@/lib/journal/store";
 import { cardSitting } from "@/lib/solace/sitting";
 import { useSolace } from "@/lib/solace/store";
@@ -37,6 +38,23 @@ function splitMeaning(text: string | null | undefined) {
 
 function storyNumber(name: string) {
   return labels.findIndex((row) => row.name === name) + 1;
+}
+
+function alignSpread() {
+  const physical = physicalState();
+  const session = useSpreads.getState().session;
+  if (!physical) return;
+  const plan = repairSpreadSession(
+    physical,
+    session,
+    [],
+    session?.spread ?? null,
+    physical.deckId,
+    session?.assignments[0]?.deckName ?? "Deck",
+  );
+  if (plan.action === "replace") useSpreads.getState().adopt(plan.session);
+  if (plan.action === "clear") useSpreads.getState().adopt(null);
+  if (plan.action === "pause") pausePhysical(plan.reason);
 }
 
 function CardOverview({
@@ -178,8 +196,10 @@ export function SpreadTable() {
 
   const releaseReading = () => {
     try {
+      setPhysicalReading(null);
       if (physicalState()) applyGather();
     } catch (err) {
+      alignSpread();
       toast(err instanceof Error ? err.message : "The cards could not be returned to the deck.");
       return;
     }
@@ -193,6 +213,7 @@ export function SpreadTable() {
     try {
       work();
     } catch (err) {
+      alignSpread();
       toast(err instanceof Error ? err.message : "That step did not finish.");
     } finally {
       window.setTimeout(() => setBusy(false), reduce ? 0 : 280);
@@ -518,6 +539,7 @@ export function SpreadLay({
     try {
       work();
     } catch (err) {
+      alignSpread();
       toast(err instanceof Error ? err.message : "That step did not finish.");
     } finally {
       window.setTimeout(() => setBusy(false), reduce ? 0 : 280);
@@ -672,6 +694,7 @@ export function SpreadLay({
                 setBusy(true);
               }
             } catch (err) {
+              alignSpread();
               toast(err instanceof Error ? err.message : "That step did not finish.");
             }
           }}

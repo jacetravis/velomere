@@ -130,7 +130,7 @@ function change(
   update(next);
   next.revision += 1;
   verify(next);
-  next.operations.push({
+  const operation: Operation = {
     id,
     kind,
     revisionFrom: state.revision,
@@ -138,7 +138,8 @@ function change(
     beforeHash,
     afterHash: sampleHash(next),
     meta,
-  });
+  };
+  next.operations = [...next.operations, operation].slice(-24);
   return next;
 }
 
@@ -212,7 +213,7 @@ export function drawSingle(state: PhysicalState, op: string, side: Side = 0): Ph
     next.table.single = { cardId, drawIndex: 1, face: "up" };
     next.orientations[String(cardId)] = side;
     next.mode = "single";
-  });
+  }, { side });
 }
 
 export function putBackSingle(state: PhysicalState, op: string): PhysicalState {
@@ -316,4 +317,71 @@ export function gatherAll(state: PhysicalState, op: string): PhysicalState {
       next.mode = "ready";
     }
   });
+}
+
+/** Compact checkpoint. The operations table keeps the full history. */
+export function checkpoint(state: PhysicalState): PhysicalState {
+  return {
+    ...state,
+    inventory: [...state.inventory],
+    drawPile: [...state.drawPile],
+    waitingStack: [...state.waitingStack],
+    drawHistory: [...state.drawHistory],
+    table: Object.fromEntries(Object.entries(state.table).map(([key, value]) => [key, { ...value }])),
+    orientations: { ...state.orientations },
+    operations: state.operations.slice(-1).map((operation) => ({
+      ...operation,
+      meta: {
+        ...operation.meta,
+        realizedOrder: operation.meta.realizedOrder ? [...operation.meta.realizedOrder] : undefined,
+      },
+    })),
+  };
+}
+
+/** Replay one recorded operation. A legacy shuffle applies its realized order and attribution; it is not re-dealt card by card. */
+export function replayOperation(state: PhysicalState, operation: Operation): PhysicalState {
+  const id = operation.id;
+  switch (operation.kind) {
+    case "cut":
+      return cut(state, id, operation.meta.index ?? -1);
+    case "legacy_shuffle_realized":
+      if (!operation.meta.realizedOrder) throw new Error("The legacy shuffle has no realized order.");
+      return legacyShuffleEndpoint(
+        state,
+        id,
+        operation.meta.realizedOrder,
+        operation.meta.style ?? "legacy",
+        operation.meta.attribution ?? "user",
+      );
+    case "slip_ejected_from_drawpile":
+      return ejectSlip(state, id, operation.meta.index ?? -1);
+    case "slip_tapped":
+      if (operation.meta.destination !== "single" && operation.meta.destination !== "waiting") {
+        throw new Error("The slipped card has no destination.");
+      }
+      return acceptSlip(state, id, operation.meta.destination, operation.meta.side === 180 ? 180 : 0);
+    case "slip_return_top":
+      return returnUntappedSlip(state, id);
+    case "single_draw":
+      return drawSingle(state, id, operation.meta.side === 180 ? 180 : 0);
+    case "single_return_top":
+      return putBackSingle(state, id);
+    case "draw_to_waiting_bottom":
+      return drawWaiting(state, id);
+    case "return_waiting_bottom_to_deck_top":
+      return returnLatestWaiting(state, id);
+    case "stage_first":
+      return stageFirst(state, id, state.drawHistory.length);
+    case "flip_first":
+      return flipFirst(state, id);
+    case "deliver_next":
+      return deliverNext(state, id, operation.meta.position ?? -1);
+    case "gather_spread_to_deck_top":
+      return clearSpreadToTop(state, id);
+    case "gather_all_to_deck_top":
+      return gatherAll(state, id);
+    default:
+      throw new Error("Unknown physical operation.");
+  }
 }

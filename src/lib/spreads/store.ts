@@ -78,6 +78,7 @@ type SpreadState = {
   flip: (requestId: string) => Session;
   deliver: (requestId: string) => Session;
   discard: () => void;
+  adopt: (session: Session | null) => void;
   remember: (pullReason: string) => void;
 };
 
@@ -208,6 +209,7 @@ export const useSpreads = create<SpreadState>()(
         return session;
       },
       discard: () => set({ session: null }),
+      adopt: (session) => set({ session }),
       remember: (pullReason) => {
         const current = get().session;
         if (!current || !pullReason.trim()) return;
