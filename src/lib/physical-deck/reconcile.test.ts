@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { decideReconcile } from "./reconcile.ts";
+import { decideAccount, decideReconcile } from "./reconcile.ts";
 import { cut, legacyShuffleEndpoint, newState, type PhysicalState } from "./state.ts";
 
 function prep(): PhysicalState {
@@ -19,4 +19,11 @@ test("reconciliation never overwrites unsent local actions", () => {
   assert.equal(decideReconcile(prep(), 1, { ...remote, sessionId: "account" }), "adopt");
   assert.equal(decideReconcile(null, 0, remote), "adopt");
   assert.equal(decideReconcile(null, 0, null), "create");
+  assert.equal(decideAccount({ local: null, unsent: 0, view: "unavailable", remote: null, sync: "unknown" }), "offline");
+  assert.equal(decideAccount({ local: local, unsent: 1, view: "unavailable", remote: null, sync: "offline" }), "hold");
+  assert.equal(decideAccount({ local: local, unsent: 1, view: "unavailable", remote: null, sync: "unknown" }), "hold");
+  assert.equal(decideAccount({ local: local, unsent: 1, view: "unavailable", remote: null, sync: "ready" }), "flush");
+  assert.equal(decideAccount({ local: null, unsent: 0, view: "unavailable", remote: null, sync: "unknown", allowCreate: false }), "hold");
+  assert.equal(decideAccount({ local: prep(), unsent: 1, view: "absent", remote: null, sync: "offline" }), "flush");
+  assert.equal(decideAccount({ local: prep(), unsent: 1, view: "found", remote: { ...remote, sessionId: "account" }, sync: "offline" }), "adopt");
 });

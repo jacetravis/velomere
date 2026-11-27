@@ -37,13 +37,14 @@ import {
   peekPhysical,
   physicalLoading,
   physicalPause,
-  physicalReading,
+  physicalSpread,
   physicalState,
   setPhysicalReading,
   startFreshPhysical,
   subscribePhysical,
 } from "@/lib/physical-deck/runtime";
 import { repairSpreadSession } from "@/lib/physical-deck/spread-sync";
+import { captureSpread, spreadForRecovery } from "@/lib/physical-deck/spread-record";
 import { waitingSheets } from "@/lib/physical-deck/waiting-stack";
 import { edgeLook, paperTone, sheetLean } from "@/lib/cards/edge";
 import { cardFrame } from "@/lib/cards/shape";
@@ -110,9 +111,8 @@ function cardsIn(ids: readonly number[], source: readonly Card[]) {
 
 function healOpenSpread(next: PhysicalState, cards: readonly Card[], deckName: string) {
   const store = useSpreads.getState();
-  const link = physicalReading();
-  const owned = store.session?.assignments.some((item) => item.deckId === next.deckId) ? store.session.spread : null;
-  const spread = owned ?? (link ? store.effective(link.spreadId) : null) ?? store.effective(store.activeSpreadId);
+  const sessionSpread = store.session?.assignments.some((item) => item.deckId === next.deckId) ? store.session.spread : null;
+  const spread = spreadForRecovery(physicalSpread(), sessionSpread);
   const plan = repairSpreadSession(
     next,
     store.session,
@@ -838,7 +838,7 @@ export function ReadingTable() {
       if (!live || live.spread.id !== spread.id) state.begin();
       const current = useSpreads.getState().session;
       if (!current || current.status !== "collecting") return "blocked";
-      setPhysicalReading({ spreadId: current.spread.id, sessionId: current.id });
+      setPhysicalReading({ spreadId: current.spread.id, sessionId: current.id }, captureSpread(current.spread));
       const physical = physicalState();
       if (physical?.slippedCard === card.id) applyAcceptSlip("waiting");
       else if (physical?.drawPile[0] === card.id && physical.slippedCard == null) applyDrawWaiting();

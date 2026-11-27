@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { getSql, withTransaction } from "@/lib/db";
 import { applyPhysicalCommit } from "./commit";
+import type { SpreadSnapshot } from "./spread-record";
 import { verify, type Operation, type PhysicalState } from "./state";
 
 type CommitInput = {
@@ -10,6 +11,8 @@ type CommitInput = {
   expectedRevision: number;
   snapshot: PhysicalState;
   operation: Operation;
+  supersede?: boolean;
+  spread?: SpreadSnapshot | null;
 };
 
 function readCommit(input: unknown): CommitInput {
@@ -25,7 +28,18 @@ function readCommit(input: unknown): CommitInput {
     expectedRevision: Number(raw.expectedRevision),
     snapshot,
     operation,
+    supersede: raw.supersede === true,
+    spread: raw.spread ?? null,
   };
+}
+
+function readSpread(input: unknown) {
+  const raw = (input ?? {}) as { deckId?: unknown; sessionId?: unknown; spread?: SpreadSnapshot | null };
+  const deckId = Number(raw.deckId);
+  if (!Number.isInteger(deckId) || deckId <= 0 || !raw.sessionId || !raw.spread?.id || !Array.isArray(raw.spread.positions)) {
+    throw new Error("The spread could not be saved.");
+  }
+  return { deckId, sessionId: String(raw.sessionId), spread: raw.spread };
 }
 
 async function assertDeck(userId: string, deckId: number, inventory: number[]) {
@@ -37,6 +51,12 @@ async function assertDeck(userId: string, deckId: number, inventory: number[]) {
   if (inventory.length !== known.size || inventory.some((id) => !known.has(id))) {
     throw new Error("The deck's cards no longer match this reading.");
   }
+}
+
+async function assertDeckOwner(userId: string, deckId: number) {
+  const sql = await getSql();
+  const decks = await sql.query<{ id: number }>("select id from decks where id = $1 and user_id = $2", [deckId, userId]);
+  if (!decks.length) throw new Error("That deck is not yours.");
 }
 
 export const commitPhysicalDeck = createServerFn({ method: "POST" })
@@ -55,6 +75,22 @@ export const commitPhysicalDeck = createServerFn({ method: "POST" })
     return withTransaction(async (sql) => applyPhysicalCommit(sql, context.userId, data));
   });
 
+export const recordPhysicalSpread = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator(readSpread)
+  .handler(async ({ data, context }) => {
+    await assertDeckOwner(context.userId, data.deckId);
+    const sql = await getSql();
+    const rows = await sql.query<{ session_id: string }>(
+      `update physical_deck_sessions
+          set spread_json = $4::jsonb, updated_at = now()
+        where user_id = $1 and deck_id = $2 and session_id = $3 and active = true
+        returning session_id`,
+      [context.userId, data.deckId, data.sessionId, JSON.stringify(data.spread)],
+    );
+    return { status: rows.length ? "saved" as const : "pending" as const };
+  });
+
 export const loadPhysicalDeck = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .validator((input: unknown) => {
@@ -64,8 +100,8 @@ export const loadPhysicalDeck = createServerFn({ method: "GET" })
   })
   .handler(async ({ data, context }) => {
     const sql = await getSql();
-    const rows = await sql.query<{ revision: number; snapshot_json: PhysicalState | string }>(
-      `select revision, snapshot_json from physical_deck_sessions
+    const rows = await sql.query<{ revision: number; snapshot_json: PhysicalState | string; spread_json: SpreadSnapshot | string | null }>(
+      `select revision, snapshot_json, spread_json from physical_deck_sessions
         where user_id = $1 and deck_id = $2 and active = true
         order by updated_at desc
         limit 1`,
@@ -75,5 +111,6 @@ export const loadPhysicalDeck = createServerFn({ method: "GET" })
     if (!row) return null;
     const snapshot = typeof row.snapshot_json === "string" ? JSON.parse(row.snapshot_json) as PhysicalState : row.snapshot_json;
     verify(snapshot);
-    return { revision: Number(row.revision), snapshot };
+    const spread = !row.spread_json ? null : typeof row.spread_json === "string" ? JSON.parse(row.spread_json) as SpreadSnapshot : row.spread_json;
+    return { revision: Number(row.revision), snapshot, spread };
   });

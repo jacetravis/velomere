@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type { SpreadDefinition } from "../spreads/engine.ts";
+import { captureSpread, spreadForRecovery } from "./spread-record.ts";
 import { repairSpreadSession, type RepairCard } from "./spread-sync.ts";
 import {
   cut,
@@ -122,4 +123,31 @@ test("a single card on the table is not turned into a spread", () => {
   const physical = cut(newState(4, "single", [1, 2, 3]), "cut", 1);
   const plan = repairSpreadSession({ ...physical, mode: "single", table: { single: { cardId: 2, drawIndex: 1, face: "up" } } }, null, [], spread, 4, "Deck");
   assert.equal(plan.action, "keep");
+});
+
+test("a new device keeps the recorded spread instead of the layout it has open", () => {
+  let physical = newState(4, "spread-session", [11, 22, 33, 44]);
+  physical = drawWaiting(physical, "d1");
+  physical = drawWaiting(physical, "d2");
+  const recorded = captureSpread(spread);
+  const decoy = {
+    ...spread,
+    id: "other-layout",
+    name: "Other",
+    positions: spread.positions.slice(0, 1).map((position) => ({ ...position, id: "wrong", name: "Wrong place", x: 0.1 })),
+  };
+  const library = JSON.stringify(decoy);
+  assert.equal(spreadForRecovery(recorded, decoy)?.id, "three");
+  assert.equal(JSON.stringify(decoy), library);
+  const wrong = repairSpreadSession(physical, null, cards, decoy, 4, "Deck");
+  assert.equal(wrong.action, "pause");
+  const plan = repairSpreadSession(physical, null, cards, spreadForRecovery(recorded, null), 4, "Deck");
+  assert.equal(plan.action, "replace");
+  if (plan.action !== "replace") return;
+  assert.equal(plan.session.spread.id, "three");
+  assert.equal(plan.session.spread.positions[0]?.name, "Place 1");
+  assert.equal(plan.session.spread.positions[0]?.x, 0.5);
+  assert.deepEqual(plan.session.assignments.map((item) => item.cardId), [11, 22]);
+  assert.equal(plan.session.assignments.length, physical.drawHistory.length);
+  assert.equal(plan.session.spread.positions[0]?.meaningApplication, "");
 });

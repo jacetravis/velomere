@@ -17,8 +17,9 @@ import { project, SpreadCommandError, type Assignment, type Session } from "@/li
 import { fittedCardWidth, expandedPositions } from "@/lib/spreads/fit";
 import { PhysicalCard } from "@/components/tarot-card";
 import { useSpreads } from "@/lib/spreads/store";
-import { applyDeliver, applyDrawWaiting, applyFlip, applyGather, pausePhysical, physicalState, setPhysicalReading } from "@/lib/physical-deck/runtime";
+import { applyDeliver, applyDrawWaiting, applyFlip, applyGather, pausePhysical, physicalSpread, physicalState, setPhysicalReading } from "@/lib/physical-deck/runtime";
 import { repairSpreadSession } from "@/lib/physical-deck/spread-sync";
+import { spreadForRecovery } from "@/lib/physical-deck/spread-record";
 import { useJournal } from "@/lib/journal/store";
 import { cardSitting } from "@/lib/solace/sitting";
 import { useSolace } from "@/lib/solace/store";
@@ -44,11 +45,12 @@ function alignSpread() {
   const physical = physicalState();
   const session = useSpreads.getState().session;
   if (!physical) return;
+  const sessionSpread = session?.assignments.some((item) => item.deckId === physical.deckId) ? session.spread : null;
   const plan = repairSpreadSession(
     physical,
     session,
     [],
-    session?.spread ?? null,
+    spreadForRecovery(physicalSpread(), sessionSpread),
     physical.deckId,
     session?.assignments[0]?.deckName ?? "Deck",
   );

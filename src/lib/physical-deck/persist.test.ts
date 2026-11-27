@@ -30,6 +30,7 @@ async function database() {
   const root = new URL("../../../migrations/", import.meta.url);
   await pg.exec(readFileSync(new URL("0013_physical_deck.sql", root), "utf8"));
   await pg.exec(readFileSync(new URL("0014_physical_deck_checkpoint.sql", root), "utf8"));
+  await pg.exec(readFileSync(new URL("0015_physical_deck_spread.sql", root), "utf8"));
   return { pg, sql: adapter(pg) };
 }
 
@@ -140,10 +141,10 @@ test("the server rejects forged hashes, revision jumps, and a changed duplicate"
   assert.equal(sampleHash(cursor), checkpointRow[0]?.checkpoint_hash);
   assert.equal(new Set(cursor.drawPile).size, ids.length);
 
-  const upright = drawSingle(newState(8, "session-upright", ids), "draw-up", 0);
+  const upright = drawSingle(newState(9, "session-upright", ids), "draw-up", 0);
   const uprightOp = { ...upright.operations.at(-1)!, meta: {} };
   const uprightSaved = await applyPhysicalCommit(sql, "user-a", {
-    deckId: 8,
+    deckId: 9,
     sessionId: "session-upright",
     expectedRevision: 0,
     snapshot: { ...checkpoint(upright), operations: [uprightOp] },
@@ -151,10 +152,10 @@ test("the server rejects forged hashes, revision jumps, and a changed duplicate"
   });
   assert.equal(uprightSaved.status, "saved");
 
-  const reversed = drawSingle(newState(8, "session-reversed", ids), "draw-rev", 180);
+  const reversed = drawSingle(newState(10, "session-reversed", ids), "draw-rev", 180);
   const reversedOp = { ...reversed.operations.at(-1)!, meta: {} };
   const reversedSaved = await applyPhysicalCommit(sql, "user-a", {
-    deckId: 8,
+    deckId: 10,
     sessionId: "session-reversed",
     expectedRevision: 0,
     snapshot: { ...checkpoint(reversed), operations: [reversedOp] },
@@ -166,5 +167,44 @@ test("the server rejects forged hashes, revision jumps, and a changed duplicate"
   impossible.operation = { ...impossible.operation, id: "not-a-deliver", kind: "deliver_next", meta: { position: 2 } };
   impossible.snapshot = { ...checkpoint(next), operations: [impossible.operation] };
   assert.equal((await applyPhysicalCommit(sql, "user-a", impossible)).status, "conflict");
+  await pg.close();
+});
+
+test("an unconfirmed session cannot replace the account deck", async () => {
+  const { pg, sql } = await database();
+  const ids = [1, 2, 3, 4];
+  const account = legacyShuffleEndpoint(newState(8, "account", ids), "prep-account", [4, 3, 2, 1], "initial_preparation", "system_initial_preparation");
+  assert.equal((await applyPhysicalCommit(sql, "user-a", commitOf(account))).status, "saved");
+  const guess = legacyShuffleEndpoint(newState(8, "offline-guess", ids), "prep-guess", [2, 1, 4, 3], "initial_preparation", "system_initial_preparation");
+  const blocked = await applyPhysicalCommit(sql, "user-a", commitOf(guess));
+  assert.equal(blocked.status, "conflict");
+  assert.match(blocked.reason ?? "", /already has a saved order/);
+  const still = await sql.query<{ session_id: string }>(
+    "select session_id from physical_deck_sessions where user_id = $1 and deck_id = $2 and active = true",
+    ["user-a", 8],
+  );
+  assert.deepEqual(still.map((row) => row.session_id), ["account"]);
+  const spread = {
+    id: "kept-spread",
+    name: "Kept",
+    description: "original",
+    openingQuestion: "What remains?",
+    revision: 3,
+    positions: [{ id: "pos-a", order: 1, name: "Hearth", question: "Where?", meaningApplication: "Home", x: 0.2, y: 0.4, rotationDeg: 0 as const, zIndex: 1, angleNotes: { "0": "", "90": "", "180": "", "270": "" } }],
+  };
+  const replaced = await applyPhysicalCommit(sql, "user-a", { ...commitOf(guess), supersede: true, spread });
+  assert.equal(replaced.status, "saved");
+  const active = await sql.query<{ session_id: string; spread_json: { id?: string; positions?: { name?: string }[] } }>(
+    "select session_id, spread_json from physical_deck_sessions where user_id = $1 and deck_id = $2 and active = true",
+    ["user-a", 8],
+  );
+  assert.deepEqual(active.map((row) => row.session_id), ["offline-guess"]);
+  assert.equal(active[0]?.spread_json.id, "kept-spread");
+  assert.equal(active[0]?.spread_json.positions?.[0]?.name, "Hearth");
+  const retired = await sql.query<{ active: boolean }>(
+    "select active from physical_deck_sessions where session_id = $1",
+    ["account"],
+  );
+  assert.equal(retired[0]?.active, false);
   await pg.close();
 });

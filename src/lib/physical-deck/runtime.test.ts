@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test, { describe } from "node:test";
 import { cutCards, shuffleByStyle } from "../cards/order.ts";
-import { cut, legacyShuffleEndpoint, newState, verify, type PhysicalState } from "./state.ts";
+import { cut, drawWaiting, legacyShuffleEndpoint, newState, verify, type PhysicalState } from "./state.ts";
 import {
   applyCut,
   applyDrawSingle,
@@ -13,8 +13,11 @@ import {
   observeExternalJournal,
   physicalOutbox,
   physicalPause,
+  physicalSpread,
   physicalState,
   resetPhysicalForTests,
+  retryPhysicalSync,
+  setPhysicalLookupForTests,
   setPhysicalRemoteForTests,
   setPhysicalTransportForTests,
   settlePhysicalForTests,
@@ -316,5 +319,158 @@ test("a version 1 journal is replayed into the outbox without a second shuffle",
   assert.equal(physicalPause()?.includes("could not be replayed"), true);
   assert.deepEqual(paused?.drawPile, saved.drawPile);
   assert.equal(physicalOutbox().length, 0);
+});
+
+test("a server outage is not an empty account, and the first offline deck waits to be confirmed", async () => {
+  memory.delete("solace-physical-v1:reader-outage:110");
+  resetPhysicalForTests();
+  const calls: string[] = [];
+  let phase: "down" | "absent" | "found" = "down";
+  const account = legacyShuffleEndpoint(
+    newState(110, "account-session", [1, 2, 3, 4]),
+    "account-prep",
+    [4, 3, 2, 1],
+    "initial_preparation",
+    "system_initial_preparation",
+  );
+  setPhysicalLookupForTests(async (deckId) => {
+    assert.equal(deckId, 110);
+    if (phase === "down") return { status: "unavailable", snapshot: null, spread: null };
+    if (phase === "absent") return { status: "absent", snapshot: null, spread: null };
+    return { status: "found", snapshot: account, spread: null };
+  });
+  setPhysicalTransportForTests(async (input) => {
+    calls.push(input.operation.id);
+    if (phase === "down") throw new Error("offline");
+    return { status: "saved", revision: input.operation.revisionTo };
+  });
+  assert.equal(bootPhysical("reader-outage", 110, [1, 2, 3, 4]), null);
+  await settlePhysicalForTests();
+  const opened = physicalState();
+  assert.ok(opened);
+  assert.equal(calls.length, 0);
+  const cutState = applyCut(opened.drawPile, 0.5);
+  const pile = [...cutState.drawPile];
+  const pending = physicalOutbox().map((item) => item.operation.id);
+  assert.equal(pending.length, 2);
+  assert.equal(calls.length, 0);
+  assert.deepEqual([...zones(cutState)].sort((a, b) => a - b), [1, 2, 3, 4]);
+  await retryPhysicalSync();
+  assert.equal(calls.length, 0);
+  assert.deepEqual(physicalState()?.drawPile, pile);
+
+  phase = "absent";
+  await retryPhysicalSync();
+  assert.deepEqual(calls, pending);
+  assert.deepEqual(physicalState()?.drawPile, pile);
+  assert.equal(physicalOutbox().length, 0);
+  assert.equal(physicalPause(), null);
+
+  memory.delete("solace-physical-v1:reader-outage:111");
+  resetPhysicalForTests();
+  phase = "down";
+  calls.length = 0;
+  setPhysicalLookupForTests(async () => (
+    phase === "down"
+      ? { status: "unavailable", snapshot: null, spread: null }
+      : { status: "found", snapshot: account, spread: null }
+  ));
+  setPhysicalTransportForTests(async () => {
+    calls.push("sent");
+    return { status: "saved", revision: 1 };
+  });
+  assert.equal(bootPhysical("reader-outage", 111, [1, 2, 3, 4]), null);
+  await settlePhysicalForTests();
+  const local = physicalState();
+  assert.ok(local);
+  applyCut(local.drawPile, 0.5);
+  const kept = [...(physicalState()?.drawPile ?? [])];
+  phase = "found";
+  await retryPhysicalSync();
+  assert.equal(calls.length, 0);
+  assert.match(physicalPause() ?? "", /somewhere else/);
+  assert.deepEqual(physicalState()?.drawPile, kept);
+  assert.equal(physicalOutbox().length, 2);
+});
+
+test("a delayed reply for one deck cannot change the deck you switched to", async () => {
+  memory.delete("solace-physical-v1:switch:101");
+  memory.delete("solace-physical-v1:switch:102");
+  resetPhysicalForTests();
+  let release = () => {};
+  const gate = new Promise<void>((resolve) => {
+    release = () => resolve();
+  });
+  const seen: number[] = [];
+  setPhysicalTransportForTests(async (input) => {
+    seen.push(input.deckId);
+    if (input.deckId === 101) await gate;
+    return { status: "saved", revision: input.operation.revisionTo };
+  });
+  const first = bootPhysical("switch", 101, [1, 2, 3, 4]);
+  assert.ok(first);
+  applyCut(first.drawPile, 0.5);
+  const firstPile = [...(physicalState()?.drawPile ?? [])];
+  const second = bootPhysical("switch", 102, [5, 6, 7, 8]);
+  assert.ok(second);
+  applyCut(second.drawPile, 0.5);
+  const secondPile = [...(physicalState()?.drawPile ?? [])];
+  const secondIds = physicalOutbox().map((item) => item.operation.id);
+  release();
+  await settlePhysicalForTests();
+  assert.equal(physicalState()?.deckId, 102);
+  assert.deepEqual(physicalState()?.drawPile, secondPile);
+  assert.deepEqual([...zones(physicalState()!)].sort((a, b) => a - b), [5, 6, 7, 8]);
+  const firstJournal = JSON.parse(memory.get("solace-physical-v1:switch:101") ?? "{}") as { snapshot?: PhysicalState; outbox?: unknown[] };
+  const secondJournal = JSON.parse(memory.get("solace-physical-v1:switch:102") ?? "{}") as { snapshot?: PhysicalState; outbox?: { operation: { id: string } }[] };
+  assert.deepEqual(firstJournal.snapshot?.drawPile, firstPile);
+  assert.equal(firstJournal.outbox?.length, 0);
+  assert.deepEqual(secondJournal.snapshot?.drawPile, secondPile);
+  assert.deepEqual(secondJournal.outbox?.map((item) => item.operation.id) ?? secondIds, []);
+  assert.equal(physicalOutbox().length, 0);
+  assert.ok(seen.includes(101));
+  assert.ok(seen.includes(102));
+  assert.equal(seen.filter((id) => id === 102).every((id) => id === 102), true);
+});
+
+test("a found account spread is restored without using another layout or drawing cards", async () => {
+  memory.delete("solace-physical-v1:reader-spread:120");
+  resetPhysicalForTests();
+  let physical = drawWaiting(drawWaiting(newState(120, "account-session", [11, 22, 33, 44]), "d1"), "d2");
+  const spread = {
+    id: "hearth",
+    name: "Hearth",
+    description: "kept",
+    openingQuestion: "Where?",
+    revision: 4,
+    positions: [1, 2, 3].map((order) => ({
+      id: `hearth-${order}`,
+      order,
+      name: `Hearth ${order}`,
+      question: "Stay",
+      meaningApplication: "Home",
+      x: order / 10,
+      y: 0.5,
+      rotationDeg: 0 as const,
+      zIndex: order,
+      angleNotes: { "0": "up", "90": "", "180": "", "270": "" },
+    })),
+  };
+  const calls: string[] = [];
+  setPhysicalLookupForTests(async () => ({ status: "found", snapshot: physical, spread }));
+  setPhysicalTransportForTests(async (input) => {
+    calls.push(input.sessionId);
+    return { status: "saved", revision: input.operation.revisionTo };
+  });
+  assert.equal(bootPhysical("reader-spread", 120, [11, 22, 33, 44]), null);
+  await settlePhysicalForTests();
+  assert.equal(calls.length, 0);
+  assert.equal(physicalState()?.sessionId, "account-session");
+  assert.deepEqual(physicalState()?.waitingStack, [11, 22]);
+  assert.equal(physicalSpread()?.id, "hearth");
+  assert.equal(physicalSpread()?.positions[0]?.name, "Hearth 1");
+  assert.equal(physicalSpread()?.positions[0]?.meaningApplication, "Home");
+  assert.equal(physicalOutbox().length, 0);
+  assert.deepEqual([...zones(physicalState()!)].sort((a, b) => a - b), [11, 22, 33, 44]);
 });
 });

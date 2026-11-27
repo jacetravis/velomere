@@ -1,6 +1,7 @@
 import { shuffleCards } from "@/lib/cards/order";
 import type { PhysicalCommit } from "./commit";
-import { decideReconcile } from "./reconcile";
+import { decideAccount, type SyncMark } from "./reconcile";
+import type { SpreadSnapshot } from "./spread-record";
 import {
   acceptSlip,
   checkpoint,
@@ -28,9 +29,15 @@ import {
   type Side,
 } from "./state";
 
-const VERSION = 2;
+const VERSION = 3;
 
 export type ReadingLink = { spreadId: string; sessionId: string };
+
+export type AccountLookup = {
+  status: "found" | "absent" | "unavailable";
+  snapshot: PhysicalState | null;
+  spread: SpreadSnapshot | null;
+};
 
 type OutboxItem = { operation: Operation; snapshot: PhysicalState };
 
@@ -40,46 +47,93 @@ type Journal = {
   snapshot: PhysicalState;
   outbox: OutboxItem[];
   reading: ReadingLink | null;
+  spread?: SpreadSnapshot | null;
+  sync?: SyncMark;
 };
 
 type Transport = (input: PhysicalCommit) => Promise<{ status: "saved" | "conflict"; revision: number; reason?: string }>;
 type RemoteLoader = () => Promise<PhysicalState | null>;
+type Lookup = (deckId: number) => Promise<AccountLookup>;
 
-let state: PhysicalState | null = null;
-let ownerId = "local";
-let activeDeckId = 0;
-let paused: string | null = null;
-let loading = false;
-let sequence = 0;
-let bootToken = 0;
-let outbox: OutboxItem[] = [];
-let readingLink: ReadingLink | null = null;
+type Scope = {
+  id: string;
+  ownerId: string;
+  deckId: number;
+  state: PhysicalState | null;
+  outbox: OutboxItem[];
+  reading: ReadingLink | null;
+  spread: SpreadSnapshot | null;
+  sync: SyncMark;
+  supersede: boolean;
+  diskStamp: string | null;
+  paused: string | null;
+  loading: boolean;
+  generation: number;
+  sequence: number;
+  flushChain: Promise<void>;
+  reconcileTask: Promise<void> | null;
+};
+
+let epoch = 0;
+let active: Scope | null = null;
+const scopes = new Map<string, Scope>();
 let transportOverride: Transport | null = null;
 let remoteLoader: RemoteLoader | null = null;
-let diskStamp: string | null = null;
-let flushChain: Promise<void> = Promise.resolve();
-let flushGeneration = 0;
-let reconcileTask: Promise<void> | null = null;
+let lookupOverride: Lookup | null = null;
 const listeners = new Set<() => void>();
 
+function blankScope(ownerId: string, deckId: number, id: string): Scope {
+  return {
+    id,
+    ownerId,
+    deckId,
+    state: null,
+    outbox: [],
+    reading: null,
+    spread: null,
+    sync: "unknown",
+    supersede: false,
+    diskStamp: null,
+    paused: null,
+    loading: false,
+    generation: 0,
+    sequence: 0,
+    flushChain: Promise.resolve(),
+    reconcileTask: null,
+  };
+}
+
+function ensure(ownerId: string, deckId: number) {
+  const id = `${ownerId}:${deckId}`;
+  const existing = scopes.get(id);
+  if (existing) return existing;
+  const scope = blankScope(ownerId, deckId, id);
+  scopes.set(id, scope);
+  return scope;
+}
+
 export function physicalState() {
-  return state;
+  return active?.state ?? null;
 }
 
 export function physicalPause() {
-  return paused;
+  return active?.paused ?? null;
 }
 
 export function physicalLoading() {
-  return loading;
+  return active?.loading ?? false;
 }
 
 export function physicalOutbox() {
-  return outbox.map((item) => ({ ...item, operation: { ...item.operation } }));
+  return (active?.outbox ?? []).map((item) => ({ ...item, operation: { ...item.operation } }));
 }
 
 export function physicalReading() {
-  return readingLink;
+  return active?.reading ?? null;
+}
+
+export function physicalSpread() {
+  return active?.spread ?? null;
 }
 
 export function subscribePhysical(listener: () => void) {
@@ -89,11 +143,17 @@ export function subscribePhysical(listener: () => void) {
   };
 }
 
+function emit(scope: Scope) {
+  if (scope !== active) return;
+  for (const listener of listeners) listener();
+}
+
 export function pausePhysical(message: string) {
-  const changed = paused !== message || loading;
-  paused = message;
-  loading = false;
-  if (changed) emit();
+  if (!active) return;
+  const changed = active.paused !== message || active.loading;
+  active.paused = message;
+  active.loading = false;
+  if (changed) emit(active);
 }
 
 export function setPhysicalTransportForTests(transport: Transport | null) {
@@ -104,70 +164,81 @@ export function setPhysicalRemoteForTests(loader: RemoteLoader | null) {
   remoteLoader = loader;
 }
 
+export function setPhysicalLookupForTests(lookup: Lookup | null) {
+  lookupOverride = lookup;
+}
+
 export async function settlePhysicalForTests() {
-  if (reconcileTask) await reconcileTask;
-  await flushPhysical();
+  await Promise.all([...scopes.values()].flatMap((scope) => [scope.reconcileTask ?? Promise.resolve(), scope.flushChain]));
+  if (active?.sync === "ready") await flushScope(active);
+  await Promise.all([...scopes.values()].map((scope) => scope.flushChain));
+}
+
+export async function retryPhysicalSync() {
+  const scope = active;
+  if (!scope?.state) return;
+  await reconcileScope(scope, scope.state.inventory, false);
+  await flushScope(scope);
 }
 
 export function resetPhysicalForTests() {
-  flushGeneration += 1;
-  state = null;
-  outbox = [];
-  readingLink = null;
-  paused = null;
-  loading = false;
-  ownerId = "local";
-  activeDeckId = 0;
-  sequence = 0;
-  bootToken += 1;
+  epoch += 1;
+  scopes.clear();
+  active = null;
   transportOverride = null;
   remoteLoader = null;
-  diskStamp = null;
-  reconcileTask = null;
-  flushChain = Promise.resolve();
-}
-
-function emit() {
-  for (const listener of listeners) listener();
+  lookupOverride = null;
 }
 
 function key(owner: string, deckId: number) {
   return `solace-physical-v1:${owner}:${deckId}`;
 }
 
-function commitOf(item: OutboxItem): PhysicalCommit {
+function shouldReconcile() {
+  return typeof window !== "undefined" || remoteLoader != null || lookupOverride != null;
+}
+
+function commitOf(scope: Scope, item: OutboxItem): PhysicalCommit {
   return {
     deckId: item.snapshot.deckId,
     sessionId: item.snapshot.sessionId,
     expectedRevision: item.operation.revisionFrom,
     snapshot: item.snapshot,
     operation: item.operation,
+    supersede: scope.supersede,
+    spread: scope.spread,
   };
 }
 
 if (typeof window !== "undefined") {
   window.addEventListener("storage", (event) => {
-    if (event.key !== key(ownerId, activeDeckId)) return;
+    if (!active || event.key !== key(active.ownerId, active.deckId)) return;
     observeExternalJournal(event.newValue);
+  });
+  window.addEventListener("online", () => {
+    const scope = active;
+    if (!scope) return;
+    void reconcileScope(scope, scope.state?.inventory ?? [], false);
   });
 }
 
 export function observeExternalJournal(raw: string | null) {
-  if (!state || !raw) return;
+  const scope = active;
+  if (!scope?.state || !raw) return;
   try {
     const next = JSON.parse(raw) as Journal;
     const snapshot = next.snapshot;
-    if (!snapshot || snapshot.sessionId !== state.sessionId || snapshot.revision !== state.revision || sampleHash(snapshot) !== sampleHash(state)) {
-      paused = "This deck was handled in another tab. Handling is paused so nothing is overwritten.";
-      emit();
+    if (!snapshot || snapshot.sessionId !== scope.state.sessionId || snapshot.revision !== scope.state.revision || sampleHash(snapshot) !== sampleHash(scope.state)) {
+      scope.paused = "This deck was handled in another tab. Handling is paused so nothing is overwritten.";
+      emit(scope);
     }
   } catch {
-    paused = "The saved deck could not be read. Handling is paused.";
-    emit();
+    scope.paused = "The saved deck could not be read. Handling is paused.";
+    emit(scope);
   }
 }
 
-function rebuildLegacy(snapshot: PhysicalState): Journal | null {
+function rebuildLegacy(scope: Scope, snapshot: PhysicalState): Journal | null {
   const sorted = [...snapshot.inventory].sort((a, b) => a - b);
   let cursor = newState(snapshot.deckId, snapshot.sessionId, sorted);
   const rebuilt: OutboxItem[] = [];
@@ -184,59 +255,93 @@ function rebuildLegacy(snapshot: PhysicalState): Journal | null {
     cursor = next;
   }
   if (sampleHash(cursor) !== sampleHash(snapshot)) return null;
-  return { version: VERSION, ownerId, snapshot: checkpoint(snapshot.operations.length ? cursor : snapshot), outbox: rebuilt, reading: null };
+  return {
+    version: VERSION,
+    ownerId: scope.ownerId,
+    snapshot: checkpoint(snapshot.operations.length ? cursor : snapshot),
+    outbox: rebuilt,
+    reading: null,
+    spread: null,
+    sync: "unknown",
+  };
 }
 
-function journalFrom(owner: string, snapshot: PhysicalState, items: OutboxItem[], reading: ReadingLink | null): Journal {
-  return { version: VERSION, ownerId: owner, snapshot: checkpoint(snapshot), outbox: items, reading };
+function journalFrom(scope: Scope, snapshot: PhysicalState, items: OutboxItem[]): Journal {
+  return {
+    version: VERSION,
+    ownerId: scope.ownerId,
+    snapshot: checkpoint(snapshot),
+    outbox: items,
+    reading: scope.reading,
+    spread: scope.spread,
+    sync: scope.sync,
+  };
 }
 
-function parseJournal(owner: string, raw: string): Journal | null {
+function parseJournal(scope: Scope, raw: string): { journal: Journal | null; pause: string | null } {
   const parsed = JSON.parse(raw) as Partial<Journal> & { snapshot?: PhysicalState };
-  if (!parsed.snapshot || parsed.ownerId !== owner) return null;
+  if (!parsed.snapshot || parsed.ownerId !== scope.ownerId) return { journal: null, pause: null };
   verify(parsed.snapshot);
-  if (parsed.version === VERSION && Array.isArray(parsed.outbox)) {
+  if ((parsed.version === VERSION || parsed.version === 2) && Array.isArray(parsed.outbox)) {
     for (const item of parsed.outbox) verify(item.snapshot);
     return {
-      version: VERSION,
-      ownerId: owner,
-      snapshot: checkpoint(parsed.snapshot),
-      outbox: parsed.outbox,
-      reading: parsed.reading ?? null,
+      pause: null,
+      journal: {
+        version: VERSION,
+        ownerId: scope.ownerId,
+        snapshot: checkpoint(parsed.snapshot),
+        outbox: parsed.outbox,
+        reading: parsed.reading ?? null,
+        spread: parsed.spread ?? null,
+        sync: parsed.sync ?? "unknown",
+      },
     };
   }
   if (parsed.version === 1) {
-    const rebuilt = rebuildLegacy(parsed.snapshot);
+    const rebuilt = rebuildLegacy(scope, parsed.snapshot);
     if (!rebuilt) {
-      paused = "The saved deck could not be replayed. Handling is paused so nothing is overwritten.";
-      return { version: VERSION, ownerId: owner, snapshot: checkpoint(parsed.snapshot), outbox: [], reading: null };
+      return {
+        pause: "The saved deck could not be replayed. Handling is paused so nothing is overwritten.",
+        journal: {
+          version: VERSION,
+          ownerId: scope.ownerId,
+          snapshot: checkpoint(parsed.snapshot),
+          outbox: [],
+          reading: null,
+          spread: null,
+          sync: "unknown",
+        },
+      };
     }
-    rebuilt.ownerId = owner;
-    return rebuilt;
+    return { journal: rebuilt, pause: null };
   }
-  return null;
+  return { journal: null, pause: null };
 }
 
-function readJournal(owner: string, deckId: number): Journal | null {
-  if (typeof localStorage === "undefined") return null;
-  const raw = localStorage.getItem(key(owner, deckId));
-  diskStamp = raw;
+function readJournal(scope: Scope): Journal | null {
+  if (typeof localStorage === "undefined") {
+    scope.diskStamp = null;
+    return null;
+  }
+  const raw = localStorage.getItem(key(scope.ownerId, scope.deckId));
+  scope.diskStamp = raw;
   if (!raw) return null;
-  return parseJournal(owner, raw);
+  const parsed = parseJournal(scope, raw);
+  if (parsed.pause) scope.paused = parsed.pause;
+  return parsed.journal;
 }
 
-function writeJournal(snapshot: PhysicalState, items: OutboxItem[]) {
+function writeJournal(scope: Scope, snapshot: PhysicalState, items: OutboxItem[]) {
   if (typeof localStorage === "undefined") return false;
-  const storageKey = key(ownerId, snapshot.deckId);
+  const storageKey = key(scope.ownerId, snapshot.deckId);
   const current = localStorage.getItem(storageKey);
-  if (current !== diskStamp) {
-    paused = "This deck was handled in another tab. Handling is paused so nothing is overwritten.";
-    throw new Error(paused);
+  if (current !== scope.diskStamp) {
+    scope.paused = "This deck was handled in another tab. Handling is paused so nothing is overwritten.";
+    throw new Error(scope.paused);
   }
-  const payload = journalFrom(ownerId, snapshot, items, readingLink);
-  const raw = JSON.stringify(payload);
+  const raw = JSON.stringify(journalFrom(scope, snapshot, items));
   localStorage.setItem(storageKey, raw);
-  diskStamp = raw;
+  scope.diskStamp = raw;
   return true;
 }
 
@@ -245,47 +350,50 @@ export function peekPhysical(owner: string, deckId: number): PhysicalState | nul
     if (typeof localStorage === "undefined") return null;
     const raw = localStorage.getItem(key(owner, deckId));
     if (!raw) return null;
-    return parseJournal(owner, raw)?.snapshot ?? null;
+    const scope = blankScope(owner, deckId, `${owner}:${deckId}`);
+    return parseJournal(scope, raw).journal?.snapshot ?? null;
   } catch {
     return null;
   }
 }
 
-function nextOp(kind: string) {
-  sequence += 1;
-  return `${kind}-${Date.now().toString(36)}-${sequence}`;
+function nextOp(scope: Scope, kind: string) {
+  scope.sequence += 1;
+  return `${kind}-${Date.now().toString(36)}-${scope.sequence}`;
 }
 
-function remember(next: PhysicalState) {
+function remember(scope: Scope, next: PhysicalState) {
   const saved = checkpoint(next);
   const operation = saved.operations.at(-1);
   if (!operation) throw new Error("The deck action was not recorded.");
-  const items = [...outbox, { operation, snapshot: saved }];
+  const items = [...scope.outbox, { operation, snapshot: saved }];
   try {
-    const wrote = writeJournal(saved, items);
+    const wrote = writeJournal(scope, saved, items);
     if (!wrote) {
-      paused = "This browser could not save the deck. Handling is paused.";
-      throw new Error(paused);
+      scope.paused = "This browser could not save the deck. Handling is paused.";
+      throw new Error(scope.paused);
     }
   } catch (err) {
-    if (!paused) paused = "This browser could not save the deck. Handling is paused.";
-    throw err instanceof Error ? err : new Error(paused);
+    if (!scope.paused) scope.paused = "This browser could not save the deck. Handling is paused.";
+    throw err instanceof Error ? err : new Error(scope.paused);
   }
-  state = saved;
-  outbox = items;
-  void flushPhysical();
+  scope.state = saved;
+  scope.outbox = items;
+  void flushScope(scope);
   return saved;
 }
 
-function commit(next: PhysicalState) {
-  if (next === state) return next;
-  return remember(next);
+function commit(scope: Scope, next: PhysicalState) {
+  if (next === scope.state) return next;
+  return remember(scope, next);
 }
 
 function act(update: (current: PhysicalState) => PhysicalState) {
-  if (paused) throw new Error(paused);
-  if (!state) throw new Error("The deck is not ready.");
-  return commit(update(state));
+  const scope = active;
+  if (!scope) throw new Error("The deck is not ready.");
+  if (scope.paused) throw new Error(scope.paused);
+  if (!scope.state) throw new Error("The deck is not ready.");
+  return commit(scope, update(scope.state));
 }
 
 async function defaultTransport(input: PhysicalCommit) {
@@ -293,275 +401,399 @@ async function defaultTransport(input: PhysicalCommit) {
   return commitPhysicalDeck({ data: input });
 }
 
-export function flushPhysical(): Promise<void> {
-  if (paused) return Promise.resolve();
+function flushScope(scope: Scope): Promise<void> {
+  if (scope.paused || scope.sync !== "ready") return Promise.resolve();
   if (typeof window === "undefined" && !transportOverride) return Promise.resolve();
-  const generation = flushGeneration;
-  const run = flushChain.then(() => drain(generation));
-  flushChain = run.then(
+  const generation = scope.generation;
+  const seen = epoch;
+  const run = scope.flushChain.then(() => drain(scope, generation, seen));
+  scope.flushChain = run.then(
     () => undefined,
     () => undefined,
   );
   return run;
 }
 
-async function drain(generation: number) {
-  if (generation !== flushGeneration || paused) return;
+export function flushPhysical(): Promise<void> {
+  if (!active) return Promise.resolve();
+  return flushScope(active);
+}
+
+function scheduleRetry(scope: Scope) {
+  if (typeof window === "undefined") return;
+  const generation = scope.generation;
+  const seen = epoch;
+  window.setTimeout(() => {
+    if (epoch !== seen || scope.generation !== generation) return;
+    void reconcileScope(scope, scope.state?.inventory ?? [], false);
+  }, 4000);
+}
+
+async function drain(scope: Scope, generation: number, seen: number) {
+  if (generation !== scope.generation || seen !== epoch || scope.paused || scope.sync !== "ready") return;
   const transport = transportOverride ?? defaultTransport;
-  while (outbox.length && !paused && generation === flushGeneration) {
-    const item = outbox[0]!;
+  while (scope.outbox.length && !scope.paused && scope.generation === generation && epoch === seen) {
+    const item = scope.outbox[0]!;
     let result: { status: "saved" | "conflict"; revision: number; reason?: string };
     try {
-      result = await transport(commitOf(item));
+      result = await transport(commitOf(scope, item));
     } catch {
+      scheduleRetry(scope);
       return;
     }
-    if (generation !== flushGeneration) return;
+    if (scope.generation !== generation || epoch !== seen) return;
     if (result.status === "conflict") {
-      paused = result.reason || "This deck was handled somewhere else. Handling is paused so nothing is overwritten.";
-      emit();
+      scope.paused = result.reason || "This deck was handled somewhere else. Handling is paused so nothing is overwritten.";
+      emit(scope);
       return;
     }
-    const rest = outbox.slice(1);
+    if (scope.outbox[0]?.operation.id !== item.operation.id) return;
+    const rest = scope.outbox.slice(1);
+    const supersede = scope.supersede;
+    scope.supersede = false;
     try {
-      if (typeof localStorage !== "undefined" && state && !writeJournal(state, rest)) {
-        paused = "This browser could not save the deck. Handling is paused.";
-        emit();
+      if (typeof localStorage !== "undefined" && scope.state && !writeJournal(scope, scope.state, rest)) {
+        scope.supersede = supersede;
+        scope.paused = "This browser could not save the deck. Handling is paused.";
+        emit(scope);
         return;
       }
     } catch {
-      if (!paused) paused = "This browser could not save the deck. Handling is paused.";
-      emit();
+      scope.supersede = supersede;
+      if (!scope.paused) scope.paused = "This browser could not save the deck. Handling is paused.";
+      emit(scope);
       return;
     }
-    if (generation !== flushGeneration) return;
-    outbox = rest;
+    if (scope.generation !== generation || epoch !== seen || scope.outbox[0]?.operation.id !== item.operation.id) return;
+    scope.outbox = rest;
   }
 }
 
-function adopt(remote: PhysicalState) {
+function adopt(scope: Scope, remote: PhysicalState, spread: SpreadSnapshot | null) {
+  const previous = {
+    state: scope.state,
+    outbox: scope.outbox,
+    spread: scope.spread,
+    reading: scope.reading,
+    sync: scope.sync,
+    supersede: scope.supersede,
+  };
+  scope.sync = "ready";
+  scope.supersede = false;
+  scope.spread = spread;
+  if (previous.state && remote.sessionId !== previous.state.sessionId) scope.reading = null;
   const saved = checkpoint(remote);
   try {
-    if (!writeJournal(saved, [])) {
-      paused = "This browser could not save the deck. Handling is paused.";
+    if (!writeJournal(scope, saved, [])) {
+      scope.paused = "This browser could not save the deck. Handling is paused.";
+      scope.state = previous.state;
+      scope.outbox = previous.outbox;
+      scope.spread = previous.spread;
+      scope.reading = previous.reading;
+      scope.sync = previous.sync;
+      scope.supersede = previous.supersede;
       return;
     }
   } catch {
-    if (!paused) paused = "This browser could not save the deck. Handling is paused.";
+    scope.state = previous.state;
+    scope.outbox = previous.outbox;
+    scope.spread = previous.spread;
+    scope.reading = previous.reading;
+    scope.sync = previous.sync;
+    scope.supersede = previous.supersede;
+    if (!scope.paused) scope.paused = "This browser could not save the deck. Handling is paused.";
     return;
   }
-  outbox = [];
-  state = saved;
+  scope.state = saved;
+  scope.outbox = [];
+}
+
+function applySaved(scope: Scope, saved: Journal) {
+  scope.state = saved.snapshot;
+  scope.outbox = saved.outbox;
+  scope.reading = saved.reading;
+  scope.spread = saved.spread ?? null;
+  scope.sync = saved.sync ?? "unknown";
 }
 
 export function bootPhysical(owner: string, deckId: number, cardIds: readonly CardId[]): PhysicalState | null {
-  const token = ++bootToken;
-  ownerId = owner || "local";
-  activeDeckId = deckId;
-  paused = null;
-  loading = false;
-  outbox = [];
-  readingLink = null;
+  const scope = ensure(owner || "local", deckId);
+  scope.generation += 1;
+  active = scope;
+  scope.paused = null;
+  scope.loading = false;
   let saved: Journal | null = null;
   try {
-    saved = readJournal(ownerId, deckId);
+    saved = readJournal(scope);
   } catch {
-    paused = "The saved deck could not be read. Handling is paused.";
-    state = null;
+    scope.paused = "The saved deck could not be read. Handling is paused.";
+    scope.state = null;
+    scope.outbox = [];
     return null;
   }
-  if (paused && saved) {
-    state = saved.snapshot;
-    outbox = saved.outbox;
+  if (scope.paused && saved) {
+    applySaved(scope, saved);
     return saved.snapshot;
   }
   if (saved) {
     if (fingerprint(saved.snapshot.inventory) !== fingerprint(cardIds)) {
-      paused = "This deck's cards changed. The saved order is paused.";
-      state = saved.snapshot;
-      outbox = saved.outbox;
-      readingLink = saved.reading;
+      scope.paused = "This deck's cards changed. The saved order is paused.";
+      applySaved(scope, saved);
       return saved.snapshot;
     }
-    state = saved.snapshot;
-    outbox = saved.outbox;
-    readingLink = saved.reading;
-    if (typeof window !== "undefined" || transportOverride || remoteLoader) {
-      reconcileTask = reconcile(token, cardIds, false);
-    }
+    applySaved(scope, saved);
+    if (shouldReconcile()) scope.reconcileTask = reconcileScope(scope, cardIds, false);
     return saved.snapshot;
   }
-  if (typeof window === "undefined" && !transportOverride && !remoteLoader) return createFresh(cardIds);
-  state = null;
-  loading = true;
-  reconcileTask = reconcile(token, cardIds, true);
+  if (!shouldReconcile()) return createFresh(scope, cardIds, "ready");
+  scope.state = null;
+  scope.outbox = [];
+  scope.loading = true;
+  scope.reconcileTask = reconcileScope(scope, cardIds, true);
   return null;
 }
 
-function createFresh(cardIds: readonly CardId[]) {
-  const deckId = activeDeckId;
+function createFresh(scope: Scope, cardIds: readonly CardId[], sync: SyncMark) {
   const canonical = [...cardIds].sort((a, b) => a - b);
-  const sessionId = `phys-${deckId}-${Math.random().toString(36).slice(2, 10)}`;
-  let next = newState(deckId, sessionId, canonical);
+  const sessionId = `phys-${scope.deckId}-${Math.random().toString(36).slice(2, 10)}`;
+  let next = newState(scope.deckId, sessionId, canonical);
   if (canonical.length > 1) {
     next = legacyShuffleEndpoint(next, `prep-${sessionId}`, shuffleCards(canonical), "initial_preparation", "system_initial_preparation");
   }
-  state = null;
-  outbox = [];
-  return commit(next);
+  scope.sync = sync;
+  scope.supersede = false;
+  scope.state = null;
+  scope.outbox = [];
+  scope.reading = null;
+  scope.spread = null;
+  return commit(scope, next);
 }
 
-async function loadRemote(): Promise<PhysicalState | null> {
+async function loadAccount(deckId: number): Promise<AccountLookup> {
   try {
+    if (lookupOverride) return await lookupOverride(deckId);
     if (remoteLoader) {
       const snapshot = await remoteLoader();
-      if (!snapshot) return null;
-      verify(snapshot);
-      return snapshot;
+      return snapshot
+        ? { status: "found", snapshot, spread: null }
+        : { status: "absent", snapshot: null, spread: null };
     }
     const { loadPhysicalDeck } = await import("./server");
-    const loaded = await loadPhysicalDeck({ data: { deckId: activeDeckId } });
-    if (!loaded?.snapshot) return null;
+    const loaded = await loadPhysicalDeck({ data: { deckId } });
+    if (!loaded?.snapshot) return { status: "absent", snapshot: null, spread: null };
     verify(loaded.snapshot);
-    return loaded.snapshot;
+    return { status: "found", snapshot: loaded.snapshot, spread: loaded.spread ?? null };
   } catch {
-    return null;
+    return { status: "unavailable", snapshot: null, spread: null };
   }
 }
 
-async function reconcile(token: number, cardIds: readonly CardId[], allowCreate: boolean) {
-  const remote = await loadRemote();
-  if (token !== bootToken) return;
-  if (remote && fingerprint(remote.inventory) !== fingerprint(cardIds)) {
-    paused = "This deck's cards changed. The saved order is paused.";
-    if (!state) state = checkpoint(remote);
-    loading = false;
-    emit();
+async function reconcileScope(scope: Scope, cardIds: readonly CardId[], allowCreate: boolean) {
+  const generation = scope.generation;
+  const seen = epoch;
+  const account = await loadAccount(scope.deckId);
+  if (scope.generation !== generation || epoch !== seen) return;
+  if (account.status === "found" && account.snapshot && fingerprint(account.snapshot.inventory) !== fingerprint(cardIds)) {
+    scope.paused = "This deck's cards changed. The saved order is paused.";
+    if (!scope.state) scope.state = checkpoint(account.snapshot);
+    scope.loading = false;
+    emit(scope);
     return;
   }
-  const decision = decideReconcile(state, outbox.length, remote);
+  const view = account.status === "found" && !account.snapshot ? "unavailable" : account.status;
+  const decision = decideAccount({
+    local: scope.state,
+    unsent: scope.outbox.length,
+    view,
+    remote: account.snapshot,
+    sync: scope.sync,
+    allowCreate,
+  });
+  if (decision === "offline") {
+    try {
+      createFresh(scope, cardIds, "offline");
+      scope.loading = false;
+      emit(scope);
+    } catch (err) {
+      scope.paused = err instanceof Error ? err.message : "The deck could not be prepared.";
+      scope.loading = false;
+      emit(scope);
+    }
+    return;
+  }
+  if (decision === "hold") {
+    scope.loading = false;
+    emit(scope);
+    return;
+  }
   if (decision === "pause") {
-    paused = "This deck was handled somewhere else. Handling is paused so nothing is overwritten.";
-    loading = false;
-    emit();
+    scope.paused = "This deck was handled somewhere else. Handling is paused so nothing is overwritten.";
+    scope.loading = false;
+    emit(scope);
     return;
   }
-  if (decision === "adopt" && remote) {
-    adopt(remote);
-    loading = false;
-    emit();
+  if (decision === "adopt" && account.snapshot) {
+    adopt(scope, account.snapshot, account.spread);
+    scope.loading = false;
+    emit(scope);
     return;
   }
   if (decision === "create" && allowCreate) {
     try {
-      createFresh(cardIds);
-      loading = false;
-      emit();
+      createFresh(scope, cardIds, "ready");
+      scope.loading = false;
+      emit(scope);
     } catch (err) {
-      paused = err instanceof Error ? err.message : "The deck could not be prepared.";
-      loading = false;
-      emit();
+      scope.paused = err instanceof Error ? err.message : "The deck could not be prepared.";
+      scope.loading = false;
+      emit(scope);
     }
     return;
   }
-  loading = false;
-  if (decision === "flush") void flushPhysical();
+  if (decision === "flush") {
+    if (scope.sync !== "ready") scope.sync = "ready";
+    if (account.spread && scope.state && account.snapshot?.sessionId === scope.state.sessionId && !scope.spread) {
+      scope.spread = account.spread;
+    }
+    try {
+      if (scope.state) writeJournal(scope, scope.state, scope.outbox);
+    } catch {
+      if (!scope.paused) scope.paused = "This browser could not save the deck. Handling is paused.";
+      scope.loading = false;
+      emit(scope);
+      return;
+    }
+    scope.loading = false;
+    emit(scope);
+    void flushScope(scope);
+    return;
+  }
+  if (account.spread && scope.state && account.snapshot?.sessionId === scope.state.sessionId && !scope.spread) {
+    scope.spread = account.spread;
+    try {
+      writeJournal(scope, scope.state, scope.outbox);
+    } catch {
+      if (!scope.paused) scope.paused = "This browser could not save the deck. Handling is paused.";
+    }
+  }
+  scope.loading = false;
+  emit(scope);
 }
 
-export function startFreshPhysical(cardIds: readonly CardId[], deckId = state?.deckId || activeDeckId) {
+export function startFreshPhysical(cardIds: readonly CardId[], deckId = active?.state?.deckId || active?.deckId || 0) {
   if (!deckId) throw new Error("The deck is not ready.");
-  bootToken += 1;
-  flushGeneration += 1;
-  activeDeckId = deckId;
-  paused = null;
-  loading = false;
-  outbox = [];
-  readingLink = null;
-  reconcileTask = null;
-  if (typeof localStorage !== "undefined") diskStamp = localStorage.getItem(key(ownerId, deckId));
+  const owner = active?.ownerId || "local";
+  const scope = ensure(owner, deckId);
+  scope.generation += 1;
+  active = scope;
+  scope.paused = null;
+  scope.loading = false;
+  scope.outbox = [];
+  scope.reading = null;
+  scope.spread = null;
+  scope.sync = "ready";
+  scope.supersede = true;
+  scope.reconcileTask = null;
+  if (typeof localStorage !== "undefined") scope.diskStamp = localStorage.getItem(key(owner, deckId));
   const canonical = [...cardIds].sort((a, b) => a - b);
   const sessionId = `phys-${deckId}-${Math.random().toString(36).slice(2, 10)}`;
   let next = newState(deckId, sessionId, canonical);
   if (canonical.length > 1) {
     next = legacyShuffleEndpoint(next, `prep-${sessionId}`, shuffleCards(canonical), "initial_preparation", "system_initial_preparation");
   }
-  state = null;
-  return commit(next);
+  scope.state = null;
+  return commit(scope, next);
 }
 
-export function setPhysicalReading(link: ReadingLink | null) {
-  readingLink = link;
-  if (!state) return;
+export function setPhysicalReading(link: ReadingLink | null, spread?: SpreadSnapshot | null) {
+  const scope = active;
+  if (!scope) return;
+  scope.reading = link;
+  scope.spread = spread ?? null;
+  if (!scope.state) return;
   try {
-    writeJournal(state, outbox);
+    writeJournal(scope, scope.state, scope.outbox);
   } catch {
-    if (!paused) pausePhysical("This browser could not save the deck. Handling is paused.");
-    else pausePhysical(paused);
+    if (!scope.paused) pausePhysical("This browser could not save the deck. Handling is paused.");
+    else pausePhysical(scope.paused);
+  }
+  if (scope.sync === "ready" && spread && scope.state) void pushSpread(scope);
+}
+
+async function pushSpread(scope: Scope) {
+  if (typeof window === "undefined" || !scope.state || !scope.spread) return;
+  try {
+    const { recordPhysicalSpread } = await import("./server");
+    await recordPhysicalSpread({
+      data: { deckId: scope.deckId, sessionId: scope.state.sessionId, spread: scope.spread },
+    });
+  } catch {
+    scheduleRetry(scope);
   }
 }
 
 export function orderIds() {
-  return state ? [...state.drawPile] : [];
+  return active?.state ? [...active.state.drawPile] : [];
 }
 
 export function applyRealizedShuffle(before: readonly CardId[], after: readonly CardId[], style: string) {
   return act((current) => {
     if (current.drawPile.join(",") !== before.join(",")) throw new Error("The deck moved before this shuffle could be saved.");
-    return legacyShuffleEndpoint(current, nextOp("shuffle"), [...after], style);
+    return legacyShuffleEndpoint(current, nextOp(active!, "shuffle"), [...after], style);
   });
 }
 
 export function applyCut(before: readonly CardId[], ratio: number) {
   return act((current) => {
     if (current.drawPile.join(",") !== before.join(",")) throw new Error("The deck moved before this cut could be saved.");
-    return cut(current, nextOp("cut"), cutIndex(before.length, ratio));
+    return cut(current, nextOp(active!, "cut"), cutIndex(before.length, ratio));
   });
 }
 
 export function applyDrawSingle(side: Side) {
-  return act((current) => drawSingle(current, nextOp("single"), side));
+  return act((current) => drawSingle(current, nextOp(active!, "single"), side));
 }
 
 export function applyPutBack() {
-  return act((current) => putBackSingle(current, nextOp("return")));
+  return act((current) => putBackSingle(current, nextOp(active!, "return")));
 }
 
 export function applyDrawWaiting() {
-  return act((current) => drawWaiting(current, nextOp("wait")));
+  return act((current) => drawWaiting(current, nextOp(active!, "wait")));
 }
 
 export function applyReturnWaiting() {
-  return act((current) => returnLatestWaiting(current, nextOp("unwait")));
+  return act((current) => returnLatestWaiting(current, nextOp(active!, "unwait")));
 }
 
 export function applyStage() {
-  return act((current) => stageFirst(current, nextOp("stage"), current.drawHistory.length));
+  return act((current) => stageFirst(current, nextOp(active!, "stage"), current.drawHistory.length));
 }
 
 export function applyFlip() {
-  return act((current) => flipFirst(current, nextOp("flip")));
+  return act((current) => flipFirst(current, nextOp(active!, "flip")));
 }
 
 export function applyDeliver() {
   return act((current) => {
     const placed = Object.keys(current.table).filter((item) => item.startsWith("spread:")).length;
-    return deliverNext(current, nextOp("deliver"), placed + 1);
+    return deliverNext(current, nextOp(active!, "deliver"), placed + 1);
   });
 }
 
 export function applyEject(index: number) {
-  return act((current) => ejectSlip(current, nextOp("slip"), index));
+  return act((current) => ejectSlip(current, nextOp(active!, "slip"), index));
 }
 
 export function applyAcceptSlip(destination: "single" | "waiting", side: Side = 0) {
-  return act((current) => acceptSlip(current, nextOp("take-slip"), destination, side));
+  return act((current) => acceptSlip(current, nextOp(active!, "take-slip"), destination, side));
 }
 
 export function applyReturnSlip() {
-  return act((current) => returnUntappedSlip(current, nextOp("unslip")));
+  return act((current) => returnUntappedSlip(current, nextOp(active!, "unslip")));
 }
 
 export function applyGather() {
-  if (!state || (state.mode === "ready" && state.slippedCard == null)) return state;
-  return act((current) => gatherAll(current, nextOp("gather")));
+  if (!active?.state || (active.state.mode === "ready" && active.state.slippedCard == null)) return active?.state ?? null;
+  return act((current) => gatherAll(current, nextOp(active!, "gather")));
 }

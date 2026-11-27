@@ -8,6 +8,7 @@ import {
   type Operation,
   type PhysicalState,
 } from "./state";
+import type { SpreadSnapshot } from "./spread-record";
 
 export type Queryable = {
   query: <T>(text: string, params?: unknown[]) => Promise<T[]>;
@@ -19,6 +20,9 @@ export type PhysicalCommit = {
   expectedRevision: number;
   snapshot: PhysicalState;
   operation: Operation;
+  /** Explicit new order. This is the only path that may retire another active session. */
+  supersede?: boolean;
+  spread?: SpreadSnapshot | null;
 };
 
 function stable(value: unknown): unknown {
@@ -137,25 +141,38 @@ export async function applyPhysicalCommit(sql: Queryable, userId: string, data: 
 
   const saved = checkpoint({ ...data.snapshot, operations: [data.operation] });
   const hash = sampleHash(saved);
+  const spreadJson = data.spread ? JSON.stringify(data.spread) : null;
   if (current == null) {
-    await sql.query(
-      `update physical_deck_sessions set active = false, updated_at = now()
-        where user_id = $1 and deck_id = $2 and active = true and session_id <> $3`,
+    const others = await sql.query<{ session_id: string }>(
+      `select session_id from physical_deck_sessions
+        where user_id = $1 and deck_id = $2 and active = true and session_id <> $3
+        for update`,
       [userId, data.deckId, data.sessionId],
     );
+    if (others.length && !data.supersede) {
+      return conflict(0, "This deck already has a saved order. Handling is paused so it is not replaced.");
+    }
+    if (others.length) {
+      await sql.query(
+        `update physical_deck_sessions set active = false, updated_at = now()
+          where user_id = $1 and deck_id = $2 and active = true and session_id <> $3`,
+        [userId, data.deckId, data.sessionId],
+      );
+    }
     await sql.query(
       `insert into physical_deck_sessions
-         (user_id, deck_id, session_id, revision, deck_fingerprint, snapshot_json, checkpoint_hash, active)
-       values ($1, $2, $3, $4, $5, $6::jsonb, $7, true)`,
-      [userId, data.deckId, data.sessionId, saved.revision, fingerprint(saved.inventory), JSON.stringify(saved), hash],
+         (user_id, deck_id, session_id, revision, deck_fingerprint, snapshot_json, checkpoint_hash, spread_json, active)
+       values ($1, $2, $3, $4, $5, $6::jsonb, $7, $8::jsonb, true)`,
+      [userId, data.deckId, data.sessionId, saved.revision, fingerprint(saved.inventory), JSON.stringify(saved), hash, spreadJson],
     );
   } else {
     const updated = await sql.query<{ revision: number }>(
       `update physical_deck_sessions
-          set revision = $4, snapshot_json = $5::jsonb, deck_fingerprint = $6, checkpoint_hash = $7, updated_at = now()
+          set revision = $4, snapshot_json = $5::jsonb, deck_fingerprint = $6, checkpoint_hash = $7,
+              spread_json = coalesce($8::jsonb, spread_json), updated_at = now()
         where user_id = $1 and session_id = $2 and revision = $3
         returning revision`,
-      [userId, data.sessionId, data.expectedRevision, saved.revision, JSON.stringify(saved), fingerprint(saved.inventory), hash],
+      [userId, data.sessionId, data.expectedRevision, saved.revision, JSON.stringify(saved), fingerprint(saved.inventory), hash, spreadJson],
     );
     if (!updated.length) return conflict(current, "The stored deck is at a different revision.");
   }
