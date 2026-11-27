@@ -44,6 +44,8 @@ export type VisualScene = {
   frames: VisualFrame[];
   grammarOk: boolean;
   grammarError: string | null;
+  /** `legacy` when the recorded movements are not the named grip. The picture still follows the events. */
+  claim: "matched" | "legacy";
   identity: MotionIdentity | null;
   inputAttribution: PhysicalShuffleTrace["input"]["inputAttribution"];
 };
@@ -162,6 +164,7 @@ export function compileVisualPass(
     frames,
     grammarOk: grammarError == null,
     grammarError,
+    claim: grammarError == null ? "matched" : "legacy",
     identity,
     inputAttribution: { ...trace.input.inputAttribution },
   };

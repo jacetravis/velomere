@@ -73,6 +73,11 @@ export type PhysicalShuffleTrace = {
     packetSizes?: number[];
     cutPoints?: [number, number];
     pickupOrder?: number[];
+    /** Cut ratios chosen once for a shuffle-count run, in pass order. */
+    cutSequence?: number[];
+    cutSequenceIndex?: number;
+    /** How many passes that run planned. The reader chooses the count; the depths are not a finger cut. */
+    passCount?: number;
     seed?: number;
     inputAttribution: Record<string, MotionSource>;
   };

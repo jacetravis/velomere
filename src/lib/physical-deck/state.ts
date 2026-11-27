@@ -1,6 +1,7 @@
 import { sha256 } from "./hash";
 import type { PhysicalShuffleTrace } from "./motion/events";
 import { replayPhysicalShuffle } from "./motion/replay";
+import { validateStyleGrammar } from "./visual/validate";
 
 /** One physical card. Identity is the deck's Card.id, never its name or position. */
 export type CardId = number;
@@ -16,6 +17,11 @@ export type OperationMeta = {
   source?: "reader" | "algorithm-selected";
   /** Recorded movements. Replay of this trace is the shuffle. `realizedOrder` is not. */
   motion?: PhysicalShuffleTrace;
+  /**
+   * Style grammar stamped when a new motion shuffle is accepted.
+   * Absent on operations saved before that gate. Replay must not invent it.
+   */
+  grammar?: "matched" | "legacy";
   destination?: "single" | "waiting";
   side?: Side;
   position?: number;
@@ -174,8 +180,15 @@ export function legacyShuffleEndpoint(state: PhysicalState, op: string, output: 
 }
 
 /** One reader shuffle pass. The next draw pile is whatever the recorded movements produce. */
-export function motionShuffle(state: PhysicalState, op: string, trace: PhysicalShuffleTrace): PhysicalState {
+export function motionShuffle(
+  state: PhysicalState,
+  op: string,
+  trace: PhysicalShuffleTrace,
+  acceptance: { mode: "accept" } | { mode: "replay"; grammar?: "matched" | "legacy" } = { mode: "accept" },
+): PhysicalState {
   requireThat(trace.events.length > 0, "The shuffle recorded no movements.");
+  const grammar = acceptance.mode === "accept" ? "matched" : acceptance.grammar;
+  if (acceptance.mode === "accept") validateStyleGrammar(trace);
   return change(state, op, "motion_shuffle", (next) => {
     requireThat(next.mode === "ready" || next.mode === "collecting", "Deck not available");
     requireThat(trace.style.length > 0, "The shuffle has no style.");
@@ -186,6 +199,7 @@ export function motionShuffle(state: PhysicalState, op: string, trace: PhysicalS
     attribution: "user",
     source: trace.source,
     motion: trace,
+    ...(grammar ? { grammar } : {}),
   });
 }
 
@@ -379,7 +393,10 @@ export function replayOperation(state: PhysicalState, operation: Operation): Phy
       );
     case "motion_shuffle":
       if (!operation.meta.motion) throw new Error("The shuffle has no recorded movements.");
-      return motionShuffle(state, id, operation.meta.motion);
+      return motionShuffle(state, id, operation.meta.motion, {
+        mode: "replay",
+        grammar: operation.meta.grammar === "matched" || operation.meta.grammar === "legacy" ? operation.meta.grammar : undefined,
+      });
     case "slip_ejected_from_drawpile":
       return ejectSlip(state, id, operation.meta.index ?? -1);
     case "slip_tapped":

@@ -7,7 +7,7 @@ import { inspectMotion, replayPhysicalShuffle } from "../motion/replay.ts";
 import { cutIndex } from "../state.ts";
 import { completedVisual, compileVisualPass, sampleVisual, settledOrder } from "./compile.ts";
 import { compileCutVisual } from "./cut.ts";
-import { playbackCues } from "./playback.ts";
+import { playbackCues, playbackDuration, playbackGroups, playbackIndex, PLAYBACK_PROGRESS, renderSamples } from "./playback.ts";
 
 function ids(count: number, step = 9) {
   return Array.from({ length: count }, (_, index) => 100 + index * step);
@@ -184,6 +184,7 @@ test("sampling a later movement does not rewrite an earlier packet", () => {
 test("the active table does not paint shuffle packets from the old sheet split", () => {
   const source = readFileSync(new URL("../../../components/reading-table.tsx", import.meta.url), "utf8");
   const motion = readFileSync(new URL("../../../components/physical-shuffle-motion.tsx", import.meta.url), "utf8");
+  const playback = readFileSync(new URL("./playback.ts", import.meta.url), "utf8");
   assert.equal(source.includes("shuffleSplit"), false);
   assert.equal(source.includes("sheetsForSplit"), false);
   assert.equal(source.includes("riffleRun"), false);
@@ -192,4 +193,159 @@ test("the active table does not paint shuffle packets from the old sheet split",
   assert.match(source, /compileCutVisual/);
   assert.match(source, /PhysicalShuffleMotion/);
   assert.match(motion, /data-motion-faithful/);
+  assert.equal(source.split("cutSections(").length - 1, 1);
+  const countPass = source.slice(source.indexOf("const runCountPass"), source.indexOf("const runHoldPass"));
+  assert.equal(countPass.includes("cutSections"), false);
+  assert.match(countPass, /countPlan/);
+  assert.match(countPass, /passCount: true/);
+  assert.match(motion, /renderSamples\(scene, false\)/);
+  assert.match(motion, /playbackIndex/);
+  assert.match(motion, /reduced-clock/);
+  assert.equal(playback.includes("Math.min(2400"), false);
+});
+
+function between(from: { x: number; y: number }, to: { x: number; y: number }, at: { x: number; y: number }, progress: number) {
+  const expectedX = from.x + (to.x - from.x) * progress;
+  const expectedY = from.y + (to.y - from.y) * progress;
+  return Math.abs(at.x - expectedX) < 1e-6 && Math.abs(at.y - expectedY) < 1e-6;
+}
+
+function compressedHits(scene: Parameters<typeof sampleVisual>[0], duration: number) {
+  const hit = new Set<number>();
+  const frameMs = 1000 / 60;
+  for (let elapsed = 0; elapsed <= duration + frameMs; elapsed += frameMs) {
+    const sample = sampleVisual(scene, Math.min(1, elapsed / Math.max(duration, 1)));
+    if (sample.action !== "spread_on_workspace" || sample.seq == null) continue;
+    const frame = scene.frames[sample.seq];
+    if (!frame?.slideFrom || !frame.slideTo || frame.cardId == null) continue;
+    const at = sample.positions[String(frame.cardId)];
+    if (!at) continue;
+    const dx = frame.slideTo.x - frame.slideFrom.x;
+    const dy = frame.slideTo.y - frame.slideFrom.y;
+    const span = dx * dx + dy * dy;
+    const along = dx * (at.x - frame.slideFrom.x) + dy * (at.y - frame.slideFrom.y);
+    if (span > 1e-8 && along > span * 0.08 && along < span * 0.92) hit.add(frame.seq);
+  }
+  return hit;
+}
+
+for (const count of [52, 78, 91]) {
+  test(`a ${count}-card wash paints every placement, stroke, and gather instead of skipping them`, () => {
+    const { scene } = sceneOf("table_wash", count, { thickness: 0.72, seed: 21 });
+    assert.equal(scene.grammarOk, true, scene.grammarError ?? "");
+    assert.equal(scene.claim, "matched");
+    const groups = playbackGroups(scene.frames);
+    assert.deepEqual(groups.flatMap((group) => group.seqs), scene.frames.map((frame) => frame.seq));
+    const samples = renderSamples(scene, false);
+    assert.equal(samples.length, 1 + groups.length * 2);
+    const again = renderSamples(scene, false);
+    assert.equal(again.length, samples.length);
+    assert.deepEqual(again.map((sample) => sample.packetIds), samples.map((sample) => sample.packetIds));
+    const spreads = scene.frames.filter((frame) => frame.action === "spread_on_workspace");
+    const pickups = scene.frames.filter((frame) => frame.action === "gather_from_table");
+    let spreadHits = 0;
+    let pickupHits = 0;
+    groups.forEach((group, index) => {
+      const mid = samples[1 + index * 2]!;
+      const done = samples[2 + index * 2]!;
+      const covered = Object.values(mid.zones).flat();
+      assert.equal(new Set(covered).size, count, `${group.action} dropped a card`);
+      assert.equal(covered.length, count);
+      if (group.role === "place") {
+        const spread = group.frames[1]!;
+        const at = mid.positions[String(spread.cardId)];
+        assert.ok(at);
+        assert.equal(between(spread.slideFrom!, spread.slideTo!, at, PLAYBACK_PROGRESS), true);
+        assert.equal(mid.zones.draw?.includes(spread.cardId!) ?? false, false);
+        assert.deepEqual(done.positions[String(spread.cardId)], spread.slideTo);
+        assert.deepEqual(done.zones, spread.zones);
+        spreadHits += 1;
+      } else if (group.role === "stroke") {
+        assert.equal(mid.packetIds.length, count);
+        for (const frame of group.frames) {
+          const at = mid.positions[String(frame.cardId)];
+          assert.ok(at);
+          assert.equal(between(frame.slideFrom!, frame.slideTo!, at, PLAYBACK_PROGRESS), true);
+          assert.deepEqual(done.positions[String(frame.cardId)], frame.slideTo);
+        }
+        assert.equal(done.action, group.action);
+      } else if (group.frames[0]!.kind === "pickup") {
+        assert.equal(mid.travel?.kind, "pickup");
+        assert.ok((mid.travel?.progress ?? 0) > 0 && (mid.travel?.progress ?? 1) < 1);
+        assert.deepEqual(mid.travel?.ids, group.frames[0]!.packetIds);
+        assert.deepEqual(done.zones.draw?.at(-1), group.frames[0]!.cardId);
+        pickupHits += 1;
+      }
+      assert.deepEqual(samples.at(-1)!.zones.draw, scene.after);
+    });
+    assert.equal(spreadHits, spreads.length);
+    assert.equal(pickupHits, pickups.length);
+    assert.equal(groups.filter((group) => group.role === "stroke").length, 3);
+    const oldDuration = Math.min(2400, 880 + scene.frames.filter((frame) => frame.kind === "slide" || frame.kind === "pickup").length * 2.4);
+    const skipped = compressedHits(scene, oldDuration);
+    assert.ok(skipped.size < spreads.length / 2, `old clock still showed ${skipped.size} of ${spreads.length}`);
+    assert.ok(playbackDuration(scene, false) > oldDuration);
+    const reduced = renderSamples(scene, true);
+    assert.equal(reduced.length, 2);
+    assert.deepEqual(reduced.at(-1)!.zones.draw, scene.after);
+  });
+}
+
+test("a cut keeps its pace, and a late frame cannot skip a recorded sample", () => {
+  const before = ids(10);
+  const scene = compileCutVisual(before, 4, null);
+  assert.equal(playbackDuration(scene, false), 980);
+  const samples = renderSamples(scene, false);
+  assert.equal(playbackIndex(samples.length, 980, 0, 0), 0);
+  assert.ok(playbackIndex(samples.length, 980, 160, 0) < 3);
+  assert.notEqual(playbackIndex(samples.length, 980, 160, 0), samples.length - 1);
+  let step = 0;
+  const seen: number[] = [0];
+  for (let elapsed = 0; elapsed < 4000; elapsed += 1000 / 60) {
+    const next = playbackIndex(samples.length, 980, elapsed, step);
+    assert.ok(next <= step + 1);
+    if (next !== step) seen.push(next);
+    step = next;
+  }
+  assert.deepEqual(seen, samples.map((_, index) => index));
+  const wash = sceneOf("table_wash", 52, { thickness: 0.72, seed: 21 }).scene;
+  let washStep = 0;
+  const washSeen: number[] = [0];
+  const washDuration = playbackDuration(wash, false);
+  const washSamples = renderSamples(wash, false);
+  for (let elapsed = 0; elapsed < washDuration + washSamples.length * (1000 / 60); elapsed += 1000 / 60) {
+    const next = playbackIndex(washSamples.length, washDuration, elapsed, washStep);
+    assert.ok(next <= washStep + 1);
+    if (next !== washStep) washSeen.push(next);
+    washStep = next;
+  }
+  assert.equal(washSeen.length, washSamples.length);
+  assert.equal(washStep, washSamples.length - 1);
+});
+
+test("full-deck grips other than a wash still paint each recorded packet in flight", () => {
+  for (const style of SHUFFLE_STYLES) {
+    if (style === "table_wash") continue;
+    const { scene } = sceneOf(style, 52, { thickness: 0.85, ratio: 0.37, seed: 14 });
+    assert.equal(scene.claim, "matched");
+    const groups = playbackGroups(scene.frames);
+    const samples = renderSamples(scene, false);
+    assert.deepEqual(groups.flatMap((group) => group.seqs), scene.frames.map((frame) => frame.seq));
+    assert.equal(groups.every((group) => group.role === "event"), true);
+    groups.forEach((group, index) => {
+      const frame = group.frames[0]!;
+      const mid = samples[1 + index * 2]!;
+      const done = samples[2 + index * 2]!;
+      assert.equal(new Set(Object.values(mid.zones).flat()).size, 52);
+      if (frame.kind === "transfer" || frame.kind === "pickup") {
+        assert.equal(mid.seq, frame.seq);
+        assert.ok(mid.travel);
+        assert.ok(mid.travel.progress > 0 && mid.travel.progress < 1);
+        assert.deepEqual(mid.travel.ids, frame.packetIds);
+      }
+      assert.deepEqual(done.zones, frame.zones);
+      assert.deepEqual(done.packetIds, frame.packetIds);
+    });
+    assert.deepEqual(samples.at(-1)!.zones.draw, scene.after);
+  }
 });

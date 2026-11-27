@@ -835,6 +835,8 @@ export function applyPhysicalMotionShuffle(input: {
   packetSizes?: ShufflePlan["packetSizes"];
   cutPoints?: ShufflePlan["cutPoints"];
   pickupOrder?: ShufflePlan["pickupOrder"];
+  cutSequence?: ShufflePlan["cutSequence"];
+  cutSequenceIndex?: number;
   readerChoices?: ShufflePlan["readerChoices"];
 }) {
   return act((current) => {
@@ -851,6 +853,8 @@ export function applyPhysicalMotionShuffle(input: {
       packetSizes: input.packetSizes,
       cutPoints: input.cutPoints,
       pickupOrder: input.pickupOrder,
+      cutSequence: input.cutSequence,
+      cutSequenceIndex: input.cutSequenceIndex,
       originalDeckCount: current.inventory.length,
       readerChoices: input.readerChoices,
     });

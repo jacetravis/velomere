@@ -9,6 +9,7 @@ import {
   type PhysicalState,
 } from "./state";
 import type { SpreadSnapshot } from "./spread-record";
+import { validateStyleGrammar } from "./visual/validate";
 
 export type Queryable = {
   query: <T>(text: string, params?: unknown[]) => Promise<T[]>;
@@ -71,6 +72,17 @@ export function explainPhysicalCommit(previous: PhysicalState | null, data: Phys
   if (data.snapshot.operations.at(-1)?.id !== data.operation.id) return "The deck update is missing its operation.";
   if (previous && previous.revision !== data.expectedRevision) return "The stored deck is at a different revision.";
   if (!previous && data.expectedRevision !== 0) return "The first operation must start at revision 0.";
+
+  if (data.operation.kind === "motion_shuffle") {
+    const trace = data.operation.meta.motion;
+    if (!trace) return "The shuffle has no recorded movements.";
+    if (data.operation.meta.grammar === "legacy") return "A new shuffle cannot be filed as a legacy grip.";
+    try {
+      validateStyleGrammar(trace);
+    } catch (err) {
+      return err instanceof Error ? err.message : "This shuffle is not the named grip.";
+    }
+  }
 
   const baseline = previous ?? newState(data.deckId, data.sessionId, [...data.snapshot.inventory].sort((a, b) => a - b));
   if (sampleHash(baseline) !== data.operation.beforeHash) return "The previous deck does not match this operation.";

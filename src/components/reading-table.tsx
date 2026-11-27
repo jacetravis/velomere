@@ -269,6 +269,7 @@ export function ReadingTable() {
   const playbackRef = useRef(playback);
   playbackRef.current = playback;
   const passRef = useRef<null | { token: number; mode: "hold" | "count" | "cut"; index: number; total: number }>(null);
+  const countPlan = useRef<number[] | null>(null);
   const abandonRef = useRef<() => void>(() => {});
   const ownCommit = useRef(false);
   const [drawn, setDrawn] = useState<{
@@ -555,6 +556,7 @@ export function ReadingTable() {
 
   const settleShuffle = () => {
     passRef.current = null;
+    countPlan.current = null;
     setPlayback(null);
     setCutPreview(null);
     setCutBeat(null);
@@ -603,6 +605,7 @@ export function ReadingTable() {
       setPlayback(null);
       motionGen.current += 1;
       passRef.current = null;
+      countPlan.current = null;
       shuffleRun.current += 1;
       setPhase(cards.length ? "ready" : "still");
       bootKey.current = `${user?.id ?? "local"}:${activeDeckId}:${deckRef.current.map((card) => card.id).join(",")}`;
@@ -627,6 +630,7 @@ export function ReadingTable() {
     clearShuffle();
     motionGen.current += 1;
     passRef.current = null;
+    countPlan.current = null;
     holding.current = false;
     if (flyTimer.current != null) {
       window.clearTimeout(flyTimer.current);
@@ -645,12 +649,27 @@ export function ReadingTable() {
   };
   abandonRef.current = abandonPicture;
 
-  const commitMotion = (ratio: number, turn: number, thickness: number | undefined, readerChoices: { ratio?: boolean }) => {
+  const commitMotion = (
+    ratio: number,
+    turn: number,
+    thickness: number | undefined,
+    readerChoices: { ratio?: boolean; passCount?: boolean },
+    cutPlan?: { sequence: readonly number[]; index: number },
+  ) => {
     const before = orderRef.current.map((card) => card.id);
     ownCommit.current = true;
     let next;
     try {
-      next = applyPhysicalMotionShuffle({ before, style: animationChoice, ratio, turn, thickness, readerChoices });
+      next = applyPhysicalMotionShuffle({
+        before,
+        style: animationChoice,
+        ratio,
+        turn,
+        thickness,
+        readerChoices,
+        cutSequence: cutPlan?.sequence,
+        cutSequenceIndex: cutPlan?.index,
+      });
     } finally {
       ownCommit.current = false;
     }
@@ -671,11 +690,25 @@ export function ReadingTable() {
 
   const runCountPass = (index: number, token: number, total: number) => {
     if (shuffleRun.current !== token) return;
-    const ratios = cutSections(total);
-    const ratio = ratios[index] ?? 0.5;
+    const ratios = countPlan.current;
+    if (!ratios || ratios.length !== total) {
+      shuffleRun.current += 1;
+      countPlan.current = null;
+      notePhysical(new Error("The shuffle lost its planned cuts."));
+      setPhase("still");
+      return;
+    }
+    const ratio = ratios[index];
+    if (ratio == null) {
+      shuffleRun.current += 1;
+      countPlan.current = null;
+      notePhysical(new Error("The shuffle lost its planned cuts."));
+      setPhase("still");
+      return;
+    }
     const sampled = gripUsesThickness(animationChoice) ? sampleThickness(thicknessRef.current) : undefined;
     try {
-      const scene = commitMotion(ratio, index + 1, sampled, { ratio: false });
+      const scene = commitMotion(ratio, index + 1, sampled, { ratio: false, passCount: true }, { sequence: ratios, index });
       if (!scene) {
         settleShuffle();
         return;
@@ -824,6 +857,7 @@ export function ReadingTable() {
     const passes = Math.min(SHUFFLE_MAX, Math.max(SHUFFLE_MIN, Math.round(times)));
     const token = shuffleRun.current + 1;
     shuffleRun.current = token;
+    countPlan.current = cutSections(passes);
     runKind.current = "count";
     holding.current = false;
     setHeld(false);
@@ -845,6 +879,7 @@ export function ReadingTable() {
     if (mode !== "ready" && mode !== "collecting") return;
     const token = shuffleRun.current + 1;
     shuffleRun.current = token;
+    countPlan.current = null;
     runKind.current = "hold";
     holding.current = true;
     setHeld(true);

@@ -5,6 +5,26 @@ import type { MotionEvent, PhysicalShuffleTrace, TransferEvent } from "../motion
  * This proves the movements are the named grip, and it does not rewrite old traces.
  */
 
+export type MotionClaim = "matched" | "legacy";
+
+/** Read-time label. A legacy preparation, a legacy stamp, or movements that are not the named grip. */
+export function motionClaim(operation: {
+  kind: string;
+  meta: { grammar?: string; motion?: PhysicalShuffleTrace };
+}): MotionClaim | null {
+  if (operation.kind === "legacy_shuffle_realized") return "legacy";
+  if (operation.kind !== "motion_shuffle") return null;
+  if (operation.meta.grammar === "legacy") return "legacy";
+  const trace = operation.meta.motion;
+  if (!trace) return "legacy";
+  try {
+    validateStyleGrammar(trace);
+  } catch {
+    return "legacy";
+  }
+  return "matched";
+}
+
 function fail(message: string): never {
   throw new Error(message);
 }

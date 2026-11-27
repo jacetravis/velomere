@@ -5,6 +5,11 @@ import { applyCut, applyPhysicalMotionShuffle, bootPhysical, physicalState, rese
 import { compileVisualPass, completedVisual, settledOrder } from "./compile.ts";
 import { compileCutVisual } from "./cut.ts";
 import { SHUFFLE_STYLES, type ShuffleStyle } from "../motion/events.ts";
+import { planPhysicalShuffle } from "../motion/mechanics.ts";
+import { motionClaim } from "./validate.ts";
+import { cutSections } from "../../cards/shuffle-count.ts";
+import { explainPhysicalCommit, type PhysicalCommit } from "../commit.ts";
+import { checkpoint, motionShuffle, newState, type Operation } from "../state.ts";
 
 const memory = new Map<string, string>();
 Object.defineProperty(globalThis, "localStorage", {
@@ -116,6 +121,109 @@ test("every grip's persisted trace passes grammar", () => {
       afterHash: operation.afterHash,
     });
     assert.equal(scene.grammarOk, true, `${style}: ${scene.grammarError}`);
+    assert.equal(scene.claim, "matched");
+    assert.equal(operation.meta.grammar, "matched");
+    assert.equal(motionClaim(operation), "matched");
     assert.deepEqual(completedVisual(scene, scene.frames.length - 1).zones.draw, next.drawPile);
   }
+});
+
+test("one shuffle-count run keeps the same cut sequence on every pass", () => {
+  memory.clear();
+  resetPhysicalForTests();
+  const cards = Array.from({ length: 22 }, (_, index) => index + 1);
+  let state = bootPhysical("cut-run", 9, cards);
+  assert.ok(state);
+  const ratios = cutSections(8, () => 0.3);
+  const seen: Operation[] = [];
+  for (let index = 0; index < ratios.length; index += 1) {
+    const ratio = ratios[index]!;
+    state = applyPhysicalMotionShuffle({
+      before: state.drawPile,
+      style: index % 2 === 0 ? "original" : "three_packet_cut",
+      ratio,
+      turn: index + 1,
+      seed: 70 + index,
+      cutSequence: ratios,
+      cutSequenceIndex: index,
+      readerChoices: { ratio: false, passCount: true },
+    });
+    const operation = state.operations.at(-1);
+    assert.ok(operation?.meta.motion);
+    seen.push(operation);
+  }
+  for (let index = 0; index < seen.length; index += 1) {
+    const trace = seen[index]!.meta.motion!;
+    assert.equal(trace.input.cutSequenceIndex, index);
+    assert.deepEqual(trace.input.cutSequence, ratios);
+    assert.equal(trace.input.passCount, ratios.length);
+    assert.equal(trace.input.ratio, ratios[index]);
+    assert.equal(trace.input.inputAttribution.cutSequence, "algorithm-selected");
+    assert.equal(trace.input.inputAttribution.passCount, "reader");
+    assert.equal(trace.input.inputAttribution.ratio, "algorithm-selected");
+    assert.notEqual(trace.input.inputAttribution.cutSequence, "reader");
+    assert.equal(seen[index]!.meta.grammar, "matched");
+  }
+  for (let index = 1; index < ratios.length; index += 1) assert.notEqual(ratios[index], ratios[index - 1]);
+  const restored = bootPhysical("cut-run", 9, cards);
+  assert.deepEqual(restored?.drawPile, state.drawPile);
+  assert.deepEqual(restored?.operations.at(-1)?.meta.motion?.input.cutSequence, ratios);
+  assert.equal(restored?.operations.at(-1)?.meta.grammar, "matched");
+  assert.throws(
+    () => planPhysicalShuffle({
+      style: "original",
+      before: cards,
+      ratio: ratios[1]!,
+      seed: 1,
+      cutSequence: ratios,
+      cutSequenceIndex: 0,
+    }),
+    /planned cut/,
+  );
+});
+
+test("a new shuffle cannot be saved as a different grip, and an old mismatch stays replayable", () => {
+  const pile = [11, 22, 33, 44, 55, 66, 77, 88];
+  const opened = newState(9, "grammar-session", pile);
+  const trace = planPhysicalShuffle({
+    style: "overhand",
+    before: pile,
+    thickness: 0.25,
+    seed: 4,
+    originalDeckCount: pile.length,
+  });
+  const saved = motionShuffle(opened, "motion-ok", trace);
+  const accepted = saved.operations.at(-1)!;
+  assert.equal(accepted.meta.grammar, "matched");
+  assert.equal(motionClaim(accepted), "matched");
+  const mislabeled = { ...trace, style: "riffle_bridge" as const };
+  assert.throws(() => motionShuffle(opened, "motion-bad", mislabeled), /split_left|Riffle|split/);
+  assert.equal(opened.revision, 0);
+
+  const historical = structuredClone(accepted);
+  historical.id = "motion-historical";
+  delete historical.meta.grammar;
+  historical.meta.style = "riffle_bridge";
+  historical.meta.motion = { ...trace, style: "riffle_bridge" };
+  const replayed = motionShuffle(opened, historical.id, historical.meta.motion, { mode: "replay" });
+  assert.deepEqual(replayed.drawPile, trace.afterOrder);
+  assert.equal(replayed.operations.at(-1)?.meta.grammar, undefined);
+  assert.equal(replayed.operations.at(-1)?.meta.style, "riffle_bridge");
+  assert.equal(motionClaim(historical), "legacy");
+  const commit: PhysicalCommit = {
+    deckId: opened.deckId,
+    sessionId: opened.sessionId,
+    expectedRevision: 0,
+    snapshot: checkpoint({ ...replayed, operations: [historical] }),
+    operation: historical,
+  };
+  assert.match(explainPhysicalCommit(opened, commit) ?? "", /split_left|Riffle|split/);
+  const honest = {
+    deckId: saved.deckId,
+    sessionId: saved.sessionId,
+    expectedRevision: 0,
+    snapshot: checkpoint(saved),
+    operation: accepted,
+  };
+  assert.equal(explainPhysicalCommit(opened, honest), null);
 });

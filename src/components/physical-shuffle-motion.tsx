@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef, type CSSProperties } from "react";
 import type { CutScene } from "@/lib/physical-deck/visual/cut";
 import { sampleVisual, type VisualSample, type VisualScene, type ZoneMap } from "@/lib/physical-deck/visual/compile";
-import { playbackDuration, type PicturedScene } from "@/lib/physical-deck/visual/playback";
+import { playbackDuration, playbackIndex, renderSamples, type PicturedScene } from "@/lib/physical-deck/visual/playback";
 
 const LIPS = 16;
 
@@ -172,8 +172,7 @@ export function PhysicalShuffleMotion({
     if (!node) return;
     let frame = 0;
     let closed = false;
-    const started = performance.now();
-    const duration = playbackDuration(scene, reduced);
+    node.dataset.playbackDriver = reduced ? "reduced-clock" : "samples";
     const paint = (sample: VisualSample) => {
       const traveling = sample.travel?.kind === "transfer" ? sample.travel.ids : [];
       const drop = new Set(traveling);
@@ -252,15 +251,33 @@ export function PhysicalShuffleMotion({
       paint(sampleVisual(scene, 1));
       settled.current(generation);
     };
-    const tick = (now: number) => {
-      const elapsed = now - started;
-      const clock = reduced ? (elapsed < 70 ? 0.05 : 1) : Math.min(1, elapsed / duration);
-      paint(sampleVisual(scene, clock));
-      if (clock < 1) frame = window.requestAnimationFrame(tick);
-      else finish();
-    };
-    paint(sampleVisual(scene, 0));
-    frame = window.requestAnimationFrame(tick);
+    if (reduced) {
+      const started = performance.now();
+      const tick = (now: number) => {
+        const elapsed = now - started;
+        const clock = elapsed < 70 ? 0.05 : 1;
+        paint(sampleVisual(scene, clock));
+        if (clock < 1) frame = window.requestAnimationFrame(tick);
+        else finish();
+      };
+      paint(sampleVisual(scene, 0));
+      frame = window.requestAnimationFrame(tick);
+    } else {
+      const samples = renderSamples(scene, false);
+      const duration = playbackDuration(scene, false);
+      node.dataset.playbackSamples = String(samples.length);
+      let step = 0;
+      const started = performance.now();
+      const tick = (now: number) => {
+        if (closed) return;
+        step = playbackIndex(samples.length, duration, now - started, step);
+        paint(samples[step] ?? sampleVisual(scene, 1));
+        if (step < samples.length - 1 || now - started < duration) frame = window.requestAnimationFrame(tick);
+        else finish();
+      };
+      paint(samples[0] ?? sampleVisual(scene, 0));
+      frame = window.requestAnimationFrame(tick);
+    }
     return () => {
       closed = true;
       window.cancelAnimationFrame(frame);

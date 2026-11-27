@@ -30,14 +30,21 @@ export type ShufflePlan = {
   packetSizes?: readonly number[] | null;
   cutPoints?: readonly [number, number] | null;
   pickupOrder?: readonly number[] | null;
+  /** Ratios chosen once for this shuffle-count run. This pass must use `cutSequence[cutSequenceIndex]`. */
+  cutSequence?: readonly number[] | null;
+  cutSequenceIndex?: number;
   originalDeckCount?: number;
   /** Explicit packet, cut, pickup, or ratio values chosen by the reader rather than this planner. */
   readerChoices?: {
     packetSizes?: boolean;
     cutPoints?: boolean;
     pickupOrder?: boolean;
-    /** False when the pass ratio is a section chosen for the hold, not a finger cut. */
+    /** False when the pass ratio is a section chosen for the run, not a finger cut. */
     ratio?: boolean;
+    /** True only when the reader named the cut ratios themselves. */
+    cutSequence?: boolean;
+    /** True when the reader chose how many passes, not the depth of each one. */
+    passCount?: boolean;
   };
 };
 
@@ -228,6 +235,19 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
   let packetSizes: number[] | undefined;
   let cutPoints: [number, number] | undefined;
   let pickupOrder: number[] | undefined;
+  let cutSequence: number[] | undefined;
+  let cutSequenceIndex: number | undefined;
+  if (plan.cutSequence) {
+    const sequence = [...plan.cutSequence];
+    const index = plan.cutSequenceIndex ?? 0;
+    if (sequence.length < 1 || sequence.some((value) => !Number.isFinite(value) || value < 0 || value > 1)) fail("Invalid cut sequence");
+    if (!Number.isInteger(index) || index < 0 || index >= sequence.length) fail("This pass is outside the planned cuts");
+    if (Math.abs(sequence[index]! - ratio) > 1e-9) fail("This pass left its planned cut");
+    cutSequence = sequence;
+    cutSequenceIndex = index;
+    attribution.cutSequence = plan.readerChoices?.cutSequence ? "reader" : "algorithm-selected";
+    attribution.passCount = plan.readerChoices?.passCount ? "reader" : "algorithm-selected";
+  }
 
   if (n >= 2) {
     switch (plan.style) {
@@ -428,6 +448,7 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
       ...(packetSizes ? { packetSizes } : {}),
       ...(cutPoints ? { cutPoints } : {}),
       ...(pickupOrder ? { pickupOrder } : {}),
+      ...(cutSequence ? { cutSequence, cutSequenceIndex, passCount: cutSequence.length } : {}),
       inputAttribution: attribution,
     },
     events,
