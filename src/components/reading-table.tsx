@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
-import { BookOpen, ChevronDown, Lock, LockOpen, PenLine, Shuffle } from "lucide-react";
+import { BookOpen, ChevronDown, Lock, LockOpen, PenLine } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type PointerEvent as ReactPointerEvent, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { AppShell } from "@/components/app-shell";
@@ -43,12 +43,13 @@ import {
   startFreshPhysical,
   subscribePhysical,
 } from "@/lib/physical-deck/runtime";
+import { sampleThickness, THICKNESS_INSET, thicknessFromDrag, thicknessFromPointer } from "@/lib/physical-deck/motion/thickness";
 import { captureSpread } from "@/lib/physical-deck/spread-record";
 import { displayedTableReading, resumeTableReading, tableLaysReading } from "@/lib/physical-deck/table-reading";
 import { waitingSheets } from "@/lib/physical-deck/waiting-stack";
 import { edgeLook, paperTone, sheetLean } from "@/lib/cards/edge";
 import { cardFrame } from "@/lib/cards/shape";
-import { cutDepth, cutPace, cutSections, latchShuffleCount, SHUFFLE_MAX, SHUFFLE_MIN } from "@/lib/cards/shuffle-count";
+import { cutPace, cutSections, latchShuffleCount, SHUFFLE_MAX, SHUFFLE_MIN } from "@/lib/cards/shuffle-count";
 import { shufflePose } from "@/lib/shuffle-style";
 import { DEFAULT_SHUFFLE_ANIMATION, setShuffleAnimation, shuffleAnimation, subscribeShuffleAnimation } from "@/lib/shuffle-animation";
 import { type PhysicalState } from "@/lib/physical-deck/state";
@@ -248,6 +249,14 @@ export function ReadingTable() {
   const shuffleRun = useRef(0);
   const shuffleTimers = useRef<number[]>([]);
   const holding = useRef(false);
+  const thicknessRef = useRef(0.5);
+  const thicknessDrag = useRef(false);
+  const thicknessGrab = useRef<{ x: number; thickness: number; absolute: boolean } | null>(null);
+  const springToken = useRef(0);
+  const parkRef = useRef<() => void>(() => {});
+  const thicknessTrack = useRef<HTMLDivElement>(null);
+  const [packetThickness, setPacketThickness] = useState(0.5);
+  const [thicknessReturn, setThicknessReturn] = useState(false);
   const runKind = useRef<"count" | "hold" | null>(null);
   const [held, setHeld] = useState(false);
   const [worked, setWorked] = useState(false);
@@ -275,6 +284,14 @@ export function ReadingTable() {
   useEffect(() => {
     window.localStorage.setItem("solace-spread-overlay", spreadGuides ? "on" : "off");
   }, [spreadGuides]);
+  useEffect(() => {
+    const stop = () => {
+      if (!holding.current && !thicknessDrag.current) return;
+      parkRef.current();
+    };
+    window.addEventListener("blur", stop);
+    return () => window.removeEventListener("blur", stop);
+  }, []);
   const [pendingSpread, setPendingSpread] = useState<string | null>(null);
   const [physicalNote, setPhysicalNote] = useState<string | null>(null);
   const [canFresh, setCanFresh] = useState(false);
@@ -510,10 +527,10 @@ export function ReadingTable() {
 
   const handlingBlocked = () => physicalLoading() || !!physicalPause() || !physicalState();
 
-  const recordShuffle = (ratio: number, turn: number) => {
+  const recordShuffle = (ratio: number, turn: number, thickness?: number) => {
     const before = orderRef.current.map((card) => card.id);
-    // The aside/drop/tuck picture is not these movements. Stage 3 binds the animation to this trace.
-    const next = applyPhysicalMotionShuffle({ before, style: animationChoice, ratio, turn });
+    // The aside/drop/tuck picture is not these movements. The trace is the shuffle.
+    const next = applyPhysicalMotionShuffle({ before, style: animationChoice, ratio, turn, thickness });
     showPile(next.drawPile);
   };
 
@@ -612,22 +629,11 @@ export function ReadingTable() {
     later(liftLead(), () => play(0));
   };
 
-  const nextSection = (previous: number | null) => {
-    const ratios = cutSections(7);
-    return ratios.find((ratio) => previous == null || cutDepth(ratio) !== cutDepth(previous)) ?? 0.5;
-  };
-
   const beginHold = () => {
     if (handlingBlocked() || order.length < 2 || phase === "cutting" || slip) return;
     const mode = physicalState()?.mode;
     if (mode !== "ready" && mode !== "collecting") return;
-    if (phase === "shuffling") {
-      if (runKind.current === "hold") {
-        holding.current = true;
-        setHeld(true);
-      }
-      return;
-    }
+    if (phase === "shuffling") return;
     const token = shuffleRun.current + 1;
     shuffleRun.current = token;
     runKind.current = "hold";
@@ -635,7 +641,6 @@ export function ReadingTable() {
     setHeld(true);
     setWorked(true);
     const later = openShuffle(token);
-    let previous: number | null = null;
     let count = 0;
     let armed = false;
 
@@ -730,19 +735,18 @@ export function ReadingTable() {
         armed = true;
         flyTimer.current = window.setTimeout(launch, 2600 + Math.random() * 3200);
       }
-      const ratio = nextSection(previous);
-      previous = ratio;
+      const sampled = sampleThickness(thicknessRef.current);
       cutLock.current = true;
       setShuffleStep(count);
       setShufflingTimes(count);
       setCutMotion(Math.max(32, Math.round(step * 0.92)));
-      setCutPreview(ratio);
+      setCutPreview(sampled);
       setCutBeat("aside");
       later(step, () => setCutBeat("drop"));
       later(step * 2, () => {
         setCutBeat("tuck");
         try {
-          recordShuffle(ratio, count);
+          recordShuffle(sampled, count, sampled);
         } catch (err) {
           shuffleRun.current += 1;
           notePhysical(err);
@@ -753,7 +757,7 @@ export function ReadingTable() {
         setOrigin((value) => {
           const size = order.length;
           if (size < 2) return value;
-          return (value + splitIndex(size, ratio)) % size;
+          return (value + splitIndex(size, sampled)) % size;
         });
         play();
       });
@@ -772,6 +776,52 @@ export function ReadingTable() {
       window.clearTimeout(flyTimer.current);
       flyTimer.current = null;
     }
+  };
+
+  const parkThickness = () => {
+    thicknessDrag.current = false;
+    thicknessGrab.current = null;
+    endHold();
+    const token = springToken.current + 1;
+    springToken.current = token;
+    setThicknessReturn(true);
+    window.requestAnimationFrame(() => {
+      if (springToken.current !== token) return;
+      thicknessRef.current = 0.5;
+      setPacketThickness(0.5);
+    });
+  };
+  parkRef.current = parkThickness;
+
+  const liveThumb = () => {
+    const track = thicknessTrack.current;
+    const thumb = track?.querySelector("[data-thickness-thumb]");
+    if (!track || !(thumb instanceof HTMLElement)) return thicknessRef.current;
+    const box = track.getBoundingClientRect();
+    const thumbBox = thumb.getBoundingClientRect();
+    return thicknessFromPointer(thumbBox.left + thumbBox.width / 2, box.left, box.width);
+  };
+
+  const moveThickness = (clientX: number) => {
+    const track = thicknessTrack.current;
+    if (!track) return;
+    const box = track.getBoundingClientRect();
+    const next = thicknessFromPointer(clientX, box.left, box.width);
+    thicknessRef.current = next;
+    setPacketThickness(next);
+  };
+
+  const dragThickness = (clientX: number) => {
+    const grab = thicknessGrab.current;
+    const track = thicknessTrack.current;
+    if (!grab || !track) return;
+    if (grab.absolute) {
+      moveThickness(clientX);
+      return;
+    }
+    const next = thicknessFromDrag(grab.thickness, clientX - grab.x, track.getBoundingClientRect().width);
+    thicknessRef.current = next;
+    setPacketThickness(next);
   };
 
   const previewCut = (ratio: number | null) => {
@@ -1420,74 +1470,100 @@ export function ReadingTable() {
                 {spreadLive?.drawnCount ?? 0} of {spreadSize} cards drawn for {spreadLive?.spread.name ?? spreadChoices.find((item) => item.id === spreadId)?.name ?? "this spread"}
               </p>
             ) : null}
-            <Button
-              variant="secondary"
-              className="relative w-full touch-pan-y overflow-hidden select-none"
-              disabled={deck.length < 2 || !!slip || !!physicalNote || phase === "cutting" || (phase === "shuffling" && !held)}
+            <div
+              ref={thicknessTrack}
+              role="slider"
+              aria-label="Packet thickness"
+              aria-orientation="horizontal"
+              aria-valuemin={0}
+              aria-valuemax={1}
+              aria-valuenow={Number(packetThickness.toFixed(2))}
+              aria-valuetext={packetThickness < 0.42 ? "Thin packets" : packetThickness > 0.58 ? "Thick packets" : "Neutral packets"}
+              aria-disabled={order.length < 2 || !!slip || !!physicalNote || phase === "cutting" || undefined}
+              tabIndex={order.length < 2 || !!slip || !!physicalNote || phase === "cutting" ? -1 : 0}
+              data-packet-thickness={packetThickness.toFixed(3)}
+              data-holding={held ? "true" : "false"}
+              className={cn(
+                "relative h-14 w-full touch-none rounded-full border border-border bg-raised select-none outline-none focus-visible:ring-2 focus-visible:ring-accent/50",
+                (order.length < 2 || !!slip || !!physicalNote || phase === "cutting") && "pointer-events-none opacity-40",
+              )}
               onContextMenu={(event) => event.preventDefault()}
-              onKeyDown={(event) => {
-                if (event.key !== " " && event.key !== "Enter") return;
+              onPointerDown={(event) => {
+                if (event.button !== 0) return;
+                if (order.length < 2 || !!slip || !!physicalNote || phase === "cutting" || phase === "shuffling") return;
                 event.preventDefault();
-                if (!event.repeat) beginHold();
+                springToken.current += 1;
+                const seen = liveThumb();
+                thicknessRef.current = seen;
+                setPacketThickness(seen);
+                setThicknessReturn(false);
+                try {
+                  event.currentTarget.setPointerCapture(event.pointerId);
+                } catch {
+                  /* The pointer already ended. */
+                }
+                const onThumb = event.target instanceof Element && !!event.target.closest("[data-thickness-thumb]");
+                thicknessDrag.current = true;
+                thicknessGrab.current = { x: event.clientX, thickness: seen, absolute: !onThumb };
+                if (!onThumb) moveThickness(event.clientX);
+                beginHold();
+              }}
+              onPointerMove={(event) => {
+                if (!thicknessDrag.current || !event.currentTarget.hasPointerCapture(event.pointerId)) return;
+                setThicknessReturn(false);
+                dragThickness(event.clientX);
+              }}
+              onPointerUp={() => {
+                if (!thicknessDrag.current) return;
+                parkThickness();
+              }}
+              onPointerCancel={() => {
+                if (!thicknessDrag.current) return;
+                parkThickness();
+              }}
+              onLostPointerCapture={() => {
+                if (!thicknessDrag.current) return;
+                parkThickness();
+              }}
+              onKeyDown={(event) => {
+                if (event.key === " " || event.key === "Enter") {
+                  event.preventDefault();
+                  if (!event.repeat) beginHold();
+                  return;
+                }
+                if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+                event.preventDefault();
+                setThicknessReturn(false);
+                const next = sampleThickness(thicknessRef.current + (event.key === "ArrowLeft" ? -0.08 : 0.08));
+                thicknessRef.current = next;
+                setPacketThickness(next);
               }}
               onKeyUp={(event) => {
-                if (event.key === " " || event.key === "Enter") endHold();
+                if (event.key === " " || event.key === "Enter" || event.key === "Escape") {
+                  event.preventDefault();
+                  parkThickness();
+                }
+              }}
+              onBlur={() => {
+                if (!holding.current && !thicknessDrag.current) return;
+                parkThickness();
               }}
             >
-              <Shuffle className="pointer-events-none" />
-              <span className="pointer-events-none select-none">Hold to Shuffle</span>
+              <span className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-[10px] tracking-[0.16em] text-subtle uppercase">Thin</span>
+              <span className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-[10px] tracking-[0.16em] text-subtle uppercase">Thick</span>
+              <span className="pointer-events-none absolute top-1/2 left-1/2 h-3 w-px -translate-x-1/2 -translate-y-1/2 bg-border" />
+              <span className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-3 text-[10px] tracking-[0.14em] text-subtle uppercase">
+                {held ? "Shuffling" : "Hold"}
+              </span>
               <span
-                className="absolute inset-0 z-10"
-                aria-hidden
-                onPointerDown={(event) => {
-                  if (event.button !== 0) return;
-                  const target = event.currentTarget;
-                  const pointerId = event.pointerId;
-                  const startX = event.clientX;
-                  const startY = event.clientY;
-                  if (holdWait.current != null) window.clearTimeout(holdWait.current);
-                  const start = () => {
-                    holdWait.current = null;
-                    if (target.hasPointerCapture?.(pointerId) === false) {
-                      try {
-                        target.setPointerCapture(pointerId);
-                      } catch {
-                        /* The finger already left. */
-                      }
-                    }
-                    beginHold();
-                  };
-                  if (phase === "shuffling") {
-                    start();
-                    return;
-                  }
-                  const cancel = () => {
-                    if (holdWait.current != null) {
-                      window.clearTimeout(holdWait.current);
-                      holdWait.current = null;
-                    }
-                    window.removeEventListener("pointermove", move);
-                    window.removeEventListener("pointerup", cancel);
-                    window.removeEventListener("pointercancel", cancel);
-                  };
-                  const move = (ev: PointerEvent) => {
-                    if (ev.pointerId !== pointerId) return;
-                    if (Math.hypot(ev.clientX - startX, ev.clientY - startY) > 10) cancel();
-                  };
-                  window.addEventListener("pointermove", move);
-                  window.addEventListener("pointerup", cancel);
-                  window.addEventListener("pointercancel", cancel);
-                  holdWait.current = window.setTimeout(() => {
-                    window.removeEventListener("pointermove", move);
-                    window.removeEventListener("pointerup", cancel);
-                    window.removeEventListener("pointercancel", cancel);
-                    start();
-                  }, 220);
-                }}
-                onPointerUp={endHold}
-                onPointerCancel={endHold}
+                className={cn(
+                  "absolute top-1/2 size-11 -translate-x-1/2 -translate-y-1/2 rounded-full border border-fg/20 bg-paper shadow-card motion-reduce:transition-none",
+                  thicknessReturn ? "transition-[left] duration-500 ease-[cubic-bezier(0.22,1.35,0.36,1)]" : "transition-none",
+                )}
+                data-thickness-thumb=""
+                style={{ left: `calc(${THICKNESS_INSET}px + (100% - ${THICKNESS_INSET * 2}px) * ${packetThickness})` }}
               />
-            </Button>
+            </div>
             {slip?.landed ? (
               <p className="text-center text-xs text-subtle">A card slipped out. Tap it.</p>
             ) : null}

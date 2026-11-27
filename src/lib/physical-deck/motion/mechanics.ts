@@ -4,19 +4,18 @@ import { replayPhysicalShuffle } from "./replay";
 /**
  * Six grips. The event list is the shuffle. Nothing here may be re-rolled on replay.
  *
- * original — one visible cut at the reader's ratio: lift the top packet, set the
- *   lower packet down, tuck the lifted packet underneath. A rotation, not a random shuffle.
+ * original — one visible cut. With a reader thickness, that thickness is the cut.
+ *   Otherwise the cut is the pass ratio. A rotation, not a random shuffle.
  * overhand — hold the stock and strip top packets onto the top of the other hand
- *   until it is empty. Packet order reverses. Cards inside a packet do not.
- * riffle_bridge — split at the reader's ratio. Release one or two cards from the
- *   bottom of a half onto the top of the merged pack. The bridge squares; it does not reorder.
- * hindu — bottom-strip grip: take packets from the bottom of the held stock onto
- *   the top of the receiver (at most five), then place the remaining stock underneath.
- * table_wash — discrete kinematic wash. Each card is placed and slid on the unit
- *   square, then gathered along a sweep set by the reader's ratio. Not a contact simulation.
- * three_packet_cut — two boundaries, three nonempty packets when the pile has at
- *   least three cards. Pickup order is the pass-index preset. No trailing rotation.
- *   Two cards make two packets. One card is not a shuffle.
+ *   until it is empty. Thickness sets the packet size against the cards still held.
+ * riffle_bridge — split at the pass ratio. Thickness sets how many cards leave a
+ *   half together. The bridge squares; it does not reorder.
+ * hindu — bottom-strip grip. Thickness sets each bottom packet against the cards
+ *   still held, then the remaining stock is placed underneath.
+ * table_wash — discrete kinematic wash. Thickness sets how far the cards spread
+ *   and which way they are gathered. Not a contact simulation.
+ * three_packet_cut — two boundaries. Thickness places those boundaries. No trailing
+ *   rotation. Two cards make two packets. One card is not a shuffle.
  */
 
 export type ShufflePlan = {
@@ -24,6 +23,8 @@ export type ShufflePlan = {
   before: readonly number[];
   ratio?: number;
   turn?: number;
+  /** 0 = thinnest legal packets, 1 = thickest, omitted = the stage 2 ratio formulas. */
+  thickness?: number;
   seed?: number;
   packetSizes?: readonly number[] | null;
   cutPoints?: readonly [number, number] | null;
@@ -73,6 +74,15 @@ function randomSeed(seed: number) {
 function cutIndex(length: number, ratio: number) {
   if (length < 2) return 0;
   return clamp(Math.ceil(clamp(ratio, 0, 1) * (length - 1)), 1, length - 1);
+}
+
+/** Packet size from the thumb, plus a small recorded wobble that cannot erase a thin or thick choice. */
+function sizedPacket(remaining: number, thickness: number, rng: () => number, leave = 0) {
+  const room = remaining - leave;
+  if (room < 1) fail("Cannot move empty packet");
+  const target = 1 + (room - 1) * clamp(thickness, 0, 1);
+  const wobble = (rng() - 0.5) * Math.min(0.8, room * 0.12);
+  return clamp(Math.round(target + wobble), 1, room);
 }
 
 function zone(state: Work, name: string) {
@@ -127,7 +137,9 @@ export function planPhysicalShuffle(plan: ShufflePlan): PhysicalShuffleTrace {
   const ratio = plan.ratio ?? 0.5;
   const turn = plan.turn ?? 0;
   const seed = plan.seed ?? 1;
+  const thickness = plan.thickness;
   if (!Number.isFinite(ratio)) fail("Invalid ratio");
+  if (thickness != null && !Number.isFinite(thickness)) fail("Invalid packet thickness");
   if (!Number.isInteger(turn) || turn < 0) fail("Invalid turn");
   const before = [...plan.before];
   if (before.some((id) => !Number.isInteger(id)) || new Set(before).size !== before.length) fail("Invalid draw pile");
@@ -139,6 +151,7 @@ export function planPhysicalShuffle(plan: ShufflePlan): PhysicalShuffleTrace {
     ratio: "reader",
     turn: "reader",
     seed: "algorithm-selected",
+    ...(thickness != null ? { thickness: "reader" as const } : {}),
   };
 
 type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | Omit<PickupEvent, "seq" | "t"> | Omit<SquareEvent, "seq" | "t">;
@@ -181,7 +194,7 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
   if (n >= 2) {
     switch (plan.style) {
       case "original": {
-        const cut = cutIndex(n, ratio);
+        const cut = cutIndex(n, thickness ?? ratio);
         packetSizes = [cut, n - cut];
         attribution.packetSizes = "reader";
         transfer("draw", "upper", cut, "top", "bottom", "lift_upper_packet");
@@ -199,13 +212,20 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
           const left = zone(state, "held").length;
           const suggested = plan.packetSizes?.[strip];
           const portion = 0.08 + 0.1 * clamp(ratio, 0, 1) + 0.12 * rng();
-          const count = suggested == null ? Math.min(left, Math.max(1, Math.round(n * portion))) : suggested;
+          const count = suggested == null
+            ? thickness == null
+              ? Math.min(left, Math.max(1, Math.round(n * portion)))
+              : sizedPacket(left, thickness, rng)
+            : suggested;
           transfer("held", "receive", count, "top", "top", "strip_top_to_receiver_top");
           sizes.push(count);
           strip += 1;
         }
         packetSizes = sizes;
-        attribution.packetSizes = plan.readerChoices?.packetSizes ? "reader" : "algorithm-selected";
+        attribution.packetSizes = plan.packetSizes
+          ? plan.readerChoices?.packetSizes ? "reader" : "algorithm-selected"
+          : thickness == null ? "algorithm-selected" : "reader";
+        if (thickness != null && !plan.packetSizes) attribution.variation = "algorithm-selected";
         transfer("receive", "draw", n, "top", "bottom", "finish_overhand");
         square("draw");
         break;
@@ -219,7 +239,11 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
           const remaining = zone(state, "held").length;
           const suggested = plan.packetSizes?.[strip];
           const portion = 0.1 + 0.12 * clamp(ratio, 0, 1) + 0.1 * rng();
-          const count = suggested == null ? Math.min(remaining - 1, Math.max(1, Math.round(n * portion))) : suggested;
+          const count = suggested == null
+            ? thickness == null
+              ? Math.min(remaining - 1, Math.max(1, Math.round(n * portion)))
+              : sizedPacket(remaining, thickness, rng, 1)
+            : suggested;
           if (count <= 0 || count >= remaining) fail("Hindu must leave the final packet to place underneath");
           transfer("held", "receive", count, "bottom", "top", "strip_bottom_to_receiver_top");
           sizes.push(count);
@@ -229,7 +253,10 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
         const rest = zone(state, "held").length;
         sizes.push(rest);
         packetSizes = sizes;
-        attribution.packetSizes = plan.readerChoices?.packetSizes ? "reader" : "algorithm-selected";
+        attribution.packetSizes = plan.packetSizes
+          ? plan.readerChoices?.packetSizes ? "reader" : "algorithm-selected"
+          : thickness == null ? "algorithm-selected" : "reader";
+        if (thickness != null && !plan.packetSizes) attribution.variation = "algorithm-selected";
         transfer("held", "receive", rest, "top", "bottom", "place_remaining_below_receiver");
         transfer("receive", "draw", n, "top", "bottom", "finish_hindu");
         square("draw");
@@ -239,7 +266,8 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
         const cut = cutIndex(n, ratio);
         packetSizes = [cut, n - cut];
         attribution.packetSizes = "reader";
-        attribution.releases = "algorithm-selected";
+        attribution.releases = thickness == null ? "algorithm-selected" : "reader";
+        if (thickness != null) attribution.releaseVariation = "algorithm-selected";
         transfer("draw", "left", cut, "top", "bottom", "split_left");
         transfer("draw", "right", n - cut, "top", "bottom", "split_right");
         let turnIndex = 0;
@@ -248,7 +276,9 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
           const right = zone(state, "right").length;
           const side = left === 0 ? "right" : right === 0 ? "left" : rng() < left / (left + right) ? "left" : "right";
           const available = zone(state, side).length;
-          const run = Math.min(available, 1 + (rng() < 0.22 ? 1 : 0));
+          const run = thickness == null
+            ? Math.min(available, 1 + (rng() < 0.22 ? 1 : 0))
+            : Math.min(available, sizedPacket(available, thickness, rng));
           transfer(side, "merged", run, "bottom", "top", `riffle_release_${turnIndex}`);
           turnIndex += 1;
         }
@@ -267,13 +297,23 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
           square("draw");
           break;
         }
-        const first = plan.cutPoints?.[0] ?? clamp(Math.round(n * (0.2 + 0.32 * clamp(ratio, 0, 1))), 1, n - 2);
-        const second = plan.cutPoints?.[1] ?? clamp(Math.round(n * (0.55 + 0.27 * clamp(ratio, 0, 1))), first + 1, n - 1);
+        const first = plan.cutPoints?.[0] ?? (thickness == null
+          ? clamp(Math.round(n * (0.2 + 0.32 * clamp(ratio, 0, 1))), 1, n - 2)
+          : clamp(Math.round(1 + (n - 3) * clamp(thickness, 0, 1)), 1, n - 2));
+        const rest = n - first;
+        const middle = thickness == null
+          ? null
+          : clamp(Math.round(1 + Math.max(0, rest - 2) * clamp(thickness, 0, 1)), 1, rest - 1);
+        const second = plan.cutPoints?.[1] ?? (middle == null
+          ? clamp(Math.round(n * (0.55 + 0.27 * clamp(ratio, 0, 1))), first + 1, n - 1)
+          : first + middle);
         if (!Number.isInteger(first) || !Number.isInteger(second) || first <= 0 || second <= first || second >= n) {
           fail("Invalid three-packet cut boundaries");
         }
         cutPoints = [first, second];
-        attribution.cutPoints = plan.readerChoices?.cutPoints ? "reader" : "algorithm-selected";
+        attribution.cutPoints = plan.cutPoints
+          ? plan.readerChoices?.cutPoints ? "reader" : "algorithm-selected"
+          : thickness == null ? "algorithm-selected" : "reader";
         transfer("draw", "packet0", first, "top", "bottom", "make_top_packet");
         transfer("draw", "packet1", second - first, "top", "bottom", "make_middle_packet");
         transfer("draw", "packet2", n - second, "top", "bottom", "make_bottom_packet");
@@ -293,21 +333,45 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
         break;
       }
       case "table_wash": {
-        attribution.positions = "algorithm-selected";
+        const thumb = thickness == null ? null : clamp(thickness, 0, 1);
+        attribution.positions = thumb == null ? "algorithm-selected" : "reader";
         attribution.pickupAxis = "reader";
-        for (const id of before) {
-          transfer("draw", "wash", 1, "top", "top", "release_single_card_to_table");
-          slide(id, 0.2 + 0.6 * rng(), 0.2 + 0.6 * rng(), "spread_on_workspace");
-        }
-        for (let beat = 0; beat < 3; beat += 1) {
+        if (thumb != null) attribution.positionVariation = "algorithm-selected";
+        if (thumb == null) {
           for (const id of before) {
-            const current = state.pos.get(id)!;
-            slide(id, current.x + (rng() - 0.5) * 0.18, current.y + (rng() - 0.5) * 0.18, `wash_stroke_${beat}`);
+            transfer("draw", "wash", 1, "top", "top", "release_single_card_to_table");
+            slide(id, 0.2 + 0.6 * rng(), 0.2 + 0.6 * rng(), "spread_on_workspace");
           }
+          for (let beat = 0; beat < 3; beat += 1) {
+            for (const id of before) {
+              const current = state.pos.get(id)!;
+              slide(id, current.x + (rng() - 0.5) * 0.18, current.y + (rng() - 0.5) * 0.18, `wash_stroke_${beat}`);
+            }
+          }
+          const angle = Math.PI * 2 * clamp(ratio, 0, 1);
+          const axis: [number, number] = [rounded(Math.cos(angle)), rounded(Math.sin(angle))];
+          for (let i = 0; i < n; i += 1) pickup(axis);
+        } else {
+          const radius = 0.12 + 0.28 * thumb;
+          before.forEach((id, index) => {
+            transfer("draw", "wash", 1, "top", "top", "release_single_card_to_table");
+            const angle = (Math.PI * 2 * index) / n;
+            slide(
+              id,
+              0.5 + Math.cos(angle) * radius + (rng() - 0.5) * 0.02,
+              0.5 + Math.sin(angle) * radius + (rng() - 0.5) * 0.02,
+              "spread_on_workspace",
+            );
+          });
+          for (let beat = 0; beat < 3; beat += 1) {
+            for (const id of before) {
+              const current = state.pos.get(id)!;
+              slide(id, current.x + (rng() - 0.5) * 0.012, current.y + (rng() - 0.5) * 0.012, `wash_stroke_${beat}`);
+            }
+          }
+          const axis: [number, number] = [rounded(Math.cos(Math.PI * thumb)), rounded(Math.sin(Math.PI * thumb))];
+          for (let i = 0; i < n; i += 1) pickup(axis);
         }
-        const angle = Math.PI * 2 * clamp(ratio, 0, 1);
-        const axis: [number, number] = [rounded(Math.cos(angle)), rounded(Math.sin(angle))];
-        for (let i = 0; i < n; i += 1) pickup(axis);
         square("draw");
         break;
       }
@@ -330,6 +394,7 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
       ratio,
       turn,
       seed,
+      ...(thickness != null ? { thickness: clamp(thickness, 0, 1) } : {}),
       ...(packetSizes ? { packetSizes } : {}),
       ...(cutPoints ? { cutPoints } : {}),
       ...(pickupOrder ? { pickupOrder } : {}),

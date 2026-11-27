@@ -830,6 +830,7 @@ export function applyPhysicalMotionShuffle(input: {
   style: ShuffleStyle;
   ratio: number;
   turn: number;
+  thickness?: number;
   seed?: number;
   packetSizes?: ShufflePlan["packetSizes"];
   cutPoints?: ShufflePlan["cutPoints"];
@@ -845,6 +846,7 @@ export function applyPhysicalMotionShuffle(input: {
       before: current.drawPile,
       ratio: input.ratio,
       turn: input.turn,
+      thickness: input.thickness,
       seed: input.seed ?? motionSeed(),
       packetSizes: input.packetSizes,
       cutPoints: input.cutPoints,

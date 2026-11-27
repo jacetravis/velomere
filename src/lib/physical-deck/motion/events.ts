@@ -66,6 +66,8 @@ export type PhysicalShuffleTrace = {
   input: {
     ratio?: number;
     turn?: number;
+    /** 0 thinnest packet, 1 thickest, sampled from the hold control for this pass. */
+    thickness?: number;
     packetSizes?: number[];
     cutPoints?: [number, number];
     pickupOrder?: number[];
