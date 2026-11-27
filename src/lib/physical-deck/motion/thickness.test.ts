@@ -49,7 +49,7 @@ function strips(trace: ReturnType<typeof plan>, action: string) {
 
 test("the hold samples thickness apart from cut depth and parks on an interrupted gesture", () => {
   const source = readFileSync(new URL("../../../components/reading-table.tsx", import.meta.url), "utf8");
-  assert.match(source, /recordShuffle\(ratio, count, sampled, \{ ratio: false \}\)/);
+  assert.match(source, /commitMotion\(ratio, count, sampled, \{ ratio: false \}\)/);
   assert.equal(source.includes("recordShuffle(sampled, count, sampled)"), false);
   for (const reason of ["release", "cancel", "lost-capture", "blur", "key"] as const) {
     assert.match(source, new RegExp(`parkThickness\\("${reason}"\\)|parkRef\\.current\\("${reason}"\\)`));

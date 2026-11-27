@@ -186,7 +186,7 @@ export function planPhysicalShuffle(plan: ShufflePlan): PhysicalShuffleTrace {
   const attribution: Record<string, MotionSource> = {
     style: "reader",
     ratio: "reader",
-    turn: "reader",
+    turn: "algorithm-selected",
     seed: "algorithm-selected",
     ...(thickness != null ? { thickness: "reader" as const } : {}),
   };

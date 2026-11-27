@@ -19,7 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Separator } from "@/components/ui/separator";
 import { listCards, listDecks, updateCardMeaning } from "@/lib/cards/server";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
-import { sheetsForSplit, shuffleSplit } from "@/lib/cards/order";
+import { PacketFace, PhysicalShuffleMotion, type PicturedScene } from "@/components/physical-shuffle-motion";
 import {
   applyAcceptSlip,
   applyCut,
@@ -43,16 +43,18 @@ import {
   startFreshPhysical,
   subscribePhysical,
 } from "@/lib/physical-deck/runtime";
+import { compileVisualPass } from "@/lib/physical-deck/visual/compile";
+import { compileCutVisual } from "@/lib/physical-deck/visual/cut";
+import { prefersReducedMotion } from "@/lib/physical-deck/visual/playback";
 import { interruptThickness, sampleThickness, THICKNESS_INSET, thicknessFromDrag, thicknessFromPointer, type ThumbInterrupt } from "@/lib/physical-deck/motion/thickness";
 import { captureSpread } from "@/lib/physical-deck/spread-record";
 import { displayedTableReading, resumeTableReading, tableLaysReading } from "@/lib/physical-deck/table-reading";
 import { waitingSheets } from "@/lib/physical-deck/waiting-stack";
 import { edgeLook, paperTone, sheetLean } from "@/lib/cards/edge";
 import { cardFrame } from "@/lib/cards/shape";
-import { cutPace, cutSections, latchShuffleCount, SHUFFLE_MAX, SHUFFLE_MIN } from "@/lib/cards/shuffle-count";
-import { shufflePose } from "@/lib/shuffle-style";
+import { cutSections, latchShuffleCount, SHUFFLE_MAX, SHUFFLE_MIN } from "@/lib/cards/shuffle-count";
 import { DEFAULT_SHUFFLE_ANIMATION, setShuffleAnimation, shuffleAnimation, subscribeShuffleAnimation } from "@/lib/shuffle-animation";
-import { type PhysicalState } from "@/lib/physical-deck/state";
+import { cutIndex, type PhysicalState } from "@/lib/physical-deck/state";
 import { suitLabel, type Card } from "@/lib/cards/types";
 import labels from "@/lib/cards/d3-labels.json";
 import { cn } from "@/lib/utils";
@@ -261,6 +263,14 @@ export function ReadingTable() {
   const [held, setHeld] = useState(false);
   const [worked, setWorked] = useState(false);
   const [cutMotion, setCutMotion] = useState<number | null>(null);
+  const [playback, setPlayback] = useState<null | { generation: number; scene: PicturedScene; reduced: boolean }>(null);
+  const [motionStatus, setMotionStatus] = useState("");
+  const motionGen = useRef(0);
+  const playbackRef = useRef(playback);
+  playbackRef.current = playback;
+  const passRef = useRef<null | { token: number; mode: "hold" | "count" | "cut"; index: number; total: number }>(null);
+  const abandonRef = useRef<() => void>(() => {});
+  const ownCommit = useRef(false);
   const [drawn, setDrawn] = useState<{
     card: Card;
     orientation: Orientation;
@@ -270,6 +280,8 @@ export function ReadingTable() {
   } | null>(null);
   const [meetWith, setMeetWith] = useState<{ number: number; name: string } | null>(null);
   const [shuffleCount, setShuffleCount] = useState(3);
+  const shuffleLocked = useJournal((s) => s.shuffleLocked);
+  const setShuffleLocked = useJournal((s) => s.setShuffleLocked);
   const hand = useSyncExternalStore(subscribeHands, readingHand, () => "right" as const);
   const [shufflingTimes, setShufflingTimes] = useState(1);
   const [, setShuffleStep] = useState(0);
@@ -375,6 +387,9 @@ export function ReadingTable() {
     }
     if (bootKey.current === identity) return;
     bootKey.current = identity;
+    motionGen.current += 1;
+    passRef.current = null;
+    setPlayback(null);
     const openIds = (useSpreads.getState().session?.assignments ?? [])
       .filter((item) => item.deckId === activeDeckId)
       .map((item) => item.cardId);
@@ -458,6 +473,9 @@ export function ReadingTable() {
       if (restoring) return;
       if (note) {
         shuffleRun.current += 1;
+        motionGen.current += 1;
+        passRef.current = null;
+        setPlayback(null);
         orderRef.current = [];
         setOrder([]);
         if (phaseRef.current !== "drawn") setPhase("still");
@@ -465,7 +483,24 @@ export function ReadingTable() {
       }
       const next = physicalState();
       if (!next) return;
-      if (phaseRef.current === "shuffling" || phaseRef.current === "cutting") return;
+      if (phaseRef.current === "shuffling" || phaseRef.current === "cutting") {
+        if (ownCommit.current) return;
+        const live = physicalState();
+        const revision = playbackRef.current?.scene.identity?.revisionTo;
+        if (live && revision != null && live.revision !== revision) {
+          shuffleRun.current += 1;
+          motionGen.current += 1;
+          passRef.current = null;
+          holding.current = false;
+          setPlayback(null);
+          setHeld(false);
+          const cards = cardsIn(live.drawPile, deckRef.current);
+          orderRef.current = cards;
+          setOrder(cards);
+          setPhase(cards.length ? "ready" : "still");
+        }
+        return;
+      }
       if (!healOpenSpread(next, deckRef.current, "Deck")) return;
       const cards = cardsIn(next.drawPile, deckRef.current);
       orderRef.current = cards;
@@ -493,14 +528,34 @@ export function ReadingTable() {
   useEffect(() => {
     return () => {
       shuffleRun.current += 1;
+      motionGen.current += 1;
       for (const id of shuffleTimers.current) window.clearTimeout(id);
     };
   }, []);
 
-  const liftLead = () =>
-    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 520;
+  useEffect(() => {
+    const stop = () => {
+      if (phaseRef.current !== "shuffling" && phaseRef.current !== "cutting") return;
+      parkRef.current("blur");
+      abandonRef.current();
+    };
+    const onHide = () => {
+      if (document.hidden) stop();
+    };
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    window.addEventListener("blur", stop);
+    document.addEventListener("visibilitychange", onHide);
+    motionQuery.addEventListener("change", stop);
+    return () => {
+      window.removeEventListener("blur", stop);
+      document.removeEventListener("visibilitychange", onHide);
+      motionQuery.removeEventListener("change", stop);
+    };
+  }, []);
 
   const settleShuffle = () => {
+    passRef.current = null;
+    setPlayback(null);
     setCutPreview(null);
     setCutBeat(null);
     setCutMotion(null);
@@ -508,7 +563,8 @@ export function ReadingTable() {
     holding.current = false;
     runKind.current = null;
     setHeld(false);
-    setPhase("ready");
+    setMotionStatus((status) => (status === "Shuffling" ? "Shuffle completed" : status === "Cutting" ? "Cut completed" : status));
+    setPhase(orderRef.current.length ? "ready" : "still");
   };
 
   const notePhysical = (err: unknown) => {
@@ -527,18 +583,6 @@ export function ReadingTable() {
 
   const handlingBlocked = () => physicalLoading() || !!physicalPause() || !physicalState();
 
-  const recordShuffle = (
-    ratio: number,
-    turn: number,
-    thickness?: number,
-    readerChoices?: { ratio?: boolean },
-  ) => {
-    const before = orderRef.current.map((card) => card.id);
-    // The aside/drop/tuck picture is not these movements. The trace is the shuffle.
-    const next = applyPhysicalMotionShuffle({ before, style: animationChoice, ratio, turn, thickness, readerChoices });
-    showPile(next.drawPile);
-  };
-
   const beginFresh = () => {
     if (activeDeckId == null) return;
     try {
@@ -556,6 +600,10 @@ export function ReadingTable() {
       handing.current = false;
       setPhysicalNote(null);
       setCanFresh(false);
+      setPlayback(null);
+      motionGen.current += 1;
+      passRef.current = null;
+      shuffleRun.current += 1;
       setPhase(cards.length ? "ready" : "still");
       bootKey.current = `${user?.id ?? "local"}:${activeDeckId}:${deckRef.current.map((card) => card.id).join(",")}`;
     } catch (err) {
@@ -563,7 +611,223 @@ export function ReadingTable() {
     }
   };
 
-  const openShuffle = (token: number) => {
+  const gripUsesThickness = (style: string) =>
+    style === "overhand" || style === "hindu" || style === "riffle_bridge" || style === "table_wash";
+
+  const showScene = (scene: PicturedScene, label: "Shuffling" | "Cutting") => {
+    const generation = motionGen.current + 1;
+    motionGen.current = generation;
+    setPlayback({ generation, scene, reduced: prefersReducedMotion() });
+    setMotionStatus(label);
+    return generation;
+  };
+
+  const abandonPicture = () => {
+    shuffleRun.current += 1;
+    clearShuffle();
+    motionGen.current += 1;
+    passRef.current = null;
+    holding.current = false;
+    if (flyTimer.current != null) {
+      window.clearTimeout(flyTimer.current);
+      flyTimer.current = null;
+    }
+    setHeld(false);
+    setPlayback(null);
+    setCutPreview(null);
+    setCutBeat(null);
+    setCutMotion(null);
+    cutLock.current = false;
+    runKind.current = null;
+    if (phaseRef.current === "shuffling" || phaseRef.current === "cutting") {
+      setPhase(orderRef.current.length ? "ready" : "still");
+    }
+  };
+  abandonRef.current = abandonPicture;
+
+  const commitMotion = (ratio: number, turn: number, thickness: number | undefined, readerChoices: { ratio?: boolean }) => {
+    const before = orderRef.current.map((card) => card.id);
+    ownCommit.current = true;
+    let next;
+    try {
+      next = applyPhysicalMotionShuffle({ before, style: animationChoice, ratio, turn, thickness, readerChoices });
+    } finally {
+      ownCommit.current = false;
+    }
+    const operation = next.operations.at(-1);
+    showPile(next.drawPile);
+    if (!operation || operation.kind !== "motion_shuffle" || !operation.meta.motion || operation.revisionTo !== next.revision) return null;
+    const scene = compileVisualPass(before, operation.meta.motion, {
+      operationId: operation.id,
+      sessionId: next.sessionId,
+      revisionFrom: operation.revisionFrom,
+      revisionTo: operation.revisionTo,
+      beforeHash: operation.beforeHash,
+      afterHash: operation.afterHash,
+    });
+    if (!scene.grammarOk) throw new Error(scene.grammarError ?? "This shuffle does not match its grip.");
+    return scene;
+  };
+
+  const runCountPass = (index: number, token: number, total: number) => {
+    if (shuffleRun.current !== token) return;
+    const ratios = cutSections(total);
+    const ratio = ratios[index] ?? 0.5;
+    const sampled = gripUsesThickness(animationChoice) ? sampleThickness(thicknessRef.current) : undefined;
+    try {
+      const scene = commitMotion(ratio, index + 1, sampled, { ratio: false });
+      if (!scene) {
+        settleShuffle();
+        return;
+      }
+      passRef.current = { token, mode: "count", index, total };
+      setShuffleStep(index + 1);
+      setShufflingTimes(total);
+      showScene(scene, "Shuffling");
+    } catch (err) {
+      shuffleRun.current += 1;
+      setPlayback(null);
+      notePhysical(err);
+      setPhase("still");
+    }
+  };
+
+  const runHoldPass = (count: number, token: number) => {
+    if (shuffleRun.current !== token) return;
+    if (!holding.current) {
+      settleShuffle();
+      return;
+    }
+    if (count >= 14 && flyTimer.current == null) {
+      flyTimer.current = window.setTimeout(() => {
+        if (shuffleRun.current !== token || !holding.current) return;
+        const current = orderRef.current;
+        if (current.length === 0) return;
+        holding.current = false;
+        shuffleRun.current += 1;
+        passRef.current = null;
+        motionGen.current += 1;
+        clearShuffle();
+        setPlayback(null);
+        const index = Math.floor(Math.random() * current.length);
+        const card = current[index];
+        if (!card) return;
+        try {
+          applyEject(index);
+        } catch (err) {
+          notePhysical(err);
+          return;
+        }
+        showPile();
+        setOrigin(0);
+        setCutPreview(null);
+        setCutBeat(null);
+        setCutMotion(null);
+        cutLock.current = false;
+        setHeld(false);
+        setPhase("ready");
+        const deckBox = tableBand.current?.querySelector("[data-deck]")?.getBoundingClientRect();
+        const pileNode = pileRef.current;
+        const pileBox = pileNode && getComputedStyle(pileNode).visibility !== "hidden" ? pileNode.getBoundingClientRect() : null;
+        const cardW = (deckBox?.width || 140) * 0.46;
+        const cardH = cardW / Math.max(0.35, frame.aspect);
+        const scrollX = window.scrollX;
+        const scrollY = window.scrollY;
+        const pageW = document.documentElement.clientWidth;
+        const pageH = Math.max(document.documentElement.scrollHeight, window.innerHeight);
+        const toPage = (box: DOMRect) => ({
+          left: box.left + scrollX,
+          right: box.right + scrollX,
+          top: box.top + scrollY,
+          bottom: box.bottom + scrollY,
+          width: box.width,
+          height: box.height,
+        });
+        const deckPage = deckBox ? toPage(deckBox) : null;
+        const pilePage = pileBox ? toPage(pileBox) : null;
+        const hits = (cx: number, cy: number, box: { left: number; right: number; top: number; bottom: number; width: number } | null) => {
+          if (!box || box.width < 8) return false;
+          return cx + cardW / 2 > box.left - 16 && cx - cardW / 2 < box.right + 16 && cy + cardH / 2 > box.top - 16 && cy - cardH / 2 < box.bottom + 16;
+        };
+        let landX = pageW / 2;
+        let landY = scrollY + 56;
+        for (let attempt = 0; attempt < 28; attempt += 1) {
+          const cx = cardW / 2 + 8 + Math.random() * Math.max(8, pageW - cardW - 16);
+          const cy = cardH / 2 + 8 + Math.random() * Math.max(8, pageH - cardH - 16);
+          if (!hits(cx, cy, deckPage) && !hits(cx, cy, pilePage)) {
+            landX = cx;
+            landY = cy;
+            break;
+          }
+        }
+        const startX = (deckPage?.left ?? scrollX + pageW / 2) + (deckBox?.width ?? cardW) / 2;
+        const startY = (deckPage?.top ?? scrollY + pageH * 0.4) + (deckBox?.height ?? cardH) / 2;
+        const rot = Math.round((Math.random() * 36 - 18) * 10) / 10;
+        const spin = rot + (Math.random() < 0.5 ? -1 : 1) * (64 + Math.random() * 80);
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        setSlip({ card, left: startX, top: startY, x: landX - startX, y: landY - startY, rot, spin, width: cardW, landed: reduce });
+      }, 2600 + Math.random() * 3200);
+    }
+    const sampled = gripUsesThickness(animationChoice) ? sampleThickness(thicknessRef.current) : undefined;
+    const ratio = ((count - 1) % 7 + 1) / 7;
+    try {
+      const scene = commitMotion(ratio, count, sampled, { ratio: false });
+      if (!scene) {
+        settleShuffle();
+        return;
+      }
+      passRef.current = { token, mode: "hold", index: count, total: count };
+      setShuffleStep(count);
+      setShufflingTimes(count);
+      showScene(scene, "Shuffling");
+    } catch (err) {
+      shuffleRun.current += 1;
+      setPlayback(null);
+      notePhysical(err);
+      setPhase("still");
+    }
+  };
+
+  const finishScene = (generation: number) => {
+    if (generation !== motionGen.current) return;
+    const pass = passRef.current;
+    if (!pass || pass.token !== shuffleRun.current) {
+      setPlayback(null);
+      return;
+    }
+    if (pass.mode === "hold") {
+      if (!holding.current) {
+        passRef.current = null;
+        settleShuffle();
+        return;
+      }
+      runHoldPass(pass.index + 1, pass.token);
+      return;
+    }
+    if (pass.mode === "count") {
+      if (pass.index + 1 >= pass.total) {
+        passRef.current = null;
+        settleShuffle();
+        return;
+      }
+      runCountPass(pass.index + 1, pass.token, pass.total);
+      return;
+    }
+    passRef.current = null;
+    settleShuffle();
+  };
+
+  const shuffle = (times = shuffleCount) => {
+    if (handlingBlocked() || order.length < 2 || phase === "shuffling" || phase === "cutting" || playback) return;
+    const mode = physicalState()?.mode;
+    if (mode !== "ready" && mode !== "collecting") return;
+    const passes = Math.min(SHUFFLE_MAX, Math.max(SHUFFLE_MIN, Math.round(times)));
+    const token = shuffleRun.current + 1;
+    shuffleRun.current = token;
+    runKind.current = "count";
+    holding.current = false;
+    setHeld(false);
+    setWorked(true);
     clearShuffle();
     setDrawn(null);
     setFlipped(false);
@@ -571,206 +835,29 @@ export function ReadingTable() {
     setCutPreview(null);
     setCutBeat(null);
     setPhase("shuffling");
-    const later = (ms: number, run: () => void) => {
-      const id = window.setTimeout(() => {
-        if (shuffleRun.current !== token) return;
-        run();
-      }, ms);
-      shuffleTimers.current.push(id);
-    };
-    return later;
-  };
-
-  const shuffle = (times = shuffleCount) => {
-    if (handlingBlocked() || order.length < 2 || phase === "shuffling" || phase === "cutting") return;
-    const mode = physicalState()?.mode;
-    if (mode !== "ready" && mode !== "collecting") return;
-    const passes = Math.min(SHUFFLE_MAX, Math.max(SHUFFLE_MIN, Math.round(times)));
-    const ratios = cutSections(passes);
-    const pace = cutPace(passes);
-    const step = Math.round(pace / 3);
-    const token = shuffleRun.current + 1;
-    shuffleRun.current = token;
-    runKind.current = "count";
-    holding.current = false;
-    setHeld(false);
-    setWorked(true);
-    const later = openShuffle(token);
-    setShufflingTimes(passes);
-    setCutMotion(Math.max(32, Math.round(step * 0.92)));
-
-    const play = (index: number) => {
-      if (shuffleRun.current !== token) return;
-      if (index >= ratios.length) {
-        settleShuffle();
-        return;
-      }
-      const ratio = ratios[index] ?? 0.5;
-      cutLock.current = true;
-      setShuffleStep(index + 1);
-      setCutPreview(ratio);
-      setCutBeat("aside");
-      later(step, () => setCutBeat("drop"));
-      later(step * 2, () => {
-        setCutBeat("tuck");
-        try {
-          recordShuffle(ratio, index + 1);
-        } catch (err) {
-          shuffleRun.current += 1;
-          notePhysical(err);
-          setPhase("still");
-        }
-      });
-      later(step * 3, () => {
-        setOrigin((value) => {
-          const size = order.length;
-          if (size < 2) return value;
-          return (value + splitIndex(size, ratio)) % size;
-        });
-        play(index + 1);
-      });
-    };
-
-    later(liftLead(), () => play(0));
+    setOrigin(0);
+    runCountPass(0, token, passes);
   };
 
   const beginHold = () => {
-    if (handlingBlocked() || order.length < 2 || phase === "cutting" || slip) return;
+    if (handlingBlocked() || order.length < 2 || phase === "cutting" || phase === "shuffling" || playback || slip) return;
     const mode = physicalState()?.mode;
     if (mode !== "ready" && mode !== "collecting") return;
-    if (phase === "shuffling") return;
     const token = shuffleRun.current + 1;
     shuffleRun.current = token;
     runKind.current = "hold";
     holding.current = true;
     setHeld(true);
     setWorked(true);
-    const later = openShuffle(token);
-    let count = 0;
-    let armed = false;
-    const cutRatioForPass = (pass: number) => ((pass - 1) % 7 + 1) / 7;
-
-    const clearFly = () => {
-      if (flyTimer.current != null) {
-        window.clearTimeout(flyTimer.current);
-        flyTimer.current = null;
-      }
-    };
-
-    const launch = () => {
-      if (shuffleRun.current !== token || !holding.current) return;
-      const current = orderRef.current;
-      if (current.length === 0) return;
-      holding.current = false;
-      shuffleRun.current += 1;
-      clearShuffle();
-      clearFly();
-      const index = Math.floor(Math.random() * current.length);
-      const card = current[index];
-      if (!card) return;
-      try {
-        applyEject(index);
-      } catch (err) {
-        notePhysical(err);
-        return;
-      }
-      showPile();
-      setOrigin(0);
-      setCutPreview(null);
-      setCutBeat(null);
-      setCutMotion(null);
-      cutLock.current = false;
-      setHeld(false);
-      setPhase("ready");
-      const deckBox = tableBand.current?.querySelector("[data-deck]")?.getBoundingClientRect();
-      const pileNode = pileRef.current;
-      const pileBox = pileNode && getComputedStyle(pileNode).visibility !== "hidden" ? pileNode.getBoundingClientRect() : null;
-      const cardW = (deckBox?.width || 140) * 0.46;
-      const cardH = cardW / Math.max(0.35, frame.aspect);
-      const scrollX = window.scrollX;
-      const scrollY = window.scrollY;
-      const pageW = document.documentElement.clientWidth;
-      const pageH = Math.max(document.documentElement.scrollHeight, window.innerHeight);
-      const toPage = (box: DOMRect) => ({
-        left: box.left + scrollX,
-        right: box.right + scrollX,
-        top: box.top + scrollY,
-        bottom: box.bottom + scrollY,
-        width: box.width,
-        height: box.height,
-      });
-      const deckPage = deckBox ? toPage(deckBox) : null;
-      const pilePage = pileBox ? toPage(pileBox) : null;
-      const hits = (cx: number, cy: number, box: { left: number; right: number; top: number; bottom: number; width: number } | null) => {
-        if (!box || box.width < 8) return false;
-        return cx + cardW / 2 > box.left - 16 && cx - cardW / 2 < box.right + 16 && cy + cardH / 2 > box.top - 16 && cy - cardH / 2 < box.bottom + 16;
-      };
-      let landX = pageW / 2;
-      let landY = scrollY + 56;
-      for (let attempt = 0; attempt < 28; attempt += 1) {
-        const cx = cardW / 2 + 8 + Math.random() * Math.max(8, pageW - cardW - 16);
-        const cy = cardH / 2 + 8 + Math.random() * Math.max(8, pageH - cardH - 16);
-        if (!hits(cx, cy, deckPage) && !hits(cx, cy, pilePage)) {
-          landX = cx;
-          landY = cy;
-          break;
-        }
-      }
-      const startX = (deckPage?.left ?? scrollX + pageW / 2) + (deckBox?.width ?? cardW) / 2;
-      const startY = (deckPage?.top ?? scrollY + pageH * 0.4) + (deckBox?.height ?? cardH) / 2;
-      const rot = Math.round((Math.random() * 36 - 18) * 10) / 10;
-      const spin = rot + (Math.random() < 0.5 ? -1 : 1) * (64 + Math.random() * 80);
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      setSlip({ card, left: startX, top: startY, x: landX - startX, y: landY - startY, rot, spin, width: cardW, landed: reduce });
-    };
-
-    const play = () => {
-      if (shuffleRun.current !== token) return;
-      if (!holding.current) {
-        settleShuffle();
-        return;
-      }
-      count += 1;
-      const wash = animationChoice === "table_wash";
-      const speed = Math.min(SHUFFLE_MAX, 8 + (count - 1) * (wash ? 0.4 : 1));
-      const opening = count === 1 && animationChoice === "original";
-      const washStart = wash ? 1.25 - Math.min(0.25, (count - 1) * 0.02) : 1;
-      const pace = Math.round(cutPace(speed) * (opening ? 1.6 : 1) * washStart);
-      const step = Math.round(pace / 3);
-      if (count >= 14 && !armed) {
-        armed = true;
-        flyTimer.current = window.setTimeout(launch, 2600 + Math.random() * 3200);
-      }
-      const sampled = sampleThickness(thicknessRef.current);
-      const ratio = cutRatioForPass(count);
-      cutLock.current = true;
-      setShuffleStep(count);
-      setShufflingTimes(count);
-      setCutMotion(Math.max(32, Math.round(step * 0.92)));
-      setCutPreview(ratio);
-      setCutBeat("aside");
-      later(step, () => setCutBeat("drop"));
-      later(step * 2, () => {
-        setCutBeat("tuck");
-        try {
-          recordShuffle(ratio, count, sampled, { ratio: false });
-        } catch (err) {
-          shuffleRun.current += 1;
-          notePhysical(err);
-          setPhase("still");
-        }
-      });
-      later(step * 3, () => {
-        setOrigin((value) => {
-          const size = order.length;
-          if (size < 2) return value;
-          return (value + splitIndex(size, ratio)) % size;
-        });
-        play();
-      });
-    };
-
-    later(liftLead(), () => play());
+    clearShuffle();
+    setDrawn(null);
+    setFlipped(false);
+    setPanel(null);
+    setCutPreview(null);
+    setCutBeat(null);
+    setPhase("shuffling");
+    setOrigin(0);
+    runHoldPass(1, token);
   };
 
   const endHold = () => {
@@ -838,40 +925,48 @@ export function ReadingTable() {
   };
 
   const cut = (ratio: number) => {
-    if (handlingBlocked() || order.length < 2 || phase === "shuffling" || phase === "cutting" || phase === "drawn") {
+    if (handlingBlocked() || order.length < 2 || phase === "shuffling" || phase === "cutting" || phase === "drawn" || playback) {
       return;
     }
     if (physicalState()?.mode !== "ready") return;
-    const lead = cutPreview == null ? liftLead() : 0;
+    const before = orderRef.current.map((card) => card.id);
+    let next;
+    ownCommit.current = true;
+    try {
+      next = applyCut(before, ratio);
+    } catch (err) {
+      ownCommit.current = false;
+      notePhysical(err);
+      return;
+    }
+    ownCommit.current = false;
+    const operation = next.operations.at(-1);
+    const index = operation?.meta.index;
+    showPile(next.drawPile);
+    if (!operation || operation.kind !== "cut" || typeof index !== "number") return;
+    let scene;
+    try {
+      scene = compileCutVisual(before, index, {
+        operationId: operation.id,
+        revisionFrom: operation.revisionFrom,
+        revisionTo: operation.revisionTo,
+        index,
+      });
+    } catch (err) {
+      notePhysical(err);
+      setPhase(orderRef.current.length ? "ready" : "still");
+      return;
+    }
+    const token = shuffleRun.current + 1;
+    shuffleRun.current = token;
+    runKind.current = null;
+    passRef.current = { token, mode: "cut", index, total: 1 };
     cutLock.current = true;
-    setCutMotion(520);
+    setOrigin(0);
+    setCutPreview(null);
+    setCutBeat(null);
     setPhase("cutting");
-    window.setTimeout(() => {
-      setCutPreview(ratio);
-      setCutBeat("aside");
-    }, lead);
-    window.setTimeout(() => setCutBeat("drop"), 560 + lead);
-    window.setTimeout(() => setCutBeat("tuck"), 1080 + lead);
-    window.setTimeout(() => {
-      const before = orderRef.current.map((card) => card.id);
-      try {
-        applyCut(before, ratio);
-      } catch (err) {
-        cutLock.current = false;
-        notePhysical(err);
-        setPhase("still");
-        return;
-      }
-      const size = before.length;
-      if (size > 1) {
-        setOrigin((value) => (value + splitIndex(size, ratio)) % size);
-      }
-      showPile();
-      cutLock.current = false;
-      setCutPreview(null);
-      setCutBeat(null);
-      setPhase("ready");
-    }, 1620 + lead);
+    showScene(scene, "Cutting");
   };
 
   const collectNative = (card: Card): "skip" | "blocked" | "taken" => {
@@ -1357,6 +1452,7 @@ export function ReadingTable() {
             </DrawnFace>
           ) : (
             <>
+            <p className="sr-only" role="status" aria-live="polite">{motionStatus}</p>
             <DeckStack
               phase={phase}
               preview={cutPreview}
@@ -1376,6 +1472,8 @@ export function ReadingTable() {
               backStyle={backStyle}
               hand={hand}
               shuffleStyle={animationChoice}
+              playback={playback}
+              onPlaybackDone={finishScene}
               onPreview={previewCut}
               onCut={cut}
               onTap={draw}
@@ -1572,6 +1670,19 @@ export function ReadingTable() {
                 style={{ left: `calc(${THICKNESS_INSET}px + (100% - ${THICKNESS_INSET * 2}px) * ${packetThickness})` }}
               />
             </div>
+            {animationChoice === "original" || animationChoice === "three_packet_cut" ? (
+              <p className="px-6 text-center text-[10px] leading-relaxed tracking-wide text-subtle">
+                Thickness does not move this cut. Depth stays on the deck.
+              </p>
+            ) : null}
+            <ShuffleSlider
+              value={shuffleCount}
+              disabled={order.length < 2 || !!slip || !!physicalNote || phase === "cutting" || phase === "shuffling"}
+              locked={shuffleLocked}
+              onToggleLock={() => setShuffleLocked(!shuffleLocked)}
+              onChange={setShuffleCount}
+              onCommit={(count) => shuffle(count)}
+            />
             {slip?.landed ? (
               <p className="text-center text-xs text-subtle">A card slipped out. Tap it.</p>
             ) : null}
@@ -2089,12 +2200,6 @@ export function ShuffleSlider({
 /** Enough sheets that each edge is a real pixel. A full 78-card stack is thinner than a shadow. */
 const STACK_SHEETS = 16;
 
-function splitIndex(count: number, ratio: number) {
-  if (count < 2) return 1;
-  const clamped = Math.min(1, Math.max(0, ratio));
-  return Math.min(count - 1, Math.max(1, Math.ceil(clamped * (count - 1))));
-}
-
 export function DeckStack({
   phase,
   preview,
@@ -2113,6 +2218,8 @@ export function DeckStack({
   backStyle,
   hand,
   shuffleStyle = "original",
+  playback = null,
+  onPlaybackDone,
   onPreview,
   onCut,
   onTap,
@@ -2137,6 +2244,8 @@ export function DeckStack({
   backStyle: CSSProperties;
   hand: "right" | "left";
   shuffleStyle?: string;
+  playback?: { generation: number; scene: PicturedScene; reduced: boolean } | null;
+  onPlaybackDone?: (generation: number) => void;
   onPreview: (ratio: number | null) => void;
   onCut: (ratio: number) => void;
   onTap: () => void;
@@ -2147,365 +2256,75 @@ export function DeckStack({
   const shuffling = phase === "shuffling";
   const cutting = phase === "cutting";
   const drawn = phase === "drawn";
-  const busy = shuffling || cutting || drawn;
+  const busy = shuffling || cutting || drawn || playback != null;
   const dir = hand === "left" ? -1 : 1;
-  const cuttingNow = cutting && beat != null && preview != null;
-  const aiming = preview != null && beat == null && !shuffling && !cutting;
-  const shufflingNow = shuffling && beat != null && preview != null;
-  const grouped = cuttingNow || aiming || shufflingNow;
+  const aiming = preview != null && beat == null && !shuffling && !cutting && playback == null;
   const sheets = count < 2 ? Math.max(1, count) : Math.min(STACK_SHEETS, count);
   const visualOrigin = sheets < 2 ? 0 : Math.round((origin * sheets) / count) % sheets;
-  const split = grouped ? splitIndex(sheets, preview ?? 0.5) : sheets;
-  const movingCount =
-    shufflingNow && (shuffleStyle === "overhand" || shuffleStyle === "hindu")
-      ? Math.max(1, Math.round(sheets * 0.28))
-      : shufflingNow && shuffleStyle === "three_packet_cut"
-        ? Math.max(1, Math.round(sheets / 3))
-        : split;
-  const below = Math.max(1, sheets - split);
   const step = (0.62 * (thickness / 75)) / 0.25;
-  const cardEdge = Math.max(0.85, step * 0.28);
   const edgePaint = edgeLook(edge, edgeColor, edgeSat, edgeLight).color;
   const gesture = useRef<{ x: number; y: number; dragged: boolean } | null>(null);
-  const [hinduLead, setHinduLead] = useState<"bottom" | "top">("bottom");
-  const [overhandTop, setOverhandTop] = useState(0);
-  const [riffleRun, setRiffleRun] = useState(0);
-  const riffleLock = useRef(false);
-  let topPose = "translate3d(0px, 0px, 0px)";
-  let bottomPose = "translate3d(0px, 0px, 0px)";
-  let topShadow = "translate3d(0px, 14px, 0px)";
-  let bottomShadow = "translate3d(0px, 10px, 0px)";
-  let topLift = 0;
-  let restLift = 0;
-  let topZ = 6;
-  let bottomZ = 2;
-  const originalCycle = useRef(0);
-  const originalBeat = useRef<string | null>(null);
-  const originalOpening = useRef(false);
-  if (shufflingNow && shuffleStyle === "original" && beat === "aside" && originalBeat.current !== "aside") {
-    originalCycle.current += 1;
-    originalOpening.current = originalBeat.current == null;
-  }
-  originalBeat.current = beat;
-
-  if (cuttingNow) {
-    const seat = below * step * 0.18;
-    const seatX = dir * below * step * 0.25;
-    const posed = shufflePose(beat ?? "tuck", dir, seat, seatX);
-    topPose = posed.top;
-    topShadow = posed.shadow;
-    topLift = posed.lift;
-    bottomShadow = "translate(0px, 12px)";
-    topZ = posed.topZ;
-    bottomZ = posed.bottomZ;
-  } else if (aiming) {
-    const ratio = preview ?? 0.5;
-    topPose = `translate(${dir * -36}px, ${(-18 - ratio * 36).toFixed(1)}px) rotate(${dir * -3}deg)`;
-    bottomPose = `translate(0px, ${(10 + ratio * 16).toFixed(1)}px)`;
-    topShadow = `translate(${dir * -30}px, ${(16 + ratio * 14).toFixed(1)}px) rotate(${dir * -1.5}deg) scale(${(1.04 + ratio * 0.12).toFixed(3)})`;
-    bottomShadow = `translate(0px, ${(10 + ratio * 8).toFixed(1)}px)`;
-    topLift = 0.3 + ratio * 0.45;
-  }
+  const aimIndex = aiming && count >= 2 ? cutIndex(count, preview ?? 0.5) : null;
 
   return (
     <div
       className={cn("deck-table", approach && "is-approach", approach && (shuffling || cutting || aiming) && "is-lifted", departing && "is-departing")}
       data-hand={hand}
       data-deck=""
+      data-shuffle-style={shuffleStyle}
       style={{ width: frame.width, ["--radius-lg" as string]: `${radius}px` }}
     >
-      <div className={cn("deck-ground", grouped && "is-split")} style={{ aspectRatio: frame.aspect }} aria-hidden />
+      <div className={cn("deck-ground", (aiming || playback) && "is-split")} style={{ aspectRatio: frame.aspect }} aria-hidden />
       <div
-        className={cn(
-          "deck-pile",
-          drawn && "has-drawn",
-          aiming && "is-aiming",
-          approach && (shuffling || cutting || aiming) && "is-lifted",
-          Boolean(beat) && "is-moving",
-          working && "is-working",
-          shufflingNow && shuffleStyle === "original" && "is-original",
-          shufflingNow && shuffleStyle !== "original" && "is-flow",
-          shufflingNow && shuffleStyle === "hindu" && "is-hindu",
-          shufflingNow && shuffleStyle === "riffle_bridge" && "is-riffle",
-        )}
+        className={cn("deck-pile", drawn && "has-drawn", aiming && "is-aiming", approach && (shuffling || cutting || aiming) && "is-lifted", working && "is-working")}
         data-cut={beat ?? undefined}
-        data-pull={shufflingNow && shuffleStyle === "original" ? "bottom" : undefined}
-        style={
-          {
-            aspectRatio: frame.aspect,
-            "--cut-pace": `${motion ?? 520}ms`,
-            "--shuffle-pace": `${Math.round((motion ?? 520) * 3.25)}ms`,
-            "--original-pace": `${Math.round(((motion ?? 520) * 3) / 0.92)}ms`,
-            "--pull-out": `${dir * 132}%`,
-            "--pull-tilt": `${dir * 7}deg`,
-            "--overhand-pace": `${Math.round((motion ?? 520) * 3.25 * 2.15)}ms`,
-            "--pull-x": `${dir * 118}%`,
-            "--pull-r": `${dir * 8}deg`,
-            "--card-edge": `${cardEdge}px`,
-          } as CSSProperties
-        }
+        data-pace={motion ?? undefined}
+        style={{ aspectRatio: frame.aspect } as CSSProperties}
       >
-        {grouped && !(shufflingNow && shuffleStyle === "original") ? (
-          <div
-            className="deck-cast"
-            style={{
-              transform: bottomShadow,
-              opacity: 0.58 - restLift * 0.08,
-              filter: `blur(${4 + restLift * 2}px)`,
-            }}
+        {playback ? (
+          <PhysicalShuffleMotion
+            scene={playback.scene}
+            generation={playback.generation}
+            reduced={playback.reduced}
+            hand={hand}
+            backSrc={backSrc}
+            backStyle={backStyle}
+            edgeColor={edgePaint}
+            radius={radius}
+            onSettled={onPlaybackDone ?? (() => {})}
           />
-        ) : null}
-        {grouped && !(shufflingNow && shuffleStyle === "original") ? (
-          <div
-            className={cn("deck-cast", topLift > 0.2 && "is-high")}
-            style={{
-              transform: topShadow,
-              opacity: 0.52 - topLift * 0.26,
-              filter: `blur(${5 + topLift * 7}px)`,
-            }}
-          />
-        ) : null}
-        {shufflingNow && shuffleStyle === "original" ? (
+        ) : aimIndex != null ? (
           <>
-            {(["leave", "stay"] as const).map((role) => {
-              const realStay = splitIndex(Math.max(2, count), preview ?? 0.5);
-              const realLeave = Math.max(1, Math.max(2, count) - realStay);
-              const [staySheets = 1, leaveSheets = 1] = sheetsForSplit([realStay, realLeave], sheets);
-              const size = role === "stay" ? staySheets : leaveSheets;
-              const start = role === "stay" ? 0 : staySheets;
-              const indices = Array.from({ length: size }, (_, local) => start + local).filter((index) => index < sheets);
-              const edge = cardEdge;
-              const opening = originalOpening.current;
-              return (
-                <div key={`${role}-${originalCycle.current}`}>
-                  <div className={cn("original-shadow", role === "leave" ? "is-leaving" : "is-staying", opening && "is-opening")} />
-                  <div className={cn("original-packet", role === "leave" ? "is-leaving" : "is-staying", opening && "is-opening")}>
-                    {indices.map((index, local) => (
-                      <div
-                        key={index}
-                        className="deck-card"
-                        style={{
-                          backgroundColor: paperTone(edgePaint, index),
-                          transform: `translate(${dir * local * edge * 0.38}px, ${local * edge}px)`,
-                          zIndex: indices.length - local,
-                        }}
-                      >
-                        {local === 0 ? <img src={backSrc} alt="" decoding="sync" style={backStyle} /> : null}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </>
-        ) : shufflingNow && shuffleStyle === "hindu" ? (
-          <>
-            {(["bottom", "top"] as const).map((packet) => {
-              const [heldSheets = 1, pulledSheets = 1] = sheetsForSplit(shuffleSplit("hindu", Math.max(2, count)), sheets);
-              const moving = packet === hinduLead;
-              const indices = Array.from({ length: sheets }, (_, index) => index).filter((index) =>
-                packet === "top" ? index < heldSheets : index >= sheets - pulledSheets,
-              );
-              return (
-                <div
-                  key={packet}
-                  className={cn("hindu-packet", moving ? "is-pulled" : "is-held")}
-                  onAnimationEnd={(event) => {
-                    if (!moving || event.animationName !== "hindu-pull") return;
-                    setHinduLead((lead) => (lead === "bottom" ? "top" : "bottom"));
-                  }}
-                >
-                  {indices.map((index, local) => {
-                    const lean = sheetLean(index);
-                    return (
-                      <div
-                        key={index}
-                        className="deck-card"
-                        style={{
-                          backgroundColor: paperTone(edgePaint, index),
-                          transform: `translate(${dir * local * cardEdge * 0.38}px, ${local * cardEdge}px) rotate(${lean.tilt * 0.25}deg)`,
-                          zIndex: indices.length - local,
-                        }}
-                      >
-                        {local === 0 ? <img src={backSrc} alt="" decoding="sync" style={backStyle} /> : null}
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })}
-          </>
-        ) : shufflingNow && shuffleStyle === "riffle_bridge" ? (
-          <>
-            {(["left", "right"] as const).map((side) => {
-              const [leftSheets = 1] = sheetsForSplit(shuffleSplit("riffle_bridge", Math.max(2, count)), sheets);
-              const indices = Array.from({ length: sheets }, (_, index) => index).filter((index) =>
-                side === "left" ? index < leftSheets : index >= leftSheets,
-              );
-              return (
-                <div
-                  key={`${side}-${riffleRun}`}
-                  className={cn("riffle-packet", side === "left" ? "is-left" : "is-right")}
-                  onAnimationEnd={(event) => {
-                    if (side !== "right" || event.animationName !== "riffle-right" || riffleLock.current) return;
-                    riffleLock.current = true;
-                    window.setTimeout(() => {
-                      riffleLock.current = false;
-                      setRiffleRun((run) => run + 1);
-                    }, 40);
-                  }}
-                >
-                  {indices.map((index, local) => (
-                    <div
-                      key={index}
-                      className="deck-card"
-                      style={{
-                        backgroundColor: paperTone(edgePaint, index),
-                        zIndex: (side === "right" ? 24 : 8) + local,
-                        ["--i" as string]: String(local),
-                      }}
-                    >
-                      <img src={backSrc} alt="" decoding="sync" style={backStyle} />
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
-          </>
-        ) : shufflingNow && shuffleStyle === "overhand" ? (
-          <>
-            {sheetsForSplit(shuffleSplit("overhand", Math.max(2, count)), sheets).map((size, pile, sizes) => {
-              const start = sizes.slice(0, pile).reduce((sum, item) => sum + item, 0);
-              const indices = Array.from({ length: size }, (_, local) => start + local);
-              const peeled = pile === overhandTop;
-              return (
-                <div
-                  key={`overhand-${pile}`}
-                  className={cn("flow-packet", peeled ? "is-peeled" : "is-stock")}
-                  onAnimationEnd={(event) => {
-                    if (peeled || event.animationName !== "overhand-stock") return;
-                    setOverhandTop((top) => (top === 0 ? 1 : 0));
-                  }}
-                >
-                  {indices.map((index, local) => (
-                    <div
-                      key={index}
-                      className="deck-card"
-                      style={{
-                        backgroundColor: paperTone(edgePaint, index),
-                        transform: `translate(${dir * local * cardEdge * 0.38}px, ${local * cardEdge}px)`,
-                        zIndex: indices.length - local,
-                      }}
-                    >
-                      {local === 0 ? <img src={backSrc} alt="" decoding="sync" style={backStyle} /> : null}
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
-          </>
-        ) : shufflingNow && (shuffleStyle === "three_packet_cut" || shuffleStyle === "table_wash") ? (
-          <>
-            {shuffleStyle === "table_wash"
-              ? Array.from({ length: sheets }, (_, index) => {
-                  const span = Math.max(1, sheets - 1);
-                  const along = index / span;
-                  const angle = (-98 + along * 196) * (Math.PI / 180);
-                  const reach = 88 + Math.min(count, 78) * 1.15;
-                  const gather = index % 4 === 2 ? 0 : index % 4 === 0 ? 1 : index % 4 === 3 ? 2 : 3;
-                  return (
-                    <div
-                      key={`${riffleRun}-${index}`}
-                      className="deck-card wash-card"
-                      onAnimationEnd={(event) => {
-                        if (event.animationName !== "wash-flow" || riffleLock.current) return;
-                        riffleLock.current = true;
-                        window.setTimeout(() => {
-                          riffleLock.current = false;
-                          setRiffleRun((run) => run + 1);
-                        }, 40);
-                      }}
-                      style={{
-                        backgroundColor: paperTone(edgePaint, index),
-                        zIndex: 8 + gather * sheets + index,
-                        ["--wx" as string]: `${Math.sin(angle) * reach}%`,
-                        ["--wy" as string]: `${6 + (1 - Math.cos(angle)) * 48}%`,
-                        ["--wr" as string]: `${Math.sin(angle) * 16}deg`,
-                        ["--g" as string]: String(gather + along),
-                        ["--i" as string]: String(index),
-                      }}
-                    >
-                      <img src={backSrc} alt="" decoding="sync" style={backStyle} />
-                    </div>
-                  );
-                })
-              : sheetsForSplit(shuffleSplit(shuffleStyle, Math.max(2, count)), sheets).map((size, pile, sizes) => {
-                  const start = sizes.slice(0, pile).reduce((sum, item) => sum + item, 0);
-                  const indices = Array.from({ length: size }, (_, local) => start + local);
-                  const role = `is-three-${pile}`;
-                  return (
-                    <div
-                      key={`${shuffleStyle}-${pile}-${riffleRun}`}
-                      className={cn("flow-packet", role)}
-                      onAnimationEnd={(event) => {
-                        if (riffleLock.current) return;
-                        const finished = event.animationName === "three-middle";
-                        if (!finished) return;
-                        riffleLock.current = true;
-                        window.setTimeout(() => {
-                          riffleLock.current = false;
-                          setRiffleRun((run) => run + 1);
-                        }, 40);
-                      }}
-                    >
-                      {indices.map((index, local) => (
-                        <div
-                          key={index}
-                          className="deck-card"
-                          style={{
-                            backgroundColor: paperTone(edgePaint, index),
-                            transform: `translate(${dir * local * cardEdge * 0.38}px, ${local * cardEdge}px)`,
-                            zIndex: indices.length - local,
-                          }}
-                        >
-                          {local === 0 ? <img src={backSrc} alt="" decoding="sync" style={backStyle} /> : null}
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })}
+            <div className="trace-packet" data-count={count - aimIndex} style={{ transform: "translate(0px, 8px)" }}>
+              <PacketFace count={count - aimIndex} backSrc={backSrc} backStyle={backStyle} edgeColor={edgePaint} dir={dir} radius={radius} />
+            </div>
+            <div
+              className="trace-packet"
+              data-count={aimIndex}
+              style={{ transform: `translate(${dir * -42}%, -8%) rotate(${dir * -8}deg)`, zIndex: 4 }}
+            >
+              <PacketFace count={aimIndex} backSrc={backSrc} backStyle={backStyle} edgeColor={edgePaint} dir={dir} radius={radius} />
+            </div>
           </>
         ) : (
-        Array.from({ length: sheets }, (_, index) => {
-          const v = (index - visualOrigin + sheets) % sheets;
-          const inTop = grouped && v < movingCount;
-          const local = grouped ? (inTop ? v : v - movingCount) : v;
-          const placed = !grouped ? "" : inTop ? topPose : bottomPose;
-          const band = !grouped ? 1 : inTop ? topZ : bottomZ;
-          const showFace = local === 0;
-          const lean = sheetLean(index);
-          return (
-            <div
-              key={index}
-              className="deck-card"
-              style={{
-                backgroundColor: paperTone(edgePaint, index),
-                transform: `${placed} translate(${dir * local * step * 0.25 + lean.slip}px, ${local * step * 0.18}px) rotate(${lean.tilt}deg)`,
-                zIndex: band * (sheets + 2) + (sheets - local),
-              }}
-            >
-              {showFace ? (
-                <img
-                  src={backSrc}
-                  alt=""
-                  decoding="sync"
-                  fetchPriority="high"
-                  style={backStyle}
-                />
-              ) : null}
-            </div>
-          );
-        })
+          Array.from({ length: sheets }, (_, index) => {
+            const v = (index - visualOrigin + sheets) % sheets;
+            const lean = sheetLean(index);
+            const showFace = v === 0;
+            return (
+              <div
+                key={index}
+                className="deck-card"
+                style={{
+                  backgroundColor: paperTone(edgePaint, index),
+                  transform: `translate(${dir * v * step * 0.25 + lean.slip}px, ${v * step * 0.18}px) rotate(${lean.tilt}deg)`,
+                  zIndex: sheets - v,
+                }}
+              >
+                {showFace ? <img src={backSrc} alt="" decoding="sync" fetchPriority="high" style={backStyle} /> : null}
+              </div>
+            );
+          })
         )}
         <button
           type="button"
@@ -2524,8 +2343,7 @@ export function DeckStack({
           onPointerMove={(event) => {
             const active = gesture.current;
             if (busy || !active) return;
-            const dragging =
-              event.buttons > 0 || event.currentTarget.hasPointerCapture?.(event.pointerId);
+            const dragging = event.buttons > 0 || event.currentTarget.hasPointerCapture?.(event.pointerId);
             if (!dragging) return;
             const distance = Math.hypot(event.clientX - active.x, event.clientY - active.y);
             if (distance > 10) active.dragged = true;
@@ -2550,9 +2368,7 @@ export function DeckStack({
             if (event.detail === 0) onTap();
           }}
         >
-          {preview != null && !cutting && !shuffling && !drawn ? (
-            <span className="deck-cut-line" style={{ top: `${preview * 100}%` }} />
-          ) : null}
+          {preview != null && !cutting && !shuffling && !drawn ? <span className="deck-cut-line" style={{ top: `${preview * 100}%` }} /> : null}
         </button>
       </div>
     </div>

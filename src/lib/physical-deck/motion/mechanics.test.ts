@@ -211,6 +211,8 @@ test("the table asks the movement engine, not the old style permutation", () => 
   assert.equal(source.includes("shuffleByStyle"), false);
   assert.equal(source.includes("applyRealizedShuffle"), false);
   assert.match(source, /applyPhysicalMotionShuffle/);
+  assert.equal(source.includes("shuffleSplit"), false);
+  assert.match(source, /compileVisualPass/);
 });
 
 test("algorithm packet sizes are labeled, and an explicit reader packet is labeled", () => {

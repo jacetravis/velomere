@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Unused preset sprite scene. The Table does not play this.
+ * Visible shuffles come from the committed physical trace.
+ */
+
 import { useEffect, useRef } from "react";
 import type { ShuffleAnimationId } from "@/lib/shuffle-animation";
 

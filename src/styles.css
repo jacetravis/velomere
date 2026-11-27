@@ -1223,6 +1223,58 @@ html[data-theme="numen"] .marble-slab {
   pointer-events: none;
 }
 
+.trace-motion,
+.trace-packet,
+.trace-wash {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.trace-packet {
+  z-index: 2;
+}
+
+.trace-packet.is-flyer {
+  z-index: 6;
+}
+
+.trace-card {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #efe8dc;
+  pointer-events: none;
+}
+
+.trace-card img,
+.trace-wash-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.trace-wash-card {
+  position: absolute;
+  inset: 12% 14%;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: #efe8dc;
+  box-shadow: 0 10px 18px rgb(0 0 0 / 0.28);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trace-packet,
+  .trace-wash-card,
+  .trace-card {
+    transition: none;
+  }
+}
+
 @keyframes deck-edge-pulse {
   0%,
   100% {
