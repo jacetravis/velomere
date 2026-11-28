@@ -35,24 +35,45 @@ function publish(next: MotionProbe | null) {
   }
 }
 
-function paintActor(actor: FluidActor, host: HTMLElement, backSrc: string, backStyle: CSSProperties, edgeColor: string, radius: number) {
+function paintActor(actor: FluidActor, host: HTMLElement, backSrc: string, backStyle: CSSProperties, edgeColor: string, dir: number, radius: number) {
   const node = document.createElement("div");
   node.className = "trace-proxy";
   node.dataset.fluidRole = actor.role;
   node.dataset.proxyDisplay = "single-card";
   node.style.zIndex = String(actor.zIndex);
   node.style.borderRadius = `${radius}px`;
-  node.style.boxShadow = `0 16px 28px rgb(20 14 10 / 0.32), inset 0 0 0 1px ${edgeColor}`;
-  const img = document.createElement("img");
-  img.src = backSrc;
-  img.alt = "";
-  img.draggable = false;
-  Object.assign(img.style, backStyle, { width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit", pointerEvents: "none" });
-  node.append(img);
+  const edges = Math.max(1, Math.min(8, actor.edges ?? 1));
+  if (edges > 1) node.style.overflow = "visible";
+  const gap = 2.8;
+  for (let step = 0; step < edges; step += 1) {
+    const depth = edges - 1 - step;
+    const face = step === edges - 1;
+    const lip = document.createElement("div");
+    lip.className = face ? "trace-proxy-face" : "trace-proxy-edge";
+    lip.style.zIndex = String(step + 1);
+    lip.style.borderRadius = `${radius}px`;
+    lip.style.transform = edges === 1 ? "" : `translate(${dir * depth * gap * 0.35}px, ${depth * gap}px)`;
+    lip.style.background = face ? "" : edgeColor;
+    lip.style.boxShadow = face ? `0 16px 28px rgb(20 14 10 / 0.32), inset 0 0 0 1px ${edgeColor}` : `inset 0 0 0 1px ${edgeColor}`;
+    if (face) {
+      const img = document.createElement("img");
+      img.src = backSrc;
+      img.alt = "";
+      img.draggable = false;
+      Object.assign(img.style, backStyle, { width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit", pointerEvents: "none" });
+      lip.append(img);
+    }
+    node.append(lip);
+  }
   host.append(node);
   return node.animate(
-    actor.frames.map((frame) => ({ transform: frame.transform, opacity: frame.opacity ?? 1, offset: frame.offset })),
-    { delay: actor.delay, duration: actor.duration, easing: FLUID_EASE, fill: "both" },
+    actor.frames.map((frame) => ({
+      transform: frame.transform,
+      opacity: frame.opacity ?? 1,
+      zIndex: frame.zIndex ?? actor.zIndex,
+      offset: frame.offset,
+    })),
+    { delay: actor.delay, duration: actor.duration, easing: actor.ease ?? FLUID_EASE, fill: "both" },
   );
 }
 
@@ -122,6 +143,8 @@ export function PhysicalShuffleMotion({
   const root = useRef<HTMLDivElement>(null);
   const settled = useRef(onSettled);
   settled.current = onSettled;
+  const paint = useRef({ backSrc, backStyle, edgeColor, radius });
+  paint.current = { backSrc, backStyle, edgeColor, radius };
   const dir = hand === "left" ? -1 : 1;
   const style = scene.kind === "motion" ? scene.style : "cut";
   const operationId = scene.identity?.operationId ?? null;
@@ -130,15 +153,17 @@ export function PhysicalShuffleMotion({
     const node = root.current;
     if (!node) return;
     let closed = false;
+    const { backSrc: src, backStyle: face, edgeColor: edge, radius: corner } = paint.current;
     const show = compileFluid(scene, dir, reduced);
     node.replaceChildren();
     node.dataset.motionDriver = show.driver;
     node.dataset.fluidMs = String(show.duration);
     node.dataset.proxyCount = String(show.actors.length);
-    const running = show.actors.map((actor) => paintActor(actor, node, backSrc, backStyle, edgeColor, radius));
+    const running = show.actors.map((actor) => paintActor(actor, node, src, face, edge, dir, corner));
     const first = show.actors[0];
+    const operation = scene.identity?.operationId ?? null;
     publish({
-      operationId,
+      operationId: operation,
       kind: scene.kind,
       style: scene.kind === "motion" ? scene.style : null,
       eventIndex: 0,
@@ -161,7 +186,7 @@ export function PhysicalShuffleMotion({
       for (const animation of running) animation.cancel();
       node.replaceChildren();
     };
-  }, [scene, generation, reduced, dir, edgeColor, operationId, style, backSrc, backStyle, radius]);
+  }, [scene, generation, reduced, dir]);
 
   return (
     <div

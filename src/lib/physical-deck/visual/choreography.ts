@@ -5,6 +5,7 @@ export type FluidFrame = {
   offset: number;
   transform: string;
   opacity?: number;
+  zIndex?: number;
 };
 
 export type ProxyMode = "rigid-packet" | "spatial-representation";
@@ -21,6 +22,9 @@ export type FluidActor = {
   duration: number;
   frames: FluidFrame[];
   zIndex: number;
+  /** Visible paper edges for a cut packet. Other grips stay one card. */
+  edges?: number;
+  ease?: string;
 };
 
 export type FluidShow = {
@@ -32,8 +36,9 @@ export type FluidShow = {
 const EASE = "cubic-bezier(0.33, 0.02, 0.18, 1)";
 export const FLUID_EASE = EASE;
 
-function pose(x: number, y: number, r: number) {
-  return `translate3d(${x}%, ${y}%, 0) rotate(${r}deg)`;
+function pose(x: number, y: number, r: number, scale = 1) {
+  const sized = scale === 1 ? "" : ` scale(${scale})`;
+  return `translate3d(${x}%, ${y}%, 0) rotate(${r}deg)${sized}`;
 }
 
 function frames(points: FluidFrame[]): FluidFrame[] {
@@ -43,7 +48,7 @@ function frames(points: FluidFrame[]): FluidFrame[] {
     const offset = Math.min(1, Math.max(0, point.offset));
     const last = next.at(-1);
     if (last && offset <= last.offset) continue;
-    next.push({ offset, transform: point.transform, opacity: point.opacity });
+    next.push({ offset, transform: point.transform, opacity: point.opacity, zIndex: point.zIndex });
   }
   if (!next.length || next[0]!.offset > 0) next.unshift({ offset: 0, transform: points[0]?.transform ?? pose(0, 0, 0) });
   if (next.at(-1)!.offset < 1) next.push({ offset: 1, transform: next.at(-1)!.transform });
@@ -52,6 +57,100 @@ function frames(points: FluidFrame[]): FluidFrame[] {
 
 function span(actors: FluidActor[]) {
   return Math.max(480, ...actors.map((actor) => actor.delay + actor.duration));
+}
+
+/** Two cut packets should read as different thicknesses when their counts differ. */
+export function cutEdgeCounts(counts: number[]) {
+  const deck = counts.reduce((sum, count) => sum + count, 0);
+  const edges = counts.map((count) => {
+    if (count <= 1 || deck <= 1) return 1;
+    return Math.max(2, Math.min(8, Math.round((count / deck) * 7) + 1));
+  });
+  if (counts.length === 2 && counts[0] !== counts[1] && edges[0] === edges[1]) {
+    const thick = counts[0] > counts[1] ? 0 : 1;
+    edges[thick] = Math.min(8, edges[thick]! + 2);
+    edges[1 - thick] = Math.max(1, edges[1 - thick]! - 1);
+  }
+  return edges;
+}
+
+/** A three-packet pile should read as a short stack, not one card and not a thick deck. */
+function shortStackEdges(counts: number[]) {
+  const deck = counts.reduce((sum, count) => sum + count, 0);
+  return counts.map((count) => {
+    if (count <= 1 || deck <= 1) return 1;
+    return Math.max(2, Math.min(4, Math.round((count / deck) * 5) + 1));
+  });
+}
+
+function threeLane(from: string, count: number) {
+  if (count === 2) return from === "packet0" ? -1 : 1;
+  if (from === "packet0") return -1;
+  if (from === "packet2") return 1;
+  return 0;
+}
+
+/** Spread three piles, then restack by ducking the pile that is in the way so nothing slides through a face. */
+function threeCutFrames(packets: { from: string }[], dir: number): FluidFrame[][] {
+  const n = packets.length;
+  const lanes = packets.map((packet) => threeLane(packet.from, n) * 118 * dir);
+  const duck = 100;
+  const posX = lanes.slice();
+  const events: { t: number; i: number; x: number; y: number; z: number }[] = [];
+  const note = (t: number, i: number, x: number, y: number, z: number) => events.push({ t, i, x, y, z });
+  for (let i = 0; i < n; i += 1) {
+    note(0.16, i, lanes[i] ?? 0, 0, 10);
+    note(0.26, i, lanes[i] ?? 0, 0, 10);
+  }
+  let cursor = 0.26;
+  const span = n <= 1 ? 0.2 : 0.62 / (n - 1);
+  const stacked = new Set<number>(n ? [0] : []);
+  for (let mover = 1; mover < n; mover += 1) {
+    const anchor = [...stacked][0] ?? 0;
+    const destX = posX[anchor] ?? 0;
+    const fromX = posX[mover] ?? 0;
+    const blockers: number[] = [];
+    for (let i = mover + 1; i < n; i += 1) {
+      const x = posX[i] ?? 0;
+      const toward = (x - fromX) * (destX - fromX);
+      if (toward > 0 && Math.abs(x - fromX) < Math.abs(destX - fromX) - 8) blockers.push(i);
+    }
+    const tDuck = cursor + span * 0.3;
+    const tSlide = cursor + span * 0.68;
+    const tRise = cursor + span;
+    for (let i = 0; i < n; i += 1) {
+      if (i === mover) note(tDuck, i, fromX, 0, 36 + mover);
+      else if (stacked.has(i) || blockers.includes(i)) note(tDuck, i, posX[i] ?? 0, duck, stacked.has(i) ? 3 : 6);
+      else note(tDuck, i, posX[i] ?? 0, 0, 10);
+    }
+    note(tSlide, mover, destX, 0, 36 + mover);
+    for (const i of stacked) note(tSlide, i, destX, duck, 3);
+    for (const i of blockers) note(tSlide, i, posX[i] ?? 0, duck, 6);
+    for (let i = 0; i < n; i += 1) {
+      if (i === mover) note(tRise, i, destX, 0, 36 + mover);
+      else if (stacked.has(i)) note(tRise, i, destX, 0, 4);
+      else if (blockers.includes(i)) note(tRise, i, posX[i] ?? 0, 0, 10);
+      else note(tRise, i, posX[i] ?? 0, 0, 10);
+    }
+    posX[mover] = destX;
+    stacked.add(mover);
+    cursor = tRise;
+  }
+  const finalX = posX[[...stacked][0] ?? 0] ?? 0;
+  if (Math.abs(finalX) > 1) {
+    for (let i = 0; i < n; i += 1) note(Math.min(0.96, cursor + 0.06), i, 0, 0, 20 + i);
+  }
+  for (let i = 0; i < n; i += 1) note(1, i, 0, 0, 20 + i);
+  return packets.map((_, index) => {
+    const list: FluidFrame[] = [{ offset: 0, transform: pose(0, 0, 0), zIndex: 4 }];
+    for (const event of events.filter((item) => item.i === index).sort((a, b) => a.t - b.t)) {
+      const offset = Math.round(event.t * 1000) / 1000;
+      if (offset <= list[list.length - 1]!.offset) continue;
+      list.push({ offset, transform: pose(event.x, event.y, 0), zIndex: event.z });
+    }
+    if (list[list.length - 1]!.offset < 1) list.push({ offset: 1, transform: pose(0, 0, 0), zIndex: 20 + index });
+    return list;
+  });
 }
 
 function transfers(framesIn: readonly VisualFrame[], action: string | ((action: string) => boolean)) {
@@ -84,66 +183,87 @@ function packetShow(
     return { actors, duration: 180, driver: "reduced" };
   }
   const stagger = Math.round(Math.min(160, Math.max(42, 1100 / Math.max(1, packets.length))));
-  const move = path === "cut" || path === "three" ? 1080 : 680;
+  const move = path === "cut" ? 1050 : path === "three" ? 1580 : 680;
+  const cutEdges = path === "cut"
+    ? cutEdgeCounts(packets.map((packet) => packet.ids.length))
+    : path === "three"
+      ? shortStackEdges(packets.map((packet) => packet.ids.length))
+      : [];
+  const threeFrames = path === "three" ? threeCutFrames(packets, dir) : [];
   const actors: FluidActor[] = packets.map((packet, index) => {
     const side = packet.from === "right" || packet.from === "packet2" ? 1 : packet.from === "packet1" ? 0 : -1;
-    const x = 46 * side * dir;
-    const tilt = 7 * side * dir;
     let points: FluidFrame[];
     if (path === "overhand") {
+      const count = Math.max(1, packets.length);
+      const peel = 0.05 + (index / count) * 0.5;
+      const aside = Math.min(0.68, peel + 0.1);
+      const drop = Math.min(0.76, peel + 0.16);
+      const x = 58 * dir;
       points = [
-        { offset: 0, transform: pose(0, 0, 0) },
-        { offset: 0.2, transform: pose(0, -112, tilt * -0.4) },
-        { offset: 0.42, transform: pose(x * 1.35, -112, tilt) },
-        { offset: 0.68, transform: pose(x * 1.15, 2, tilt * 0.2) },
-        { offset: 1, transform: pose(0, 0, 0) },
+        { offset: 0, transform: pose(0, 0, 0), zIndex: count - index },
+        { offset: peel, transform: pose(0, -24, -4 * dir), zIndex: 24 + index },
+        { offset: aside, transform: pose(x, -20, 5 * dir), zIndex: 24 + index },
+        { offset: drop, transform: pose(x, 0, 0), zIndex: 8 + index },
+        { offset: 0.84, transform: pose(x, 0, 0), zIndex: 8 + index },
+        { offset: 1, transform: pose(0, 0, 0), zIndex: 8 + index },
       ];
     } else if (path === "hindu") {
-      points = [
-        { offset: 0, transform: pose(0, 0, 0) },
-        { offset: 0.22, transform: pose(x * 0.85, 8, tilt * 0.45) },
-        { offset: 0.4, transform: pose(x, -118, tilt) },
-        { offset: 0.66, transform: pose(0, -118, 0) },
-        { offset: 0.86, transform: pose(0, -8, 0) },
-        { offset: 1, transform: pose(0, 0, 0) },
-      ];
+      const count = Math.max(1, packets.length);
+      const last = index === count - 1;
+      const lane = 118 * dir;
+      if (last) {
+        points = [
+          { offset: 0, transform: pose(0, 0, 0), zIndex: 24 },
+          { offset: 0.8, transform: pose(0, 0, 0), zIndex: 24 },
+          { offset: 0.84, transform: pose(0, 0, 0), zIndex: 2 },
+          { offset: 1, transform: pose(0, 0, 0), zIndex: 2 },
+        ];
+      } else {
+        const pull = 0.12 + (index / Math.max(1, count - 1)) * 0.46;
+        points = [
+          { offset: 0, transform: pose(0, 0, 0), zIndex: 3 },
+          { offset: pull, transform: pose(0, 0, 0), zIndex: 3 },
+          { offset: Math.min(0.64, pull + 0.1), transform: pose(lane, 3, 4 * dir), zIndex: 14 + index },
+          { offset: Math.min(0.72, pull + 0.16), transform: pose(lane, 0, 0), zIndex: 14 + index },
+          { offset: 0.8, transform: pose(lane, 0, 0), zIndex: 14 + index },
+          { offset: 1, transform: pose(0, 0, 0), zIndex: 14 + index },
+        ];
+      }
     } else if (path === "riffle") {
-      const drop = Math.min(0.78, 0.34 + (index / Math.max(1, packets.length)) * 0.4);
+      const count = Math.max(1, packets.length);
+      const lane = side * 112 * dir;
+      const lean = side * 7 * dir;
+      const release = count === 1 ? 0.42 : 0.24 + (index / (count - 1)) * 0.46;
+      const land = release + 0.08;
       points = [
-        { offset: 0, transform: pose(0, 0, 0) },
-        { offset: 0.16, transform: pose(x * 1.7, 2, tilt) },
-        { offset: drop, transform: pose(x * 1.7, -18, tilt * 0.4) },
-        { offset: Math.min(0.96, drop + 0.14), transform: pose(0, -6, 0) },
-        { offset: 1, transform: pose(0, 0, 0) },
+        { offset: 0, transform: pose(0, 0, 0), zIndex: 4 },
+        { offset: 0.18, transform: pose(lane, 0, lean), zIndex: 4 + index },
+        { offset: release, transform: pose(lane, -6, lean), zIndex: 30 + index },
+        { offset: land, transform: pose(0, -4, 0), zIndex: 30 + index },
+        { offset: 0.84, transform: pose(0, 0, 0), zIndex: 30 + index },
+        { offset: 0.92, transform: pose(0, -7, 0), zIndex: 30 + index },
+        { offset: 1, transform: pose(0, 0, 0), zIndex: 30 + index },
       ];
     } else if (path === "three") {
-      const back = 0.42 + (index / Math.max(1, packets.length)) * 0.4;
-      points = [
-        { offset: 0, transform: pose(0, 0, 0) },
-        { offset: 0.28, transform: pose(x * 1.9, side === 0 ? -86 : 16, tilt) },
-        { offset: back, transform: pose(x * 1.9, side === 0 ? -120 : -8, tilt * 0.2) },
-        { offset: Math.min(0.94, back + 0.16), transform: pose(0, -10, 0) },
-        { offset: 1, transform: pose(0, 0, 0) },
-      ];
+      points = threeFrames[index] ?? [{ offset: 0, transform: pose(0, 0, 0) }, { offset: 1, transform: pose(0, 0, 0) }];
     } else {
       const upper = packet.from === "upper" || index === 0;
+      // Clear the deck completely, then slide back underneath. The halves never share a face.
       points = upper
         ? [
-            { offset: 0, transform: pose(0, 0, 0) },
-            { offset: 0.28, transform: pose(-54 * dir, -16, -11 * dir) },
-            { offset: 0.48, transform: pose(-54 * dir, -8, -6 * dir) },
-            { offset: 0.72, transform: pose(0, 6, 0) },
-            { offset: 1, transform: pose(0, 0, 0) },
+            { offset: 0, transform: pose(0, 0, 0), zIndex: 14 },
+            { offset: 0.42, transform: pose(122 * dir, 4, 5 * dir), zIndex: 14 },
+            { offset: 0.52, transform: pose(122 * dir, 4, 2 * dir), zIndex: 2 },
+            { offset: 1, transform: pose(0, 0, 0), zIndex: 2 },
           ]
         : [
-            { offset: 0, transform: pose(0, 0, 0) },
-            { offset: 0.48, transform: pose(0, 0, 0) },
-            { offset: 0.72, transform: pose(0, -8, 0) },
-            { offset: 1, transform: pose(0, 0, 0) },
+            { offset: 0, transform: pose(0, 0, 0), zIndex: 8 },
+            { offset: 1, transform: pose(0, 0, 0), zIndex: 8 },
           ];
     }
-    const delay = path === "cut" ? 0 : stagger * index;
-    const duration = path === "riffle" ? Math.min(2100, 1100 + Math.min(packets.length, 12) * 24) : move;
+    const delay = path === "cut" || path === "overhand" || path === "riffle" || path === "hindu" || path === "three" ? 0 : stagger * index;
+    const duration = path === "riffle" ? 1680 : path === "hindu" ? 1500 : path === "three" ? 1580 : path === "overhand" ? Math.min(2000, 1200 + packets.length * 36) : move;
+    const upperCut = path === "cut" && (packet.from === "upper" || index === 0);
     return {
       key: packet.key,
       ids: packet.ids,
@@ -153,7 +273,9 @@ function packetShow(
       eventSeqs: packet.seqs,
       delay,
       duration,
-      zIndex: index + 2,
+      zIndex: upperCut ? 1 : index + 2,
+      edges: cutEdges[index],
+      ease: path === "cut" || path === "riffle" || path === "hindu" || path === "three" ? "cubic-bezier(0.37, 0.01, 0.2, 1)" : undefined,
       frames: frames(points),
     };
   });
@@ -164,6 +286,35 @@ function packetShow(
 export function washProxyBudget(count: number) {
   if (count <= 14) return count;
   return 12;
+}
+
+/** Lay a wash across the felt in recorded left-to-right order, with a real gap between cards. */
+function washSeats(points: { x: number; y: number }[], dir: number) {
+  const n = points.length;
+  const ranked = points
+    .map((point, index) => ({ index, x: point.x, y: point.y }))
+    .sort((a, b) => a.x - b.x || a.y - b.y || a.index - b.index);
+  const rows = n <= 3 ? 1 : n <= 6 ? 2 : 3;
+  const cols = Math.ceil(n / rows);
+  const scale = rows === 1 ? 1 : rows === 2 ? 0.7 : 0.52;
+  const half = scale * 50;
+  const xLimit = 146 - half;
+  const yGap = rows === 3 ? 56 : 78;
+  const seats = new Array<{ x: number; y: number; r: number; scale: number }>(n);
+  ranked.forEach((item, rank) => {
+    const row = rows === 1 ? 0 : rank < cols ? 0 : rank < cols * 2 ? 1 : 2;
+    const rowCount = row === rows - 1 ? n - cols * (rows - 1) : cols;
+    const rowIndex = rank - cols * row;
+    const step = rowCount <= 1 ? 0 : Math.min(120, (xLimit * 2) / (rowCount - 1));
+    const origin = -((rowCount - 1) * step) / 2;
+    seats[item.index] = {
+      x: (origin + rowIndex * step) * dir,
+      y: (row - (rows - 1) / 2) * yGap,
+      r: (rowIndex - (rowCount - 1) / 2) * 1.1 * dir,
+      scale,
+    };
+  });
+  return seats;
 }
 
 function washShow(scene: VisualScene, dir: number, reduced: boolean): FluidShow {
@@ -212,12 +363,17 @@ function washShow(scene: VisualScene, dir: number, reduced: boolean): FluidShow 
       seqs: members.flatMap((item) => item.seqs),
     });
   }
-  const duration = reduced ? 180 : 1680;
-  const n = Math.max(1, clusters.length - 1);
+  const duration = reduced ? 180 : 1760;
+  const seats = washSeats(clusters.map((cluster) => cluster.at), dir);
+  const maxPick = Math.max(1, ...clusters.map((cluster) => cluster.pick));
   const actors: FluidActor[] = clusters.map((cluster, index) => {
-    const place = (point: { x: number; y: number }) =>
-      pose((point.x - 0.5) * 150, (point.y - 0.5) * 108, (point.x - 0.5) * 14 * dir);
-    const gather = Math.min(0.9, 0.58 + (cluster.pick / Math.max(1, scene.before.length - 1)) * 0.28);
+    const seat = seats[index] ?? { x: 0, y: 0, r: 0, scale: 1 };
+    const nudgeX = Math.max(-4, Math.min(4, (cluster.end.x - cluster.at.x) * 24));
+    const nudgeY = Math.max(-3, Math.min(3, (cluster.end.y - cluster.at.y) * 16));
+    const spreadAt = clusters.length === 1 ? 0.28 : 0.14 + (index / (clusters.length - 1)) * 0.2;
+    const settled = Math.min(0.46, spreadAt + 0.1);
+    const gather = 0.56 + (cluster.pick / maxPick) * 0.28;
+    const home = Math.min(0.96, gather + 0.08);
     return {
       key: `wash-${index}`,
       ids: cluster.ids,
@@ -227,7 +383,8 @@ function washShow(scene: VisualScene, dir: number, reduced: boolean): FluidShow 
       eventSeqs: cluster.seqs,
       delay: 0,
       duration,
-      zIndex: clusters.length - index,
+      zIndex: index + 2,
+      ease: EASE,
       frames: frames(
         reduced
           ? [
@@ -235,11 +392,12 @@ function washShow(scene: VisualScene, dir: number, reduced: boolean): FluidShow 
               { offset: 1, transform: pose(0, 0, 0), opacity: 1 },
             ]
           : [
-              { offset: 0, transform: pose((index - n / 2) * 1.5, 0, 0), opacity: 1 },
-              { offset: 0.22, transform: place(cluster.at), opacity: 1 },
-              { offset: 0.5, transform: place(cluster.end), opacity: 1 },
-              { offset: gather, transform: place(cluster.end), opacity: 1 },
-              { offset: 1, transform: pose(0, 0, 0), opacity: 1 },
+              { offset: 0, transform: pose(0, 0, 0), zIndex: 2 },
+              { offset: spreadAt, transform: pose(seat.x, seat.y, seat.r, seat.scale), zIndex: 4 + index },
+              { offset: settled, transform: pose(seat.x + nudgeX, seat.y + nudgeY, seat.r, seat.scale), zIndex: 4 + index },
+              { offset: gather, transform: pose(seat.x + nudgeX, seat.y + nudgeY - 4, seat.r * 0.3, seat.scale), zIndex: 40 + index },
+              { offset: home, transform: pose(0, 0, 0), zIndex: 40 + index },
+              { offset: 1, transform: pose(0, 0, 0), zIndex: 40 + index },
             ],
       ),
     };
@@ -261,8 +419,6 @@ export function compileFluid(scene: VisualScene | CutScene, dir: number, reduced
       reduced,
       "cut",
     );
-    if (!reduced && show.actors[1]) show.actors[1].zIndex = 6;
-    if (!reduced && show.actors[0]) show.actors[0].zIndex = 2;
     return show;
   }
   if (scene.style === "table_wash") return washShow(scene, dir, reduced);
@@ -308,7 +464,7 @@ export function compileFluid(scene: VisualScene | CutScene, dir: number, reduced
     packets.sort((a, b) => (rank.get(a.from) ?? 0) - (rank.get(b.from) ?? 0));
     const show = packetShow(packets, dir, reduced, "three");
     show.actors.forEach((actor, index) => {
-      actor.zIndex = show.actors.length - index + 1;
+      actor.zIndex = index + 2;
     });
     return show;
   }

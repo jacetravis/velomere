@@ -6,7 +6,7 @@ import { gripPacketTarget, planPhysicalShuffle } from "../motion/mechanics.ts";
 import { replayPhysicalShuffle } from "../motion/replay.ts";
 import { compileCutVisual } from "./cut.ts";
 import { compileVisualPass } from "./compile.ts";
-import { compileFluid, washProxyBudget } from "./choreography.ts";
+import { compileFluid, cutEdgeCounts, washProxyBudget } from "./choreography.ts";
 
 function deck(count: number) {
   return Array.from({ length: count }, (_, index) => 101 + 17 * index);
@@ -114,12 +114,26 @@ test("fluid actors follow recorded packets for every grip, including a manual cu
       assert.ok(actor.frames.at(-1)!.offset === 1);
       if (style === "riffle_bridge") assert.equal(actor.mode, "rigid-packet");
     }
+    if (style === "three_packet_cut") {
+      assert.ok(show.actors.length >= 2);
+      assert.ok(show.actors.every((actor) => actor.delay === 0));
+      assert.ok(show.duration > 1400 && show.duration < 1800);
+      assert.ok(show.actors.filter((actor) => actor.ids.length > 1).every((actor) => (actor.edges ?? 0) >= 2 && (actor.edges ?? 0) <= 4));
+      assert.ok(show.actors.some((actor) => actor.frames.some((frame) => frame.transform.includes(", 100%"))));
+    }
+    if (style === "hindu") {
+      assert.ok(show.actors.every((actor) => actor.delay === 0));
+      assert.ok(show.actors.every((actor) => actor.frames.every((frame) => !frame.transform.includes(", -118%"))));
+      assert.ok(show.actors.slice(0, -1).every((actor) => actor.frames.some((frame) => /118%/.test(frame.transform))));
+    }
     if (style === "riffle_bridge") {
       const releases = trace.events.filter((event) => event.kind === "transfer" && event.action.startsWith("riffle_release_"));
       assert.deepEqual(
         show.actors.map((actor) => actor.ids),
         releases.map((event) => (event.kind === "transfer" ? event.cards : [])),
       );
+      assert.ok(show.actors.every((actor) => actor.delay === 0));
+      assert.ok(show.actors.every((actor) => actor.frames.some((frame) => /112%/.test(frame.transform))));
     }
     assert.equal(show.driver, "fluid");
   }
@@ -129,7 +143,23 @@ test("fluid actors follow recorded packets for every grip, including a manual cu
   assert.deepEqual(show.actors[0]!.ids, before.slice(0, 7));
   assert.deepEqual(show.actors[1]!.ids, before.slice(7));
   assert.ok(show.duration < 2000);
+  assert.ok((show.actors[0]!.frames.at(-1)!.zIndex ?? 0) < (show.actors[1]!.frames.at(-1)!.zIndex ?? 0));
+  assert.ok(show.duration <= 1100);
+  assert.match(show.actors[0]!.frames.map((frame) => frame.transform).join(" "), /122%/);
+  assert.equal(show.actors[1]!.frames.every((frame) => frame.transform.includes("translate3d(0%, 0%, 0)")), true);
   assert.equal(compileFluid(cut, 1, true).duration, 180);
+  const original = compileFluid(compileVisualPass(before, planPhysicalShuffle({ style: "original", before, ratio: 0.4, seed: 4 })), 1, false);
+  const lifted = original.actors.find((actor) => actor.key === "original-upper");
+  const stock = original.actors.find((actor) => actor.key === "original-lower");
+  assert.ok(lifted && stock);
+  assert.ok((lifted.frames[1]!.zIndex ?? 0) > 1);
+  assert.ok((lifted.frames.at(-1)!.zIndex ?? 0) < (stock.frames.at(-1)!.zIndex ?? 0));
+  assert.notEqual(lifted.edges, stock.edges);
+  assert.match(lifted.frames.map((frame) => frame.transform).join(" "), /122%/);
+  assert.equal(stock.frames.every((frame) => frame.transform.includes("translate3d(0%, 0%, 0)")), true);
+  assert.deepEqual(cutEdgeCounts([20, 58]), [3, 6]);
+  const washOnly = compileFluid(compileVisualPass(before, planPhysicalShuffle({ style: "table_wash", before, seed: 4 })), 1, false);
+  assert.ok(washOnly.actors.every((actor) => actor.edges == null));
 });
 
 test("a later pointer position is not the value the hold locked", () => {
@@ -150,6 +180,7 @@ test("painted proxies are one card back, never a stack of edges", () => {
   const motion = readFileSync(new URL("../../../components/physical-shuffle-motion.tsx", import.meta.url), "utf8");
   const table = readFileSync(new URL("../../../components/reading-table.tsx", import.meta.url), "utf8");
   assert.equal(motion.includes("data-lip"), false);
+  assert.match(motion, /\[scene, generation, reduced, dir\]/);
   assert.equal(motion.includes("trace-proxy"), true);
   assert.equal(motion.includes("dataset.groupSize"), false);
   assert.match(table, /activePointer/);
@@ -160,6 +191,9 @@ test("painted proxies are one card back, never a stack of edges", () => {
   const wash = compileFluid(compileVisualPass(before, planPhysicalShuffle({ style: "table_wash", before, thickness: 1, seed: 3, ratio: 0.5 })), 1, false);
   assert.equal(wash.actors.length, 12);
   assert.ok(wash.duration < 2000);
+  const spread = wash.actors.map((actor) => actor.frames[1]!.transform);
+  assert.equal(new Set(spread).size, spread.length);
+  assert.ok(spread.some((transform) => /translate3d\(-?\d{2}/.test(transform)));
   const over = compileFluid(compileVisualPass(before, planPhysicalShuffle({ style: "overhand", before, thickness: 1, seed: 3, ratio: 0.5 })), 1, false);
   assert.ok(over.actors.every((actor) => actor.display === "single-card" && actor.ids.length >= 1));
   assert.ok(over.duration < 4000);

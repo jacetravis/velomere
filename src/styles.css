@@ -1240,10 +1240,18 @@ html[data-theme="numen"] .marble-slab {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: #efe8dc;
-  box-shadow: 0 16px 28px rgb(20 14 10 / 0.32);
+  background: transparent;
   transform-origin: 50% 78%;
   will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.trace-fluid .trace-proxy-face,
+.trace-fluid .trace-proxy-edge {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #efe8dc;
   pointer-events: none;
 }
 
