@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import { SHUFFLE_STYLES } from "../motion/events.ts";
 import { gripPacketTarget, planPhysicalShuffle } from "../motion/mechanics.ts";
 import { replayPhysicalShuffle } from "../motion/replay.ts";
 import { compileCutVisual } from "./cut.ts";
 import { compileVisualPass } from "./compile.ts";
-import { compileFluid } from "./choreography.ts";
+import { compileFluid, washProxyBudget } from "./choreography.ts";
 
 function deck(count: number) {
   return Array.from({ length: count }, (_, index) => 101 + 17 * index);
@@ -84,9 +85,14 @@ for (const count of [2, 3, 22, 52, 78, 91]) {
     const wash = planPhysicalShuffle({ style: "table_wash", before, thickness: 0.2, ratio: 0.5, seed: 4 });
     const scene = compileVisualPass(before, wash);
     const show = compileFluid(scene, 1, false);
-    assert.deepEqual(show.actors.map((actor) => actor.ids[0]).sort((a, b) => a - b), [...before].sort((a, b) => a - b));
+    const covered = show.actors.flatMap((actor) => actor.ids);
+    assert.equal(covered.length, count);
+    assert.equal(new Set(covered).size, count);
+    assert.equal(show.actors.length, washProxyBudget(count));
+    if (count >= 22) assert.ok(show.actors.length >= 9 && show.actors.length <= 14);
+    assert.ok(show.actors.every((actor) => actor.display === "single-card" && actor.mode === "spatial-representation"));
     assert.ok(show.duration <= 3200);
-    if (count >= 22) assert.ok(show.duration < wash.events.length * 12);
+    assert.ok(show.duration < 2000);
     const historical = structuredClone(wash);
     delete historical.input.groups;
     assert.deepEqual(replayPhysicalShuffle(before, historical), wash.afterOrder);
@@ -103,7 +109,18 @@ test("fluid actors follow recorded packets for every grip, including a manual cu
     const ids = show.actors.flatMap((actor) => actor.ids);
     assert.equal(new Set(ids).size, before.length);
     assert.equal(ids.length, before.length);
-    for (const actor of show.actors) assert.ok(actor.frames.at(-1)!.offset === 1);
+    for (const actor of show.actors) {
+      assert.equal(actor.display, "single-card");
+      assert.ok(actor.frames.at(-1)!.offset === 1);
+      if (style === "riffle_bridge") assert.equal(actor.mode, "rigid-packet");
+    }
+    if (style === "riffle_bridge") {
+      const releases = trace.events.filter((event) => event.kind === "transfer" && event.action.startsWith("riffle_release_"));
+      assert.deepEqual(
+        show.actors.map((actor) => actor.ids),
+        releases.map((event) => (event.kind === "transfer" ? event.cards : [])),
+      );
+    }
     assert.equal(show.driver, "fluid");
   }
   const before = deck(22);
@@ -127,4 +144,23 @@ test("a later pointer position is not the value the hold locked", () => {
   assert.deepEqual(first, frozen);
   assert.equal(second.input.groups![0]!.length, first.input.groups![0]!.length);
   assert.equal(second.input.thickness, locked);
+});
+
+test("painted proxies are one card back, never a stack of edges", () => {
+  const motion = readFileSync(new URL("../../../components/physical-shuffle-motion.tsx", import.meta.url), "utf8");
+  const table = readFileSync(new URL("../../../components/reading-table.tsx", import.meta.url), "utf8");
+  assert.equal(motion.includes("data-lip"), false);
+  assert.equal(motion.includes("trace-proxy"), true);
+  assert.equal(motion.includes("dataset.groupSize"), false);
+  assert.match(table, /activePointer/);
+  assert.match(table, /visibilitychange/);
+  assert.match(table, /event\.isPrimary/);
+  assert.match(table, /Hold to shuffle/);
+  const before = deck(78);
+  const wash = compileFluid(compileVisualPass(before, planPhysicalShuffle({ style: "table_wash", before, thickness: 1, seed: 3, ratio: 0.5 })), 1, false);
+  assert.equal(wash.actors.length, 12);
+  assert.ok(wash.duration < 2000);
+  const over = compileFluid(compileVisualPass(before, planPhysicalShuffle({ style: "overhand", before, thickness: 1, seed: 3, ratio: 0.5 })), 1, false);
+  assert.ok(over.actors.every((actor) => actor.display === "single-card" && actor.ids.length >= 1));
+  assert.ok(over.duration < 4000);
 });

@@ -253,6 +253,7 @@ export function ReadingTable() {
   const holding = useRef(false);
   const thicknessRef = useRef(0.5);
   const thicknessDrag = useRef(false);
+  const activePointer = useRef<number | null>(null);
   const lockedThickness = useRef<number | undefined>(undefined);
   const countThickness = useRef<number | undefined>(undefined);
   const springToken = useRef(0);
@@ -304,7 +305,14 @@ export function ReadingTable() {
       parkRef.current("blur");
     };
     window.addEventListener("blur", stop);
-    return () => window.removeEventListener("blur", stop);
+    const hide = () => {
+      if (document.visibilityState === "hidden") stop();
+    };
+    document.addEventListener("visibilitychange", hide);
+    return () => {
+      window.removeEventListener("blur", stop);
+      document.removeEventListener("visibilitychange", hide);
+    };
   }, []);
   const [pendingSpread, setPendingSpread] = useState<string | null>(null);
   const [physicalNote, setPhysicalNote] = useState<string | null>(null);
@@ -912,6 +920,7 @@ export function ReadingTable() {
 
   const parkThickness = (reason: ThumbInterrupt = "release") => {
     thicknessDrag.current = false;
+    activePointer.current = null;
     endHold();
     const token = springToken.current + 1;
     springToken.current = token;
@@ -1594,12 +1603,12 @@ export function ReadingTable() {
             <div
               ref={thicknessTrack}
               role="slider"
-              aria-label="Packet thickness"
+              aria-label="Hold to shuffle. Touch location selects packet size. Release to stop."
               aria-orientation="horizontal"
               aria-valuemin={0}
               aria-valuemax={1}
               aria-valuenow={Number(packetThickness.toFixed(2))}
-              aria-valuetext={packetThickness < 0.42 ? "Thin packets" : packetThickness > 0.58 ? "Thick packets" : "Neutral packets"}
+              aria-valuetext={held ? "Holding. Packet size is locked." : packetThickness < 0.42 ? "Thin packets" : packetThickness > 0.58 ? "Thick packets" : "Neutral packets"}
               aria-disabled={order.length < 2 || !!slip || !!physicalNote || phase === "cutting" || undefined}
               tabIndex={order.length < 2 || !!slip || !!physicalNote || phase === "cutting" ? -1 : 0}
               data-packet-thickness={packetThickness.toFixed(3)}
@@ -1611,12 +1620,14 @@ export function ReadingTable() {
               )}
               onContextMenu={(event) => event.preventDefault()}
               onPointerDown={(event) => {
-                if (event.button !== 0) return;
+                if (event.button !== 0 || !event.isPrimary) return;
+                if (activePointer.current != null) return;
                 if (order.length < 2 || !!slip || !!physicalNote || phase === "cutting" || phase === "shuffling") return;
                 event.preventDefault();
                 springToken.current += 1;
                 setThicknessReturn(false);
                 moveThickness(event.clientX);
+                activePointer.current = event.pointerId;
                 try {
                   event.currentTarget.setPointerCapture(event.pointerId);
                 } catch {
@@ -1626,14 +1637,17 @@ export function ReadingTable() {
                 beginHold();
               }}
               onPointerMove={(event) => {
+                if (activePointer.current != null && event.pointerId !== activePointer.current) return;
                 if (!thicknessDrag.current || !event.currentTarget.hasPointerCapture(event.pointerId)) return;
                 event.preventDefault();
               }}
-              onPointerUp={() => {
+              onPointerUp={(event) => {
+                if (activePointer.current != null && event.pointerId !== activePointer.current) return;
                 if (!thicknessDrag.current) return;
                 parkThickness("release");
               }}
-              onPointerCancel={() => {
+              onPointerCancel={(event) => {
+                if (activePointer.current != null && event.pointerId !== activePointer.current) return;
                 if (!thicknessDrag.current) return;
                 parkThickness("cancel");
               }}

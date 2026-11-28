@@ -1236,20 +1236,15 @@ html[data-theme="numen"] .marble-slab {
   transform-style: preserve-3d;
 }
 
-.trace-fluid .trace-packet,
-.trace-fluid .trace-wash-card {
+.trace-fluid .trace-proxy {
   position: absolute;
   inset: 0;
-  overflow: visible;
-  pointer-events: none;
-  transform-origin: 50% 78%;
-  will-change: transform;
-}
-
-.trace-fluid .trace-wash-card {
   overflow: hidden;
   background: #efe8dc;
-  box-shadow: 0 12px 22px rgb(20 14 10 / 0.28);
+  box-shadow: 0 16px 28px rgb(20 14 10 / 0.32);
+  transform-origin: 50% 78%;
+  will-change: transform, opacity;
+  pointer-events: none;
 }
 
 .trace-packet {

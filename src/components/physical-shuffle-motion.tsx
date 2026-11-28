@@ -35,47 +35,23 @@ function publish(next: MotionProbe | null) {
   }
 }
 
-function paintActor(actor: FluidActor, host: HTMLElement, backSrc: string, backStyle: CSSProperties, edgeColor: string, dir: number, radius: number) {
+function paintActor(actor: FluidActor, host: HTMLElement, backSrc: string, backStyle: CSSProperties, edgeColor: string, radius: number) {
   const node = document.createElement("div");
-  node.className = actor.role === "card" ? "trace-wash-card is-fluid" : "trace-packet is-fluid";
-  node.dataset.groupSize = String(actor.ids.length);
+  node.className = "trace-proxy";
   node.dataset.fluidRole = actor.role;
+  node.dataset.proxyDisplay = "single-card";
   node.style.zIndex = String(actor.zIndex);
   node.style.borderRadius = `${radius}px`;
-  if (actor.role === "card") {
-    const img = document.createElement("img");
-    img.src = backSrc;
-    img.alt = "";
-    img.draggable = false;
-    Object.assign(img.style, backStyle, { width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit", pointerEvents: "none" });
-    node.append(img);
-  } else {
-    const lips = Math.max(1, Math.min(8, actor.ids.length));
-    const gap = Math.min(3.2, 0.55 + Math.sqrt(actor.ids.length) * 0.42);
-    for (let step = 0; step < lips; step += 1) {
-      const depth = lips - 1 - step;
-      const face = step === lips - 1;
-      const lip = document.createElement("div");
-      lip.className = "trace-card";
-      lip.style.transform = `translate(${dir * depth * gap * 0.42}px, ${depth * gap}px)`;
-      lip.style.zIndex = String(step + 1);
-      lip.style.borderRadius = `${radius}px`;
-      lip.style.background = face ? "" : edgeColor;
-      lip.style.boxShadow = face ? "0 16px 28px rgb(20 14 10 / 0.34)" : "";
-      if (face) {
-        const img = document.createElement("img");
-        img.src = backSrc;
-        img.alt = "";
-        img.draggable = false;
-        Object.assign(img.style, backStyle);
-        lip.append(img);
-      }
-      node.append(lip);
-    }
-  }
+  node.style.boxShadow = `0 16px 28px rgb(20 14 10 / 0.32), inset 0 0 0 1px ${edgeColor}`;
+  const img = document.createElement("img");
+  img.src = backSrc;
+  img.alt = "";
+  img.draggable = false;
+  Object.assign(img.style, backStyle, { width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit", pointerEvents: "none" });
+  node.append(img);
   host.append(node);
   return node.animate(
-    actor.frames.map((frame) => ({ transform: frame.transform, offset: frame.offset })),
+    actor.frames.map((frame) => ({ transform: frame.transform, opacity: frame.opacity ?? 1, offset: frame.offset })),
     { delay: actor.delay, duration: actor.duration, easing: FLUID_EASE, fill: "both" },
   );
 }
@@ -158,8 +134,8 @@ export function PhysicalShuffleMotion({
     node.replaceChildren();
     node.dataset.motionDriver = show.driver;
     node.dataset.fluidMs = String(show.duration);
-    node.dataset.groupCount = String(show.actors.length);
-    const running = show.actors.map((actor) => paintActor(actor, node, backSrc, backStyle, edgeColor, dir, radius));
+    node.dataset.proxyCount = String(show.actors.length);
+    const running = show.actors.map((actor) => paintActor(actor, node, backSrc, backStyle, edgeColor, radius));
     const first = show.actors[0];
     publish({
       operationId,

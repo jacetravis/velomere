@@ -4,12 +4,19 @@ import type { VisualFrame, VisualScene } from "./compile";
 export type FluidFrame = {
   offset: number;
   transform: string;
+  opacity?: number;
 };
+
+export type ProxyMode = "rigid-packet" | "spatial-representation";
 
 export type FluidActor = {
   key: string;
   ids: number[];
   role: "packet" | "card";
+  /** Every painted proxy is one card back. Membership stays off the table. */
+  display: "single-card";
+  mode: ProxyMode;
+  eventSeqs: number[];
   delay: number;
   duration: number;
   frames: FluidFrame[];
@@ -36,7 +43,7 @@ function frames(points: FluidFrame[]): FluidFrame[] {
     const offset = Math.min(1, Math.max(0, point.offset));
     const last = next.at(-1);
     if (last && offset <= last.offset) continue;
-    next.push({ offset, transform: point.transform });
+    next.push({ offset, transform: point.transform, opacity: point.opacity });
   }
   if (!next.length || next[0]!.offset > 0) next.unshift({ offset: 0, transform: points[0]?.transform ?? pose(0, 0, 0) });
   if (next.at(-1)!.offset < 1) next.push({ offset: 1, transform: next.at(-1)!.transform });
@@ -52,18 +59,26 @@ function transfers(framesIn: readonly VisualFrame[], action: string | ((action: 
   return framesIn.filter((frame) => frame.kind === "transfer" && match(frame.action) && frame.packetIds.length);
 }
 
-function packetShow(packets: { ids: number[]; from: string; key: string }[], dir: number, reduced: boolean, path: "overhand" | "hindu" | "riffle" | "cut" | "three"): FluidShow {
+function packetShow(
+  packets: { ids: number[]; from: string; key: string; seqs: number[] }[],
+  dir: number,
+  reduced: boolean,
+  path: "overhand" | "hindu" | "riffle" | "cut" | "three",
+): FluidShow {
   if (reduced) {
     const actors = packets.map((packet, index) => ({
       key: packet.key,
       ids: packet.ids,
       role: "packet" as const,
+      display: "single-card" as const,
+      mode: "rigid-packet" as const,
+      eventSeqs: packet.seqs,
       delay: 0,
       duration: 180,
       zIndex: index + 1,
       frames: frames([
-        { offset: 0, transform: pose(0, 0, 0) },
-        { offset: 1, transform: pose(0, 0, 0) },
+        { offset: 0, transform: pose(0, 0, 0), opacity: 1 },
+        { offset: 1, transform: pose(0, 0, 0), opacity: 1 },
       ]),
     }));
     return { actors, duration: 180, driver: "reduced" };
@@ -128,11 +143,14 @@ function packetShow(packets: { ids: number[]; from: string; key: string }[], dir
           ];
     }
     const delay = path === "cut" ? 0 : stagger * index;
-    const duration = path === "riffle" ? Math.max(move, 920 + packets.length * 18) : path === "three" || path === "cut" ? move : move;
+    const duration = path === "riffle" ? Math.min(2100, 1100 + Math.min(packets.length, 12) * 24) : move;
     return {
       key: packet.key,
       ids: packet.ids,
       role: "packet",
+      display: "single-card",
+      mode: "rigid-packet",
+      eventSeqs: packet.seqs,
       delay,
       duration,
       zIndex: index + 2,
@@ -142,62 +160,91 @@ function packetShow(packets: { ids: number[]; from: string; key: string }[], dir
   return { actors, duration: span(actors), driver: "fluid" };
 }
 
+/** A full-deck wash is a fan of whole cards, not one sprite per physical card. */
+export function washProxyBudget(count: number) {
+  if (count <= 14) return count;
+  return 12;
+}
+
 function washShow(scene: VisualScene, dir: number, reduced: boolean): FluidShow {
   const spread = new Map<number, { x: number; y: number }>();
   const last = new Map<number, { x: number; y: number }>();
+  const seqs = new Map<number, number[]>();
   const pickup: number[] = [];
   for (const frame of scene.frames) {
-    if (frame.action === "spread_on_workspace" && frame.cardId != null && frame.slideTo) {
+    if (frame.cardId == null) continue;
+    const owned = seqs.get(frame.cardId) ?? [];
+    owned.push(frame.seq);
+    seqs.set(frame.cardId, owned);
+    if (frame.action === "spread_on_workspace" && frame.slideTo) {
       spread.set(frame.cardId, frame.slideTo);
       last.set(frame.cardId, frame.slideTo);
-    } else if (frame.kind === "slide" && frame.cardId != null && frame.slideTo && frame.action.startsWith("wash_stroke_")) {
+    } else if (frame.kind === "slide" && frame.slideTo && frame.action.startsWith("wash_stroke_")) {
       last.set(frame.cardId, frame.slideTo);
-    } else if (frame.action === "gather_from_table" && frame.cardId != null) pickup.push(frame.cardId);
+    } else if (frame.action === "gather_from_table") pickup.push(frame.cardId);
   }
   const order = new Map(pickup.map((id, index) => [id, index]));
-  const n = scene.before.length;
-  if (reduced) {
-    return {
-      driver: "reduced",
-      duration: 180,
-      actors: scene.before.map((id, index) => ({
-        key: `wash-${id}`,
-        ids: [id],
-        role: "card",
-        delay: 0,
-        duration: 180,
-        zIndex: index + 1,
-        frames: frames([
-          { offset: 0, transform: pose(0, 0, 0) },
-          { offset: 1, transform: pose(0, 0, 0) },
-        ]),
-      })),
-    };
+  const cards = scene.before.map((id) => ({
+    id,
+    at: spread.get(id) ?? { x: 0.5, y: 0.5 },
+    end: last.get(id) ?? spread.get(id) ?? { x: 0.5, y: 0.5 },
+    pick: order.get(id) ?? 0,
+    seqs: seqs.get(id) ?? [],
+  }));
+  const angled = [...cards].sort((a, b) => {
+    const turn = Math.atan2(a.at.y - 0.5, a.at.x - 0.5) - Math.atan2(b.at.y - 0.5, b.at.x - 0.5);
+    return Math.abs(turn) > 1e-9 ? turn : a.pick - b.pick;
+  });
+  const budget = washProxyBudget(cards.length);
+  const clusters: { ids: number[]; at: { x: number; y: number }; end: { x: number; y: number }; pick: number; seqs: number[] }[] = [];
+  for (let index = 0; index < budget; index += 1) {
+    const start = Math.floor((index * angled.length) / budget);
+    const stop = Math.floor(((index + 1) * angled.length) / budget);
+    const slice = angled.slice(start, stop);
+    if (!slice.length) continue;
+    const members = [...slice].sort((a, b) => a.pick - b.pick);
+    const face = slice[Math.floor(slice.length / 2)]!;
+    clusters.push({
+      ids: members.map((item) => item.id),
+      at: face.at,
+      end: face.end,
+      pick: members[0]!.pick,
+      seqs: members.flatMap((item) => item.seqs),
+    });
   }
-  const duration = Math.min(3200, 1280 + n * 6);
-  const actors: FluidActor[] = scene.before.map((id) => {
-    const at = spread.get(id) ?? { x: 0.5, y: 0.5 };
-    const end = last.get(id) ?? at;
-    const place = (point: { x: number; y: number }) => pose((point.x - 0.5) * 168, (point.y - 0.5) * 124, (point.x - 0.5) * 18 * dir);
-    const pick = order.get(id) ?? 0;
-    const gather = Math.min(0.9, 0.62 + (pick / Math.max(1, n - 1)) * 0.24);
+  const duration = reduced ? 180 : 1680;
+  const n = Math.max(1, clusters.length - 1);
+  const actors: FluidActor[] = clusters.map((cluster, index) => {
+    const place = (point: { x: number; y: number }) =>
+      pose((point.x - 0.5) * 150, (point.y - 0.5) * 108, (point.x - 0.5) * 14 * dir);
+    const gather = Math.min(0.9, 0.58 + (cluster.pick / Math.max(1, scene.before.length - 1)) * 0.28);
     return {
-      key: `wash-${id}`,
-      ids: [id],
+      key: `wash-${index}`,
+      ids: cluster.ids,
       role: "card",
+      display: "single-card",
+      mode: "spatial-representation",
+      eventSeqs: cluster.seqs,
       delay: 0,
       duration,
-      zIndex: n - pick,
-      frames: frames([
-        { offset: 0, transform: pose(0, 0, 0) },
-        { offset: 0.2, transform: place(at) },
-        { offset: 0.48, transform: place(end) },
-        { offset: gather, transform: place(end) },
-        { offset: 1, transform: pose(0, 0, 0) },
-      ]),
+      zIndex: clusters.length - index,
+      frames: frames(
+        reduced
+          ? [
+              { offset: 0, transform: pose(0, 0, 0), opacity: 1 },
+              { offset: 1, transform: pose(0, 0, 0), opacity: 1 },
+            ]
+          : [
+              { offset: 0, transform: pose((index - n / 2) * 1.5, 0, 0), opacity: 1 },
+              { offset: 0.22, transform: place(cluster.at), opacity: 1 },
+              { offset: 0.5, transform: place(cluster.end), opacity: 1 },
+              { offset: gather, transform: place(cluster.end), opacity: 1 },
+              { offset: 1, transform: pose(0, 0, 0), opacity: 1 },
+            ],
+      ),
     };
   });
-  return { actors, duration, driver: "fluid" };
+  return { actors, duration, driver: reduced ? "reduced" : "fluid" };
 }
 
 /** Precompiled movement. Every actor is a recorded set of card ids. Timing is not one tick per event. */
@@ -207,8 +254,8 @@ export function compileFluid(scene: VisualScene | CutScene, dir: number, reduced
     const rest = scene.before.filter((id) => !lifted.includes(id));
     const show = packetShow(
       [
-        { ids: [...lifted], from: "upper", key: "cut-upper" },
-        { ids: rest, from: "draw", key: "cut-lower" },
+        { ids: [...lifted], from: "upper", key: "cut-upper", seqs: [scene.frames[0]?.seq ?? 0] },
+        { ids: rest, from: "draw", key: "cut-lower", seqs: [scene.frames[1]?.seq ?? 1] },
       ].filter((packet) => packet.ids.length),
       dir,
       reduced,
@@ -221,7 +268,7 @@ export function compileFluid(scene: VisualScene | CutScene, dir: number, reduced
   if (scene.style === "table_wash") return washShow(scene, dir, reduced);
   if (scene.style === "overhand") {
     return packetShow(
-      transfers(scene.frames, "strip_top_to_receiver_top").map((frame, index) => ({ ids: [...frame.packetIds], from: "held", key: `over-${index}` })),
+      transfers(scene.frames, "strip_top_to_receiver_top").map((frame, index) => ({ ids: [...frame.packetIds], from: "held", key: `over-${index}`, seqs: [frame.seq] })),
       dir,
       reduced,
       "overhand",
@@ -233,6 +280,7 @@ export function compileFluid(scene: VisualScene | CutScene, dir: number, reduced
         ids: [...frame.packetIds],
         from: "held",
         key: `hindu-${index}`,
+        seqs: [frame.seq],
       })),
       dir,
       reduced,
@@ -245,6 +293,7 @@ export function compileFluid(scene: VisualScene | CutScene, dir: number, reduced
         ids: [...frame.packetIds],
         from: frame.from ?? "left",
         key: `riffle-${index}`,
+        seqs: [frame.seq],
       })),
       dir,
       reduced,
@@ -255,7 +304,7 @@ export function compileFluid(scene: VisualScene | CutScene, dir: number, reduced
     const made = transfers(scene.frames, (action) => action.startsWith("make_"));
     const picks = scene.frames.filter((frame) => frame.action.startsWith("pick_") || frame.action.startsWith("pickup_packet_"));
     const rank = new Map(picks.map((frame, index) => [frame.from ?? frame.action, index]));
-    const packets = made.map((frame, index) => ({ ids: [...frame.packetIds], from: frame.to ?? "packet0", key: `three-${index}` }));
+    const packets = made.map((frame, index) => ({ ids: [...frame.packetIds], from: frame.to ?? "packet0", key: `three-${index}`, seqs: [frame.seq] }));
     packets.sort((a, b) => (rank.get(a.from) ?? 0) - (rank.get(b.from) ?? 0));
     const show = packetShow(packets, dir, reduced, "three");
     show.actors.forEach((actor, index) => {
@@ -267,9 +316,9 @@ export function compileFluid(scene: VisualScene | CutScene, dir: number, reduced
   const lower = transfers(scene.frames, "put_lower_on_result")[0];
   return packetShow(
     [
-      lifted ? { ids: [...lifted.packetIds], from: "upper", key: "original-upper" } : null,
-      lower ? { ids: [...lower.packetIds], from: "draw", key: "original-lower" } : null,
-    ].filter((packet): packet is { ids: number[]; from: string; key: string } => !!packet && packet.ids.length > 0),
+      lifted ? { ids: [...lifted.packetIds], from: "upper", key: "original-upper", seqs: [lifted.seq] } : null,
+      lower ? { ids: [...lower.packetIds], from: "draw", key: "original-lower", seqs: [lower.seq] } : null,
+    ].filter((packet): packet is { ids: number[]; from: string; key: string; seqs: number[] } => !!packet && packet.ids.length > 0),
     dir,
     reduced,
     "cut",
