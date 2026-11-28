@@ -51,6 +51,13 @@ test("the hold samples thickness apart from cut depth and parks on an interrupte
   const source = readFileSync(new URL("../../../components/reading-table.tsx", import.meta.url), "utf8");
   assert.match(source, /commitMotion\(ratio, count, sampled, \{ ratio: false \}\)/);
   assert.equal(source.includes("recordShuffle(sampled, count, sampled)"), false);
+  assert.equal(source.includes("dragThickness"), false);
+  assert.match(source, /lockedThickness/);
+  assert.match(source, /countThickness/);
+  assert.match(source, /if \(holding\.current \|\| thicknessDrag\.current\) return/);
+  const move = source.slice(source.indexOf("onPointerMove"), source.indexOf("onPointerUp"));
+  assert.equal(move.includes("thicknessRef"), false);
+  assert.equal(move.includes("moveThickness"), false);
   for (const reason of ["release", "cancel", "lost-capture", "blur", "key"] as const) {
     assert.match(source, new RegExp(`parkThickness\\("${reason}"\\)|parkRef\\.current\\("${reason}"\\)`));
   }
@@ -71,7 +78,7 @@ for (const count of [2, 3, 22, 52, 78]) {
     assert.equal(thickOver.orderChanged, true);
     assert.notDeepEqual(thickOver.afterOrder, before);
     assert.equal(thinOver.input.inputAttribution.packetSizes, "derived");
-    assert.equal(thinOver.input.inputAttribution.variation, "algorithm-selected");
+    assert.equal(thinOver.input.inputAttribution.variation, undefined);
     assert.notEqual(thinOver.input.inputAttribution.packetSizes, "reader");
     if (count === 2) {
       assert.equal(thickStrips[0], 1);
@@ -138,7 +145,8 @@ for (const count of [2, 3, 22, 52, 78]) {
       assert.equal(thickHindu.orderChanged, true);
       if (count >= 22) {
         assert.ok(thickBottom[0]! > 1);
-        assert.notDeepEqual(thinHindu.afterOrder, thickHindu.afterOrder);
+        assert.notEqual(thinBottom[0], thickBottom[0]);
+        assert.notDeepEqual(thinHindu.input.groups, thickHindu.input.groups);
       }
     }
 

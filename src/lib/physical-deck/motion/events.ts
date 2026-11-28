@@ -71,6 +71,8 @@ export type PhysicalShuffleTrace = {
     /** 0 thinnest packet, 1 thickest, sampled from the hold control for this pass. */
     thickness?: number;
     packetSizes?: number[];
+    /** Ordered card ids of each physical packet or release, in the order they were transferred. */
+    groups?: number[][];
     cutPoints?: [number, number];
     pickupOrder?: number[];
     /** Cut ratios chosen once for a shuffle-count run, in pass order. */

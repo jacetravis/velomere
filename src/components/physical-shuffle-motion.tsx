@@ -2,8 +2,9 @@
 
 import { useLayoutEffect, useRef, type CSSProperties } from "react";
 import type { CutScene } from "@/lib/physical-deck/visual/cut";
-import { sampleVisual, type VisualSample, type VisualScene, type ZoneMap } from "@/lib/physical-deck/visual/compile";
-import { playbackDuration, playbackIndex, renderSamples, type PicturedScene } from "@/lib/physical-deck/visual/playback";
+import { compileFluid, FLUID_EASE, type FluidActor } from "@/lib/physical-deck/visual/choreography";
+import type { ZoneMap } from "@/lib/physical-deck/visual/compile";
+import type { PicturedScene } from "@/lib/physical-deck/visual/playback";
 
 const LIPS = 16;
 
@@ -34,32 +35,49 @@ function publish(next: MotionProbe | null) {
   }
 }
 
-const ANCHORS: Record<string, { x: number; y: number; r: number }> = {
-  draw: { x: 0, y: 0, r: 0 },
-  held: { x: 2, y: -10, r: -4 },
-  receive: { x: -48, y: 16, r: 8 },
-  upper: { x: -54, y: -8, r: -12 },
-  result: { x: 0, y: 4, r: 0 },
-  left: { x: -42, y: 0, r: -8 },
-  right: { x: 44, y: 0, r: 8 },
-  merged: { x: 0, y: 6, r: 0 },
-  packet0: { x: -50, y: -4, r: -7 },
-  packet1: { x: 0, y: 18, r: 0 },
-  packet2: { x: 50, y: -4, r: 7 },
-};
-
-function anchor(zone: string, dir: number) {
-  const pose = ANCHORS[zone] ?? ANCHORS.draw!;
-  return { x: pose.x * dir, y: pose.y, r: pose.r * dir };
-}
-
-function mix(from: number, to: number, t: number) {
-  return from + (to - from) * t;
-}
-
-function ease(t: number) {
-  const x = Math.min(1, Math.max(0, t));
-  return x * x * (3 - 2 * x);
+function paintActor(actor: FluidActor, host: HTMLElement, backSrc: string, backStyle: CSSProperties, edgeColor: string, dir: number, radius: number) {
+  const node = document.createElement("div");
+  node.className = actor.role === "card" ? "trace-wash-card is-fluid" : "trace-packet is-fluid";
+  node.dataset.groupSize = String(actor.ids.length);
+  node.dataset.fluidRole = actor.role;
+  node.style.zIndex = String(actor.zIndex);
+  node.style.borderRadius = `${radius}px`;
+  if (actor.role === "card") {
+    const img = document.createElement("img");
+    img.src = backSrc;
+    img.alt = "";
+    img.draggable = false;
+    Object.assign(img.style, backStyle, { width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit", pointerEvents: "none" });
+    node.append(img);
+  } else {
+    const lips = Math.max(1, Math.min(8, actor.ids.length));
+    const gap = Math.min(3.2, 0.55 + Math.sqrt(actor.ids.length) * 0.42);
+    for (let step = 0; step < lips; step += 1) {
+      const depth = lips - 1 - step;
+      const face = step === lips - 1;
+      const lip = document.createElement("div");
+      lip.className = "trace-card";
+      lip.style.transform = `translate(${dir * depth * gap * 0.42}px, ${depth * gap}px)`;
+      lip.style.zIndex = String(step + 1);
+      lip.style.borderRadius = `${radius}px`;
+      lip.style.background = face ? "" : edgeColor;
+      lip.style.boxShadow = face ? "0 16px 28px rgb(20 14 10 / 0.34)" : "";
+      if (face) {
+        const img = document.createElement("img");
+        img.src = backSrc;
+        img.alt = "";
+        img.draggable = false;
+        Object.assign(img.style, backStyle);
+        lip.append(img);
+      }
+      node.append(lip);
+    }
+  }
+  host.append(node);
+  return node.animate(
+    actor.frames.map((frame) => ({ transform: frame.transform, offset: frame.offset })),
+    { delay: actor.delay, duration: actor.duration, easing: FLUID_EASE, fill: "both" },
+  );
 }
 
 export function PacketFace({
@@ -104,39 +122,6 @@ export function PacketFace({
   );
 }
 
-function LipStack({ backSrc, backStyle, radius }: { backSrc: string; backStyle: CSSProperties; radius: number }) {
-  return (
-    <>
-      {Array.from({ length: LIPS }, (_, step) => (
-        <div key={step} data-lip={step} className="trace-card" style={{ borderRadius: radius }} hidden>
-          <img src={backSrc} alt="" draggable={false} style={backStyle} hidden />
-        </div>
-      ))}
-    </>
-  );
-}
-
-function showPacket(element: HTMLElement, count: number, dir: number, edgeColor: string) {
-  const lips = Math.max(count > 0 ? 1 : 0, Math.min(LIPS, count));
-  const gap = Math.min(3.4, 0.55 + Math.sqrt(Math.max(1, count)) * 0.42);
-  element.dataset.count = String(count);
-  element.querySelectorAll<HTMLElement>("[data-lip]").forEach((lip, step) => {
-    if (step >= lips) {
-      lip.hidden = true;
-      return;
-    }
-    const depth = lips - 1 - step;
-    const face = step === lips - 1;
-    lip.hidden = false;
-    lip.style.transform = `translate(${dir * depth * gap * 0.42}px, ${depth * gap}px)`;
-    lip.style.zIndex = String(step + 1);
-    lip.style.background = face ? "" : edgeColor;
-    lip.style.boxShadow = face ? "0 14px 28px rgb(0 0 0 / 0.38)" : "";
-    const img = lip.querySelector("img");
-    if (img instanceof HTMLElement) img.hidden = !face;
-  });
-}
-
 export function PhysicalShuffleMotion({
   scene,
   generation,
@@ -164,165 +149,56 @@ export function PhysicalShuffleMotion({
   const dir = hand === "left" ? -1 : 1;
   const style = scene.kind === "motion" ? scene.style : "cut";
   const operationId = scene.identity?.operationId ?? null;
-  const slotOf = useRef(new Map<number, number>());
-  slotOf.current = new Map(scene.before.map((id, index) => [id, index]));
 
   useLayoutEffect(() => {
     const node = root.current;
     if (!node) return;
-    let frame = 0;
     let closed = false;
-    node.dataset.playbackDriver = reduced ? "reduced-clock" : "samples";
-    const paint = (sample: VisualSample) => {
-      const traveling = sample.travel?.kind === "transfer" ? sample.travel.ids : [];
-      const drop = new Set(traveling);
-      const visible = Object.entries(sample.zones)
-        .map(([name, cards]) => ({ name, cards: cards.filter((id) => !drop.has(id)) }))
-        .filter((zone) => zone.cards.length);
-      node.querySelectorAll<HTMLElement>("[data-trace-zone]").forEach((element) => {
-        const zone = visible.find((item) => item.name === element.dataset.traceZone);
-        if (!zone) {
-          element.hidden = true;
-          return;
-        }
-        element.hidden = false;
-        const pose = anchor(zone.name, dir);
-        let bridge = "";
-        if (!reduced && sample.action === "square_without_reordering" && style === "riffle_bridge" && zone.name === "merged") {
-          bridge = " scaleY(0.9)";
-        }
-        element.style.transform = `translate(${pose.x}%, ${pose.y}%) rotate(${pose.r}deg)${bridge}`;
-        showPacket(element, zone.cards.length, dir, edgeColor);
-      });
-      const flyer = node.querySelector<HTMLElement>("[data-trace-flyer]");
-      if (flyer && sample.travel?.kind === "transfer") {
-        const from = anchor(sample.travel.from, dir);
-        const to = anchor(sample.travel.to, dir);
-        const t = ease(sample.travel.progress);
-        flyer.hidden = false;
-        flyer.style.transform = `translate(${mix(from.x, to.x, t)}%, ${mix(from.y, to.y, t)}%) rotate(${mix(from.r, to.r, t)}deg)`;
-        showPacket(flyer, sample.travel.ids.length, dir, edgeColor);
-      } else if (flyer) flyer.hidden = true;
-      const wash = node.querySelector<HTMLElement>("[data-trace-wash]");
-      if (wash) {
-        const picking = sample.travel?.kind === "pickup" ? sample.travel.ids[0] : null;
-        wash.querySelectorAll<HTMLElement>("[data-trace-slot]").forEach((card) => {
-          card.hidden = true;
-        });
-        const showCard = (id: number, x: number, y: number, turn: number) => {
-          const slot = slotOf.current.get(id);
-          if (slot == null) return;
-          const card = wash.querySelector<HTMLElement>(`[data-trace-slot="${slot}"]`);
-          if (!card) return;
-          card.hidden = false;
-          card.style.transform = `translate(${x}%, ${y}%) rotate(${turn}deg)`;
-        };
-        for (const [key, at] of Object.entries(sample.positions)) {
-          const id = Number(key);
-          if (picking === id) continue;
-          showCard(id, (at.x - 0.5) * 210, (at.y - 0.5) * 170, (at.x - 0.5) * 18 * dir);
-        }
-        if (picking != null) {
-          const at = sample.positions[String(picking)] ?? { x: 0.5, y: 0.5 };
-          const t = ease(sample.travel?.progress ?? 0);
-          showCard(picking, mix((at.x - 0.5) * 210, 0, t), mix((at.y - 0.5) * 170, 0, t), mix((at.x - 0.5) * 18 * dir, 0, t));
-        }
-        wash.hidden = Object.keys(sample.positions).length === 0 && picking == null;
-      }
-      node.dataset.seq = sample.seq == null ? "" : String(sample.seq);
-      node.dataset.action = sample.action ?? "before";
-      node.dataset.packetCount = String(sample.packetIds.length);
-      publish({
-        operationId,
-        kind: scene.kind,
-        style: scene.kind === "motion" ? scene.style : null,
-        eventIndex: sample.eventIndex,
-        seq: sample.seq,
-        action: sample.action,
-        packetCount: sample.packetIds.length,
-        packetIds: sample.packetIds,
-        zones: sample.zones,
-        after: [...scene.after],
-      });
-    };
+    const show = compileFluid(scene, dir, reduced);
+    node.replaceChildren();
+    node.dataset.motionDriver = show.driver;
+    node.dataset.fluidMs = String(show.duration);
+    node.dataset.groupCount = String(show.actors.length);
+    const running = show.actors.map((actor) => paintActor(actor, node, backSrc, backStyle, edgeColor, dir, radius));
+    const first = show.actors[0];
+    publish({
+      operationId,
+      kind: scene.kind,
+      style: scene.kind === "motion" ? scene.style : null,
+      eventIndex: 0,
+      seq: 0,
+      action: show.driver,
+      packetCount: first?.ids.length ?? 0,
+      packetIds: first ? [...first.ids] : [],
+      zones: { draw: [...scene.after] },
+      after: [...scene.after],
+    });
     const finish = () => {
       if (closed) return;
       closed = true;
-      paint(sampleVisual(scene, 1));
       settled.current(generation);
     };
-    if (reduced) {
-      const started = performance.now();
-      const tick = (now: number) => {
-        const elapsed = now - started;
-        const clock = elapsed < 70 ? 0.05 : 1;
-        paint(sampleVisual(scene, clock));
-        if (clock < 1) frame = window.requestAnimationFrame(tick);
-        else finish();
-      };
-      paint(sampleVisual(scene, 0));
-      frame = window.requestAnimationFrame(tick);
-    } else {
-      const samples = renderSamples(scene, false);
-      const duration = playbackDuration(scene, false);
-      node.dataset.playbackSamples = String(samples.length);
-      let step = 0;
-      const started = performance.now();
-      const tick = (now: number) => {
-        if (closed) return;
-        step = playbackIndex(samples.length, duration, now - started, step);
-        paint(samples[step] ?? sampleVisual(scene, 1));
-        if (step < samples.length - 1 || now - started < duration) frame = window.requestAnimationFrame(tick);
-        else finish();
-      };
-      paint(samples[0] ?? sampleVisual(scene, 0));
-      frame = window.requestAnimationFrame(tick);
-    }
+    const timer = window.setTimeout(finish, show.duration + 32);
     return () => {
       closed = true;
-      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+      for (const animation of running) animation.cancel();
+      node.replaceChildren();
     };
-  }, [scene, generation, reduced, dir, edgeColor, operationId, style]);
-
-  const names = new Set<string>(["draw"]);
-  for (const frame of scene.frames) {
-    for (const name of [...Object.keys(frame.zones), ...Object.keys(frame.beforeZones)]) names.add(name);
-    if (frame.from) names.add(frame.from);
-    if (frame.to) names.add(frame.to);
-  }
-  names.delete("wash");
-  const showWash = scene.kind === "motion" && scene.style === "table_wash";
+  }, [scene, generation, reduced, dir, edgeColor, operationId, style, backSrc, backStyle, radius]);
 
   return (
     <div
       ref={root}
-      className="trace-motion"
+      className="trace-motion trace-fluid"
       data-motion-faithful="trace"
       data-operation-id={operationId ?? ""}
       data-motion-kind={scene.kind}
       data-motion-style={style}
       data-event-count={scene.frames.length}
       aria-hidden
-    >
-      {[...names].map((name) => (
-        <div key={name} className="trace-packet" data-trace-zone={name} data-count="0" hidden={name !== "draw"}>
-          <LipStack backSrc={backSrc} backStyle={backStyle} radius={radius} />
-        </div>
-      ))}
-      <div className="trace-packet is-flyer" data-trace-flyer="" data-count="0" hidden>
-        <LipStack backSrc={backSrc} backStyle={backStyle} radius={radius} />
-      </div>
-      {showWash ? (
-        <div className="trace-wash" data-trace-wash="" hidden>
-          {scene.before.map((_, index) => (
-            <div key={index} className="trace-wash-card" data-trace-slot={index} hidden>
-              <img src={backSrc} alt="" draggable={false} style={backStyle} />
-            </div>
-          ))}
-        </div>
-      ) : null}
-    </div>
+    />
   );
 }
 
-export type { PicturedScene, VisualScene, CutScene };
+export type { PicturedScene, CutScene };

@@ -43,7 +43,7 @@ test("the held thickness is stored on that pass and a later thickness does not r
   assert.equal(trace?.input.thickness, 0);
   assert.equal(trace?.input.inputAttribution.thickness, "reader");
   assert.equal(trace?.input.inputAttribution.packetSizes, "derived");
-  assert.equal(trace?.input.inputAttribution.variation, "algorithm-selected");
+  assert.equal(trace?.input.inputAttribution.variation, undefined);
   assert.equal(trace?.orderChanged, true);
   const firstStrip = trace?.events.find((event) => event.action === "strip_top_to_receiver_top");
   assert.equal(firstStrip?.kind === "transfer" ? firstStrip.count : 0, 1);

@@ -46,7 +46,7 @@ import {
 import { compileVisualPass } from "@/lib/physical-deck/visual/compile";
 import { compileCutVisual } from "@/lib/physical-deck/visual/cut";
 import { prefersReducedMotion } from "@/lib/physical-deck/visual/playback";
-import { interruptThickness, sampleThickness, THICKNESS_INSET, thicknessFromDrag, thicknessFromPointer, type ThumbInterrupt } from "@/lib/physical-deck/motion/thickness";
+import { interruptThickness, sampleThickness, THICKNESS_INSET, thicknessFromPointer, type ThumbInterrupt } from "@/lib/physical-deck/motion/thickness";
 import { captureSpread } from "@/lib/physical-deck/spread-record";
 import { displayedTableReading, resumeTableReading, tableLaysReading } from "@/lib/physical-deck/table-reading";
 import { waitingSheets } from "@/lib/physical-deck/waiting-stack";
@@ -253,7 +253,8 @@ export function ReadingTable() {
   const holding = useRef(false);
   const thicknessRef = useRef(0.5);
   const thicknessDrag = useRef(false);
-  const thicknessGrab = useRef<{ x: number; thickness: number; absolute: boolean } | null>(null);
+  const lockedThickness = useRef<number | undefined>(undefined);
+  const countThickness = useRef<number | undefined>(undefined);
   const springToken = useRef(0);
   const parkRef = useRef<(reason?: ThumbInterrupt) => void>(() => {});
   const thicknessTrack = useRef<HTMLDivElement>(null);
@@ -706,7 +707,7 @@ export function ReadingTable() {
       setPhase("still");
       return;
     }
-    const sampled = gripUsesThickness(animationChoice) ? sampleThickness(thicknessRef.current) : undefined;
+    const sampled = countThickness.current;
     try {
       const scene = commitMotion(ratio, index + 1, sampled, { ratio: false, passCount: true }, { sequence: ratios, index });
       if (!scene) {
@@ -801,7 +802,7 @@ export function ReadingTable() {
         setSlip({ card, left: startX, top: startY, x: landX - startX, y: landY - startY, rot, spin, width: cardW, landed: reduce });
       }, 2600 + Math.random() * 3200);
     }
-    const sampled = gripUsesThickness(animationChoice) ? sampleThickness(thicknessRef.current) : undefined;
+    const sampled = lockedThickness.current;
     const ratio = ((count - 1) % 7 + 1) / 7;
     try {
       const scene = commitMotion(ratio, count, sampled, { ratio: false });
@@ -855,6 +856,7 @@ export function ReadingTable() {
     const mode = physicalState()?.mode;
     if (mode !== "ready" && mode !== "collecting") return;
     const passes = Math.min(SHUFFLE_MAX, Math.max(SHUFFLE_MIN, Math.round(times)));
+    countThickness.current = gripUsesThickness(animationChoice) ? sampleThickness(thicknessRef.current) : undefined;
     const token = shuffleRun.current + 1;
     shuffleRun.current = token;
     countPlan.current = cutSections(passes);
@@ -880,6 +882,7 @@ export function ReadingTable() {
     const token = shuffleRun.current + 1;
     shuffleRun.current = token;
     countPlan.current = null;
+    lockedThickness.current = gripUsesThickness(animationChoice) ? sampleThickness(thicknessRef.current) : undefined;
     runKind.current = "hold";
     holding.current = true;
     setHeld(true);
@@ -909,7 +912,6 @@ export function ReadingTable() {
 
   const parkThickness = (reason: ThumbInterrupt = "release") => {
     thicknessDrag.current = false;
-    thicknessGrab.current = null;
     endHold();
     const token = springToken.current + 1;
     springToken.current = token;
@@ -923,33 +925,11 @@ export function ReadingTable() {
   };
   parkRef.current = parkThickness;
 
-  const liveThumb = () => {
-    const track = thicknessTrack.current;
-    const thumb = track?.querySelector("[data-thickness-thumb]");
-    if (!track || !(thumb instanceof HTMLElement)) return thicknessRef.current;
-    const box = track.getBoundingClientRect();
-    const thumbBox = thumb.getBoundingClientRect();
-    return thicknessFromPointer(thumbBox.left + thumbBox.width / 2, box.left, box.width);
-  };
-
   const moveThickness = (clientX: number) => {
     const track = thicknessTrack.current;
     if (!track) return;
     const box = track.getBoundingClientRect();
     const next = thicknessFromPointer(clientX, box.left, box.width);
-    thicknessRef.current = next;
-    setPacketThickness(next);
-  };
-
-  const dragThickness = (clientX: number) => {
-    const grab = thicknessGrab.current;
-    const track = thicknessTrack.current;
-    if (!grab || !track) return;
-    if (grab.absolute) {
-      moveThickness(clientX);
-      return;
-    }
-    const next = thicknessFromDrag(grab.thickness, clientX - grab.x, track.getBoundingClientRect().width);
     thicknessRef.current = next;
     setPacketThickness(next);
   };
@@ -1624,6 +1604,7 @@ export function ReadingTable() {
               tabIndex={order.length < 2 || !!slip || !!physicalNote || phase === "cutting" ? -1 : 0}
               data-packet-thickness={packetThickness.toFixed(3)}
               data-holding={held ? "true" : "false"}
+              data-thickness-locked={held ? "true" : "false"}
               className={cn(
                 "relative h-14 w-full touch-none rounded-full border border-border bg-raised select-none outline-none focus-visible:ring-2 focus-visible:ring-accent/50",
                 (order.length < 2 || !!slip || !!physicalNote || phase === "cutting") && "pointer-events-none opacity-40",
@@ -1634,25 +1615,19 @@ export function ReadingTable() {
                 if (order.length < 2 || !!slip || !!physicalNote || phase === "cutting" || phase === "shuffling") return;
                 event.preventDefault();
                 springToken.current += 1;
-                const seen = liveThumb();
-                thicknessRef.current = seen;
-                setPacketThickness(seen);
                 setThicknessReturn(false);
+                moveThickness(event.clientX);
                 try {
                   event.currentTarget.setPointerCapture(event.pointerId);
                 } catch {
                   /* The pointer already ended. */
                 }
-                const onThumb = event.target instanceof Element && !!event.target.closest("[data-thickness-thumb]");
                 thicknessDrag.current = true;
-                thicknessGrab.current = { x: event.clientX, thickness: seen, absolute: !onThumb };
-                if (!onThumb) moveThickness(event.clientX);
                 beginHold();
               }}
               onPointerMove={(event) => {
                 if (!thicknessDrag.current || !event.currentTarget.hasPointerCapture(event.pointerId)) return;
-                setThicknessReturn(false);
-                dragThickness(event.clientX);
+                event.preventDefault();
               }}
               onPointerUp={() => {
                 if (!thicknessDrag.current) return;
@@ -1674,6 +1649,7 @@ export function ReadingTable() {
                 }
                 if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
                 event.preventDefault();
+                if (holding.current || thicknessDrag.current) return;
                 setThicknessReturn(false);
                 const next = sampleThickness(thicknessRef.current + (event.key === "ArrowLeft" ? -0.08 : 0.08));
                 thicknessRef.current = next;

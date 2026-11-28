@@ -198,9 +198,11 @@ test("the active table does not paint shuffle packets from the old sheet split",
   assert.equal(countPass.includes("cutSections"), false);
   assert.match(countPass, /countPlan/);
   assert.match(countPass, /passCount: true/);
-  assert.match(motion, /renderSamples\(scene, false\)/);
-  assert.match(motion, /playbackIndex/);
-  assert.match(motion, /reduced-clock/);
+  assert.match(motion, /compileFluid/);
+  assert.match(motion, /element\.animate|actor\.element\.animate|\.animate\(/);
+  assert.equal(motion.includes("renderSamples"), false);
+  assert.equal(motion.includes("calibratedPacket"), false);
+  assert.equal(motion.includes("gripPacketTarget"), false);
   assert.equal(playback.includes("Math.min(2400"), false);
 });
 
@@ -294,15 +296,16 @@ for (const count of [52, 78, 91]) {
 test("a cut keeps its pace, and a late frame cannot skip a recorded sample", () => {
   const before = ids(10);
   const scene = compileCutVisual(before, 4, null);
-  assert.equal(playbackDuration(scene, false), 980);
+  const duration = playbackDuration(scene, false);
+  assert.equal(duration, 980);
   const samples = renderSamples(scene, false);
-  assert.equal(playbackIndex(samples.length, 980, 0, 0), 0);
-  assert.ok(playbackIndex(samples.length, 980, 160, 0) < 3);
-  assert.notEqual(playbackIndex(samples.length, 980, 160, 0), samples.length - 1);
+  assert.equal(playbackIndex(samples.length, duration, 0, 0), 0);
+  assert.ok(playbackIndex(samples.length, duration, 160, 0) < 3);
+  assert.notEqual(playbackIndex(samples.length, duration, 160, 0), samples.length - 1);
   let step = 0;
   const seen: number[] = [0];
-  for (let elapsed = 0; elapsed < 4000; elapsed += 1000 / 60) {
-    const next = playbackIndex(samples.length, 980, elapsed, step);
+  for (let elapsed = 0; elapsed < duration + samples.length * (1000 / 60); elapsed += 1000 / 60) {
+    const next = playbackIndex(samples.length, duration, elapsed, step);
     assert.ok(next <= step + 1);
     if (next !== step) seen.push(next);
     step = next;

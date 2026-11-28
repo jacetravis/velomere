@@ -1232,6 +1232,26 @@ html[data-theme="numen"] .marble-slab {
   pointer-events: none;
 }
 
+.trace-fluid {
+  transform-style: preserve-3d;
+}
+
+.trace-fluid .trace-packet,
+.trace-fluid .trace-wash-card {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+  transform-origin: 50% 78%;
+  will-change: transform;
+}
+
+.trace-fluid .trace-wash-card {
+  overflow: hidden;
+  background: #efe8dc;
+  box-shadow: 0 12px 22px rgb(20 14 10 / 0.28);
+}
+
 .trace-packet {
   z-index: 2;
 }

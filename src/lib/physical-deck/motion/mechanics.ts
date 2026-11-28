@@ -86,12 +86,11 @@ function cutIndex(length: number, ratio: number) {
   return clamp(Math.ceil(clamp(ratio, 0, 1) * (length - 1)), 1, length - 1);
 }
 
-/** Packet size from the thumb, inside a grip's real range. Extremes stay put; the middle may wobble by a card. */
+/** Packet size from the thumb, inside a grip's real range. The chosen size stays fixed; a remainder may be smaller. */
 function calibratedPacket(
   remaining: number,
   deckSize: number,
   thickness: number,
-  rng: () => number,
   bounds: { min: number; max: number },
   leave = 0,
 ) {
@@ -103,10 +102,7 @@ function calibratedPacket(
   if (untouched && hi >= remaining) hi = Math.max(1, remaining - 1);
   const low = Math.min(lowBound, hi);
   const t = clamp(thickness, 0, 1);
-  const target = low + (hi - low) * t;
-  const wobbleCap = Math.min(t, 1 - t) < 0.12 ? 0.35 : Math.min(0.9, Math.max(0.35, (hi - low) * 0.18));
-  const wobble = (rng() - 0.5) * wobbleCap * 2;
-  return clamp(Math.round(target + wobble), low, hi);
+  return clamp(Math.round(low + (hi - low) * t), low, hi);
 }
 
 /** Overhand handful. Thick is clumsy, never the whole stock. */
@@ -129,6 +125,15 @@ function riffleBounds(deckSize: number) {
   return { min: 1, max: 4 };
 }
 
+/** The packet size a touch-down thickness asks for. Null when this grip does not take thickness. */
+export function gripPacketTarget(style: ShuffleStyle, deckSize: number, thickness: number) {
+  if (deckSize < 2 || !Number.isFinite(thickness)) return null;
+  if (style === "overhand") return calibratedPacket(deckSize, deckSize, thickness, overhandBounds(deckSize));
+  if (style === "hindu") return calibratedPacket(deckSize, deckSize, thickness, hinduBounds(deckSize), 1);
+  if (style === "riffle_bridge") return calibratedPacket(deckSize, deckSize, thickness, riffleBounds(deckSize));
+  return null;
+}
+
 function zone(state: Work, name: string) {
   let cards = state.zones.get(name);
   if (!cards) {
@@ -136,6 +141,26 @@ function zone(state: Work, name: string) {
     state.zones.set(name, cards);
   }
   return cards;
+}
+
+function recordedGroups(style: ShuffleStyle, events: readonly MotionEvent[]): number[][] {
+  const take = (event: MotionEvent) => (event.kind === "transfer" ? [[...event.cards]] : []);
+  if (style === "overhand") return events.flatMap((event) => (event.kind === "transfer" && event.action === "strip_top_to_receiver_top" ? take(event) : []));
+  if (style === "hindu") {
+    return events.flatMap((event) =>
+      event.kind === "transfer" && (event.action === "strip_bottom_to_receiver_top" || event.action === "place_remaining_below_receiver") ? take(event) : [],
+    );
+  }
+  if (style === "riffle_bridge") return events.flatMap((event) => (event.kind === "transfer" && event.action.startsWith("riffle_release_") ? take(event) : []));
+  if (style === "original") {
+    return events.flatMap((event) =>
+      event.kind === "transfer" && (event.action === "lift_upper_packet" || event.action === "put_lower_on_result") ? take(event) : [],
+    );
+  }
+  if (style === "three_packet_cut") {
+    return events.flatMap((event) => (event.kind === "transfer" && event.action.startsWith("make_") ? take(event) : []));
+  }
+  return [];
 }
 
 function conserve(before: readonly number[], state: Work) {
@@ -273,7 +298,7 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
           const count = suggested == null
             ? thickness == null
               ? Math.min(left, Math.max(1, Math.round(n * portion)))
-              : calibratedPacket(left, n, thickness, rng, overhandBounds(n))
+              : calibratedPacket(left, n, thickness, overhandBounds(n))
             : suggested;
           transfer("held", "receive", count, "top", "top", "strip_top_to_receiver_top");
           sizes.push(count);
@@ -283,7 +308,6 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
         attribution.packetSizes = plan.packetSizes
           ? plan.readerChoices?.packetSizes ? "reader" : "algorithm-selected"
           : thickness == null ? "algorithm-selected" : "derived";
-        if (thickness != null && !plan.packetSizes) attribution.variation = "algorithm-selected";
         transfer("receive", "draw", n, "top", "bottom", "finish_overhand");
         square("draw");
         break;
@@ -300,13 +324,13 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
           const count = suggested == null
             ? thickness == null
               ? Math.min(remaining - 1, Math.max(1, Math.round(n * portion)))
-              : calibratedPacket(remaining, n, thickness, rng, hinduBounds(n), 1)
+              : calibratedPacket(remaining, n, thickness, hinduBounds(n), 1)
             : suggested;
           if (count <= 0 || count >= remaining) fail("Hindu must leave the final packet to place underneath");
           transfer("held", "receive", count, "bottom", "top", "strip_bottom_to_receiver_top");
           sizes.push(count);
           strip += 1;
-          if (strip >= Math.max(1, Math.min(5, n - 1))) break;
+          if (thickness == null && !plan.packetSizes && strip >= Math.max(1, Math.min(5, n - 1))) break;
         }
         const rest = zone(state, "held").length;
         sizes.push(rest);
@@ -314,7 +338,6 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
         attribution.packetSizes = plan.packetSizes
           ? plan.readerChoices?.packetSizes ? "reader" : "algorithm-selected"
           : thickness == null ? "algorithm-selected" : "derived";
-        if (thickness != null && !plan.packetSizes) attribution.variation = "algorithm-selected";
         transfer("held", "receive", rest, "top", "bottom", "place_remaining_below_receiver");
         transfer("receive", "draw", n, "top", "bottom", "finish_hindu");
         square("draw");
@@ -336,7 +359,7 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
           const available = zone(state, side).length;
           const run = thickness == null
             ? Math.min(available, 1 + (rng() < 0.22 ? 1 : 0))
-            : Math.min(available, calibratedPacket(available, n, thickness, rng, riffleBounds(n)));
+            : Math.min(available, calibratedPacket(available, n, thickness, riffleBounds(n)));
           transfer(side, "merged", run, "bottom", "top", `riffle_release_${turnIndex}`);
           turnIndex += 1;
         }
@@ -434,6 +457,14 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
   for (const event of events) event.t = rounded(event.seq / last);
   const after = [...(state.zones.get("draw") ?? [])];
   if (after.length !== n) fail("Planner did not reassemble the draw pile");
+  const groups = recordedGroups(plan.style, events);
+  if (groups.length) {
+    const flat = groups.flat();
+    if (flat.length !== n || new Set(flat).size !== n) fail("Recorded groups lost a card");
+    if (plan.style === "riffle_bridge") attribution.groups = attribution.releases ?? "derived";
+    else if (plan.style === "three_packet_cut") attribution.groups = attribution.cutPoints ?? attribution.packetSizes ?? "algorithm-selected";
+    else attribution.groups = attribution.packetSizes ?? "derived";
+  }
   const trace: PhysicalShuffleTrace = {
     schema: MOTION_SCHEMA,
     style: plan.style,
@@ -446,6 +477,7 @@ type Draft = Omit<TransferEvent, "seq" | "t"> | Omit<SlideEvent, "seq" | "t"> | 
       seed,
       ...(thickness != null ? { thickness: clamp(thickness, 0, 1) } : {}),
       ...(packetSizes ? { packetSizes } : {}),
+      ...(groups.length ? { groups } : {}),
       ...(cutPoints ? { cutPoints } : {}),
       ...(pickupOrder ? { pickupOrder } : {}),
       ...(cutSequence ? { cutSequence, cutSequenceIndex, passCount: cutSequence.length } : {}),

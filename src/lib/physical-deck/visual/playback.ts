@@ -150,7 +150,7 @@ export function renderSamples(scene: PicturedScene, reduced: boolean): VisualSam
   return samples;
 }
 
-/** Wall-clock length of the samples the painter actually shows. Washes are not capped. */
+/** Wall-clock length of the sample oracle. The table paints choreography, not this clock. */
 export function playbackDuration(scene: PicturedScene, reduced: boolean) {
   if (reduced) return 160;
   if (!scene.frames.length) return 480;
